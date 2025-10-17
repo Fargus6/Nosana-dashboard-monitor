@@ -187,67 +187,72 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2" data-testid="app-title">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
+        {/* Header */}
+        <div className="mb-4 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2" data-testid="app-title">
             Nosana Node Monitor
           </h1>
-          <p className="text-base text-gray-600">Track and manage your Nosana AI network nodes</p>
+          <p className="text-sm sm:text-base text-gray-600">Track and manage your Nosana AI network nodes</p>
         </div>
 
-        <Card className="mb-8 border-blue-200 shadow-lg backdrop-blur-sm bg-white/90" data-testid="add-node-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5" />
+        {/* Add Node Section */}
+        <Card className="mb-4 sm:mb-8 border-blue-200 shadow-lg backdrop-blur-sm bg-white/90" data-testid="add-node-card">
+          <CardHeader className="pb-3 sm:pb-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Add New Node
             </CardTitle>
-            <CardDescription>Enter your Nosana node address and optional name</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Enter your Nosana node address and optional name</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-2 sm:gap-3">
               <Input
                 data-testid="node-name-input"
                 placeholder="Node name (optional)"
                 value={newNodeName}
                 onChange={(e) => setNewNodeName(e.target.value)}
-                className="sm:w-48"
+                className="text-sm sm:text-base h-10 sm:h-auto"
               />
-              <Input
-                data-testid="node-address-input"
-                placeholder="Node address (e.g., 9DcLW6JkuanvWP2CbKsohChFWGCEiTnAGxA4xdAYHVNq)"
-                value={newNodeAddress}
-                onChange={(e) => setNewNodeAddress(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && addNode()}
-                className="flex-1"
-              />
-              <Button onClick={addNode} className="bg-blue-600 hover:bg-blue-700" data-testid="add-node-button">
-                <Plus className="w-4 h-4 mr-2" />
-                Add
-              </Button>
+              <div className="flex gap-2">
+                <Input
+                  data-testid="node-address-input"
+                  placeholder="Node address"
+                  value={newNodeAddress}
+                  onChange={(e) => setNewNodeAddress(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && addNode()}
+                  className="flex-1 text-sm sm:text-base h-10 sm:h-auto"
+                />
+                <Button onClick={addNode} className="bg-blue-600 hover:bg-blue-700 h-10 sm:h-auto px-3 sm:px-4" data-testid="add-node-button">
+                  <Plus className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Add</span>
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-700">Your Nodes ({nodes.length})</h2>
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-700">Your Nodes ({nodes.length})</h2>
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               onClick={autoRefreshAllNodes}
               disabled={autoRefreshing || nodes.length === 0}
-              className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+              className="flex-1 sm:flex-none gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-xs sm:text-sm h-9 sm:h-10"
               data-testid="auto-refresh-button"
             >
-              <RefreshCw className={`w-4 h-4 ${autoRefreshing ? "animate-spin" : ""}`} />
-              Auto-Refresh from Blockchain
+              <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${autoRefreshing ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Auto-Refresh from Blockchain</span>
+              <span className="sm:hidden">Auto-Refresh</span>
             </Button>
             <Button
               onClick={loadNodes}
               variant="outline"
-              className="gap-2"
+              className="gap-2 text-xs sm:text-sm h-9 sm:h-10 px-3"
               data-testid="refresh-button"
             >
-              <RefreshCw className="w-4 h-4" />
-              Reload
+              <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Reload</span>
             </Button>
           </div>
         </div>
