@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@nosana/sdk": "^1.0.0",
+    "@nosana/sdk": "latest",
     "express": "^4.18.2"
   }
 }
