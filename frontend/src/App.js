@@ -136,6 +136,25 @@ function App() {
     window.open(`https://dashboard.nosana.com/host/${address}`, "_blank");
   };
 
+  const toggleAddressVisibility = (nodeId) => {
+    setHiddenAddresses(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  const formatAddress = (address, nodeId) => {
+    if (hiddenAddresses.has(nodeId)) {
+      return "••••••••••••••••••••••••••••••••••••••••";
+    }
+    return address;
+  };
+
   const getStatusBadge = (status) => {
     const styles = {
       online: "bg-green-500 text-white",
