@@ -465,6 +465,9 @@ function App() {
   if (!isAuthenticated) {
     return (
       <div className={theme.background + " flex items-center justify-center p-4"}>
+        {/* Pixelated tech background for neon theme */}
+        {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
+        
         {/* Theme Toggle Button */}
         <Button
           onClick={toggleTheme}
