@@ -64,6 +64,70 @@ def validate_password_strength(password: str) -> bool:
         return False
     return True
 
+# Input sanitization
+def sanitize_string(text: str) -> str:
+    """Sanitize user input to prevent XSS and injection attacks"""
+    if not text:
+        return text
+    # HTML escape
+    sanitized = html.escape(text)
+    # Remove any control characters
+    sanitized = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', sanitized)
+    return sanitized
+
+# Validate Solana address format
+def validate_solana_address(address: str) -> bool:
+    """Validate that address is a valid Solana address format"""
+    if not address or not isinstance(address, str):
+        return False
+    # Solana addresses are base58 encoded and typically 32-44 characters
+    if not re.match(r'^[1-9A-HJ-NP-Za-km-z]{32,44}$', address):
+        return False
+    return True
+
+# Check if account is locked
+def is_account_locked(email: str) -> bool:
+    """Check if account is locked due to failed login attempts"""
+    if email in locked_accounts:
+        lockout_time = locked_accounts[email]
+        if datetime.now(timezone.utc) < lockout_time:
+            return True
+        else:
+            # Lockout period expired, remove from locked accounts
+            del locked_accounts[email]
+            if email in failed_login_attempts:
+                del failed_login_attempts[email]
+    return False
+
+# Record failed login attempt
+def record_failed_login(email: str):
+    """Record a failed login attempt and lock account if threshold exceeded"""
+    if email not in failed_login_attempts:
+        failed_login_attempts[email] = []
+    
+    # Add current timestamp
+    failed_login_attempts[email].append(datetime.now(timezone.utc))
+    
+    # Remove attempts older than lockout period
+    cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=LOGIN_LOCKOUT_MINUTES)
+    failed_login_attempts[email] = [
+        attempt for attempt in failed_login_attempts[email] 
+        if attempt > cutoff_time
+    ]
+    
+    # Lock account if too many attempts
+    if len(failed_login_attempts[email]) >= MAX_LOGIN_ATTEMPTS:
+        locked_accounts[email] = datetime.now(timezone.utc) + timedelta(minutes=LOGIN_LOCKOUT_MINUTES)
+        logger.warning(f"Account locked for {email} due to excessive failed login attempts")
+
+# Clear failed login attempts on successful login
+def clear_failed_login(email: str):
+    """Clear failed login attempts for successful login"""
+    if email in failed_login_attempts:
+        del failed_login_attempts[email]
+    if email in locked_accounts:
+        del locked_accounts[email]
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
