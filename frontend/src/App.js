@@ -929,6 +929,67 @@ function App() {
                           </div>
                         )}
 
+                        {/* Balances Section */}
+                        <div className="pt-2 border-t space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                              NOS Balance:
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className={"text-xs font-mono " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                                {formatBalance(node.nos_balance, node.id)} NOS
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => toggleBalanceVisibility(node.id)}
+                                className="h-6 w-6"
+                                title={hiddenBalances.has(node.id) ? "Show balances" : "Hide balances"}
+                              >
+                                {hiddenBalances.has(node.id) ? (
+                                  <EyeOff className="w-3 h-3" />
+                                ) : (
+                                  <Eye className="w-3 h-3" />
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-center">
+                            <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                              SOL Balance:
+                            </span>
+                            <span className={"text-xs font-mono " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                              {formatBalance(node.sol_balance, node.id)} SOL
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Stats Section */}
+                        <div className="pt-2 border-t space-y-2">
+                          {node.total_jobs !== null && node.total_jobs !== undefined && (
+                            <div className="flex justify-between items-center">
+                              <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                                Total Jobs:
+                              </span>
+                              <span className={"text-xs font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                                {node.total_jobs}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {node.availability_score !== null && node.availability_score !== undefined && (
+                            <div className="flex justify-between items-center">
+                              <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                                Availability:
+                              </span>
+                              <span className={"text-xs font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                                {node.availability_score.toFixed(1)}%
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
                         {node.notes && (
                           <div className="pt-2 border-t">
                             <p className={"text-xs italic " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")}>
