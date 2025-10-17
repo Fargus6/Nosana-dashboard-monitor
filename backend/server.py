@@ -194,6 +194,54 @@ async def check_node_status_blockchain(address: str):
     return status_data
 
 
+@api_router.post("/nodes/refresh-all-status")
+async def refresh_all_nodes_status():
+    """Automatically refresh status for all nodes from Solana blockchain"""
+    nodes = await db.nodes.find({}, {"_id": 0}).to_list(1000)
+    updated_count = 0
+    errors = []
+    
+    for node in nodes:
+        try:
+            address = node['address']
+            previous_status = node.get('status', 'unknown')
+            
+            # Fetch status from Solana
+            status_data = await fetch_node_status_from_solana(address)
+            current_status = status_data['status']
+            
+            # Update node in database
+            await db.nodes.update_one(
+                {"address": address},
+                {"$set": {
+                    "status": current_status,
+                    "job_status": status_data.get('job_status'),
+                    "last_updated": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            
+            updated_count += 1
+            
+        except Exception as e:
+            errors.append({"address": node['address'], "error": str(e)})
+            logger.error(f"Error updating node {node['address']}: {str(e)}")
+    
+    return {
+        "updated": updated_count,
+        "total": len(nodes),
+        "errors": errors
+    }
+
+
+@api_router.get("/nodes/{address}/dashboard", response_model=DashboardLink)
+async def get_dashboard_link(address: str):
+    """Get Nosana dashboard link for a node"""
+    return DashboardLink(
+        address=address,
+        url=f"https://dashboard.nosana.com/host/{address}"
+    )
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
