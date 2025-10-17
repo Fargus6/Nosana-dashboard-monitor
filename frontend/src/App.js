@@ -74,6 +74,35 @@ function App() {
     }
   };
 
+  const handleGoogleAuth = async (sessionId) => {
+    try {
+      setAuthLoading(true);
+      const response = await axios.post(`${API}/auth/google`, null, {
+        params: { session_id: sessionId }
+      });
+      
+      const token = response.data.access_token;
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      setIsAuthenticated(true);
+      toast.success("Signed in with Google successfully!");
+      
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (error) {
+      toast.error("Google sign-in failed");
+      console.error("Google auth error:", error);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    const redirectUrl = window.location.origin;
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
   const handleRegister = async () => {
     if (!email || !password) {
       toast.error("Please enter email and password");
