@@ -259,26 +259,51 @@ function App() {
     }
   };
 
-  const autoRefreshAllNodes = async () => {
+  const autoRefreshAllNodes = async (silent = false) => {
     try {
       setAutoRefreshing(true);
-      toast.info("Checking node status from Solana blockchain...");
+      if (!silent) {
+        toast.info("Checking node status from Solana blockchain...");
+      }
       
       const response = await axios.post(`${API}/nodes/refresh-all-status`);
       
       if (response.data.updated > 0) {
-        toast.success(`Updated ${response.data.updated} nodes from blockchain!`);
+        if (!silent) {
+          toast.success(`Updated ${response.data.updated} nodes from blockchain!`);
+        }
+        
+        // Check for offline nodes after refresh
+        const updatedNodes = await axios.get(`${API}/nodes`);
+        const offlineNodes = updatedNodes.data.filter(node => {
+          const oldNode = nodes.find(n => n.id === node.id);
+          return oldNode && oldNode.status !== 'offline' && node.status === 'offline';
+        });
+        
+        // Show offline alerts
+        offlineNodes.forEach(node => {
+          toast.error(`⚠️ Node ${node.name || node.address.substring(0, 8) + '...'} went OFFLINE!`, {
+            duration: 10000,
+          });
+        });
+        
         await loadNodes();
       } else {
-        toast.warning("No nodes updated");
+        if (!silent) {
+          toast.warning("No nodes updated");
+        }
       }
       
       if (response.data.errors && response.data.errors.length > 0) {
-        toast.error(`${response.data.errors.length} nodes had errors`);
+        if (!silent) {
+          toast.error(`${response.data.errors.length} nodes had errors`);
+        }
       }
     } catch (error) {
       console.error("Error auto-refreshing:", error);
-      toast.error("Failed to auto-refresh node status");
+      if (!silent) {
+        toast.error("Failed to auto-refresh node status");
+      }
     } finally {
       setAutoRefreshing(false);
     }
