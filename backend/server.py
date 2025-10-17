@@ -156,6 +156,10 @@ async def fetch_node_status_from_solana(address: str) -> dict:
                 'status': 'offline',
                 'job_status': None,
                 'online': False,
+                'nos_balance': None,
+                'sol_balance': None,
+                'total_jobs': None,
+                'availability_score': None,
                 'error': 'Account not found on Solana'
             }
         
@@ -174,15 +178,22 @@ async def fetch_node_status_from_solana(address: str) -> dict:
         else:
             status = 'offline'
         
+        # Get SOL balance
+        sol_balance = account_info.lamports / 1e9  # Convert lamports to SOL
+        
         # Check for active jobs from Nosana Jobs program
-        job_status = await check_node_jobs(address, solana_client)
+        job_data = await check_node_jobs(address, solana_client)
         
         return {
             'status': status,
-            'job_status': job_status,
+            'job_status': job_data.get('job_status'),
             'online': True,
             'lamports': account_info.lamports,
-            'has_data': has_data
+            'has_data': has_data,
+            'sol_balance': sol_balance,
+            'nos_balance': job_data.get('nos_balance'),
+            'total_jobs': job_data.get('total_jobs'),
+            'availability_score': job_data.get('availability_score')
         }
         
     except Exception as e:
@@ -191,6 +202,10 @@ async def fetch_node_status_from_solana(address: str) -> dict:
             'status': 'unknown',
             'job_status': None,
             'online': False,
+            'sol_balance': None,
+            'nos_balance': None,
+            'total_jobs': None,
+            'availability_score': None,
             'error': str(e)
         }
 
