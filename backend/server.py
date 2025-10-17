@@ -57,65 +57,83 @@ class NodeStatus(BaseModel):
 
 
 async def scrape_node_status(address: str) -> dict:
-    """Scrape node status from Nosana dashboard"""
+    """Scrape node status from Nosana dashboard using Playwright"""
     try:
-        url = f"https://dashboard.nosana.com/host/{address}"
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            url = f"https://dashboard.nosana.com/host/{address}"
+            
+            # Navigate to page with timeout
+            try:
+                response = await page.goto(url, wait_until='networkidle', timeout=15000)
+                
+                # Check if page returned 404 or error
+                if response and response.status == 404:
+                    await browser.close()
+                    return {
+                        'status': 'error',
+                        'job_status': None,
+                        'job_count': 0
+                    }
+                
+                # Wait for content to load
+                await page.wait_for_timeout(2000)
+                
+                # Get page text content
+                page_text = await page.text_content('body')
+                page_text_lower = page_text.lower() if page_text else ''
+                
+                # Check for error states
+                if 'not found' in page_text_lower or 'error' in page_text_lower:
+                    await browser.close()
+                    return {
+                        'status': 'error',
+                        'job_status': None,
+                        'job_count': 0
+                    }
+                
+                # Determine status based on page content
+                status = 'online'  # Default
+                job_status = 'idle'
+                job_count = 0
+                
+                # Check for status indicators
+                if 'offline' in page_text_lower:
+                    status = 'offline'
+                elif 'online' in page_text_lower or 'active' in page_text_lower:
+                    status = 'online'
+                
+                # Check for job status
+                if 'running' in page_text_lower:
+                    job_status = 'running'
+                elif 'queue' in page_text_lower or 'queued' in page_text_lower:
+                    job_status = 'queue'
+                
+                # Try to extract job count
+                if page_text:
+                    job_matches = re.findall(r'(\d+)\s*job', page_text_lower)
+                    if job_matches:
+                        job_count = int(job_matches[0])
+                
+                await browser.close()
+                
+                return {
+                    'status': status,
+                    'job_status': job_status,
+                    'job_count': job_count
+                }
+                
+            except Exception as e:
+                await browser.close()
+                logger.error(f"Error navigating to {url}: {str(e)}")
+                return {
+                    'status': 'offline',
+                    'job_status': None,
+                    'job_count': 0
+                }
         
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # Try to detect if page exists and is valid
-        # Look for common indicators
-        page_text = soup.get_text().lower()
-        
-        # Check if it's a valid node page
-        if 'not found' in page_text or 'error' in page_text:
-            return {
-                'status': 'error',
-                'job_status': None,
-                'job_count': 0
-            }
-        
-        # Try to find status indicators in the page
-        # This is a basic implementation - adjust based on actual page structure
-        status = 'online'  # Default assumption if page loads
-        job_status = 'idle'
-        job_count = 0
-        
-        # Look for status text patterns
-        if 'offline' in page_text:
-            status = 'offline'
-        elif 'online' in page_text or 'active' in page_text:
-            status = 'online'
-        
-        # Look for job-related text
-        if 'running' in page_text:
-            job_status = 'running'
-        elif 'queue' in page_text or 'queued' in page_text:
-            job_status = 'queue'
-        
-        # Try to extract job count
-        job_matches = re.findall(r'(\d+)\s*job', page_text)
-        if job_matches:
-            job_count = int(job_matches[0])
-        
-        return {
-            'status': status,
-            'job_status': job_status,
-            'job_count': job_count
-        }
-        
-    except requests.Timeout:
-        return {
-            'status': 'offline',
-            'job_status': None,
-            'job_count': 0
-        }
     except Exception as e:
         logger.error(f"Error scraping node {address}: {str(e)}")
         return {
