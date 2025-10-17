@@ -109,6 +109,28 @@ function App() {
 
   // Check if user is logged in on mount
   useEffect(() => {
+    // Setup axios interceptor for global error handling
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        // Handle token expiry
+        if (error.response?.status === 401 && isAuthenticated) {
+          secureStorage.remove('token');
+          delete axios.defaults.headers.common['Authorization'];
+          setIsAuthenticated(false);
+          setCurrentUser(null);
+          toast.error("Session expired. Please login again.");
+        }
+        
+        // Handle rate limiting
+        if (error.response?.status === 429) {
+          toast.error("Too many requests. Please slow down.");
+        }
+        
+        return Promise.reject(error);
+      }
+    );
+    
     // Check for Google OAuth session_id in URL fragment
     const hash = window.location.hash;
     if (hash.includes('session_id=')) {
@@ -122,6 +144,11 @@ function App() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       verifyToken();
     }
+    
+    // Cleanup interceptor on unmount
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, []);
 
   useEffect(() => {
