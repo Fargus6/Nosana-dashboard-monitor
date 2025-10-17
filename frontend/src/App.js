@@ -825,24 +825,30 @@ function App() {
                     ) : (
                       <div className="space-y-2 sm:space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs sm:text-sm text-gray-600 font-medium">Status:</span>
+                          <span className={"text-xs sm:text-sm font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                            Status:
+                          </span>
                           {getStatusBadge(node.status)}
                         </div>
 
                         {node.job_status && (
                           <div className="flex justify-between items-center">
-                            <span className="text-xs sm:text-sm text-gray-600 font-medium">Job Status:</span>
+                            <span className={"text-xs sm:text-sm font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                              Job Status:
+                            </span>
                             {getJobStatusBadge(node.job_status)}
                           </div>
                         )}
 
                         {node.notes && (
                           <div className="pt-2 border-t">
-                            <p className="text-xs text-gray-500 italic">{node.notes}</p>
+                            <p className={"text-xs italic " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")}>
+                              {node.notes}
+                            </p>
                           </div>
                         )}
 
-                        <div className="text-xs text-gray-400 pt-2 border-t">
+                        <div className={"text-xs pt-2 border-t " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-400")}>
                           Updated: {new Date(node.last_updated).toLocaleString()}
                         </div>
                       </div>
