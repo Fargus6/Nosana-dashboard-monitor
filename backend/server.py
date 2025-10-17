@@ -116,34 +116,72 @@ async def fetch_node_status_from_solana(address: str) -> dict:
 
 
 async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str:
-    """Check if node has active jobs using Nosana SDK service"""
+    """Check if node has active jobs by scraping Nosana dashboard"""
     try:
-        # Call the Node.js Nosana SDK service
-        response = requests.get(
-            f"http://localhost:3001/check-node/{node_address}",
-            timeout=10
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get('success'):
-                job_status = data.get('jobStatus', 'idle')
-                active_jobs = data.get('activeJobs', 0)
-                
-                logger.info(f"Node {node_address[:8]}... has {active_jobs} active jobs, status: {job_status}")
-                return job_status
-            else:
-                logger.warning(f"Nosana SDK returned error: {data.get('error')}")
-                return 'idle'
-        else:
-            logger.warning(f"Nosana SDK service returned status {response.status_code}")
-            return 'idle'
+        # First, try the Node.js Nosana SDK service as primary method
+        try:
+            response = requests.get(
+                f"http://localhost:3001/check-node/{node_address}",
+                timeout=8
+            )
             
-    except requests.Timeout:
-        logger.warning("Nosana SDK service timeout")
-        return 'idle'
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and data.get('jobStatus') != 'idle':
+                    return data.get('jobStatus', 'idle')
+        except Exception as sdk_error:
+            logger.debug(f"SDK service unavailable, trying web scraping: {str(sdk_error)}")
+        
+        # Fallback to web scraping the dashboard
+        from playwright.async_api import async_playwright
+        
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            url = f"https://dashboard.nosana.com/host/{node_address}"
+            
+            try:
+                await page.goto(url, wait_until='networkidle', timeout=20000)
+                await page.wait_for_timeout(2000)
+                
+                # Get page text
+                text_content = await page.inner_text('body')
+                text_lower = text_content.lower()
+                
+                await browser.close()
+                
+                # Parse status from page
+                # Look for "STATUS" section and "RUNNING DEPLOYMENT" indicator
+                if 'status' in text_lower and 'running' in text_lower:
+                    # Check if there's an active running deployment
+                    if 'running deployment' in text_lower:
+                        logger.info(f"Node {node_address[:8]}... has RUNNING deployment")
+                        return 'running'
+                    elif 'status\nrunning' in text_lower or 'status:\nrunning' in text_lower:
+                        logger.info(f"Node {node_address[:8]}... status is RUNNING")
+                        return 'running'
+                
+                # Check for queued status
+                if 'queued' in text_lower or 'queue' in text_lower:
+                    logger.info(f"Node {node_address[:8]}... has queued jobs")
+                    return 'queue'
+                
+                # If online but no running/queued jobs
+                if 'online' in text_lower or 'host api status\nonline' in text_lower:
+                    logger.info(f"Node {node_address[:8]}... is online but idle")
+                    return 'idle'
+                
+                # Default to idle
+                return 'idle'
+                
+            except Exception as page_error:
+                await browser.close()
+                logger.warning(f"Error scraping dashboard for {node_address[:8]}: {str(page_error)}")
+                return 'idle'
+            
     except Exception as e:
-        logger.error(f"Error calling Nosana SDK service: {str(e)}")
+        logger.error(f"Error checking node jobs: {str(e)}")
         return 'idle'
 
 
