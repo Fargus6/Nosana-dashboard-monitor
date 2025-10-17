@@ -119,14 +119,28 @@ function App() {
 
   // Auto-refresh every 2 minutes
   useEffect(() => {
-    if (!isAuthenticated || nodes.length === 0) return;
+    if (!isAuthenticated || nodes.length === 0) {
+      setNextRefresh(null);
+      return;
+    }
+
+    // Set initial next refresh time
+    const initialTime = new Date(Date.now() + 120000);
+    setNextRefresh(initialTime);
 
     const autoRefreshInterval = setInterval(() => {
       console.log("Auto-refreshing node status...");
       autoRefreshAllNodes(true); // Silent refresh
+      
+      // Update next refresh time
+      const nextTime = new Date(Date.now() + 120000);
+      setNextRefresh(nextTime);
     }, 120000); // 2 minutes
 
-    return () => clearInterval(autoRefreshInterval);
+    return () => {
+      clearInterval(autoRefreshInterval);
+      setNextRefresh(null);
+    };
   }, [isAuthenticated, nodes.length]);
 
   // Hide all addresses by default when nodes load
