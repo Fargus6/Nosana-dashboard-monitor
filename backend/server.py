@@ -771,7 +771,7 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
     for node in nodes:
         try:
             address = node['address']
-            previous_status = node.get('status', 'unknown')
+            # previous_status = node.get('status', 'unknown')  # Not used
             
             # Fetch status from Solana
             status_data = await fetch_node_status_from_solana(address)
