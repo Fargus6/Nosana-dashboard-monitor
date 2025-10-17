@@ -39,6 +39,31 @@ function App() {
     }
   };
 
+  const autoRefreshAllNodes = async () => {
+    try {
+      setAutoRefreshing(true);
+      toast.info("Checking node status from Solana blockchain...");
+      
+      const response = await axios.post(`${API}/nodes/refresh-all-status`);
+      
+      if (response.data.updated > 0) {
+        toast.success(`Updated ${response.data.updated} nodes from blockchain!`);
+        await loadNodes();
+      } else {
+        toast.warning("No nodes updated");
+      }
+      
+      if (response.data.errors && response.data.errors.length > 0) {
+        toast.error(`${response.data.errors.length} nodes had errors`);
+      }
+    } catch (error) {
+      console.error("Error auto-refreshing:", error);
+      toast.error("Failed to auto-refresh node status");
+    } finally {
+      setAutoRefreshing(false);
+    }
+  };
+
   const addNode = async () => {
     if (!newNodeAddress.trim()) {
       toast.error("Please enter a node address");
