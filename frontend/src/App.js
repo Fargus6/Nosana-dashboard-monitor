@@ -699,11 +699,11 @@ function App() {
                             data-testid={`edit-name-${node.id}`}
                           />
                         ) : (
-                          <CardTitle className="text-base sm:text-lg mb-1" data-testid={`node-name-${node.id}`}>
+                          <CardTitle className={"text-base sm:text-lg mb-1 " + (currentTheme === "neon80s" ? theme.text.primary : "")} data-testid={`node-name-${node.id}`}>
                             {node.name || "Unnamed Node"}
                           </CardTitle>
                         )}
-                        <p className="text-xs text-gray-500 font-mono break-all" data-testid={`node-address-${node.id}`}>
+                        <p className={"text-xs font-mono break-all " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")} data-testid={`node-address-${node.id}`}>
                           {formatAddress(node.address, node.id)}
                         </p>
                       </div>
