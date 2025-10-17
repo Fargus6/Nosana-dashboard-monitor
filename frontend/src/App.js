@@ -627,7 +627,7 @@ function App() {
                   onKeyPress={(e) => e.key === "Enter" && addNode()}
                   className="flex-1 text-sm sm:text-base h-10 sm:h-auto"
                 />
-                <Button onClick={addNode} className="bg-blue-600 hover:bg-blue-700 h-10 sm:h-auto px-3 sm:px-4" data-testid="add-node-button">
+                <Button onClick={addNode} className={theme.button + " h-10 sm:h-auto px-3 sm:px-4"} data-testid="add-node-button">
                   <Plus className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">Add</span>
                 </Button>
