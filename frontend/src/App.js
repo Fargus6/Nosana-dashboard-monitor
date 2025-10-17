@@ -382,13 +382,27 @@ function App() {
   // Login/Register UI
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-blue-200 shadow-xl">
+      <div className={theme.background + " flex items-center justify-center p-4"}>
+        {/* Theme Toggle Button */}
+        <Button
+          onClick={toggleTheme}
+          variant="outline"
+          size="icon"
+          className="fixed top-4 right-4 z-50"
+          title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Modern Blue"} theme`}
+          data-testid="theme-toggle"
+        >
+          <Palette className="w-4 h-4" />
+        </Button>
+
+        <Card className={theme.card + " w-full max-w-md shadow-xl"}>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+            <CardTitle className={theme.title + " text-2xl sm:text-3xl font-bold mb-2"}>
               Nosana Node Monitor
             </CardTitle>
-            <CardDescription>Login or create an account to monitor your nodes</CardDescription>
+            <CardDescription className={currentTheme === "neon80s" ? theme.text.muted : ""}>
+              Login or create an account to monitor your nodes
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login" className="w-full">
