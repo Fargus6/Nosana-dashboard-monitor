@@ -684,7 +684,7 @@ function App() {
               return (
                 <Card
                   key={node.id}
-                  className="border-blue-100 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm bg-white/95"
+                  className={theme.card + " " + theme.cardHover + " transition-shadow"}
                   data-testid={`node-card-${node.id}`}
                 >
                   <CardHeader className="pb-2 sm:pb-3">
