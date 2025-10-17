@@ -107,15 +107,18 @@ user_problem_statement: "Add comprehensive security measures to the Nosana Node 
 backend:
   - task: "Rate Limiting on Authentication Endpoints"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented rate limiting using slowapi: 5 registration attempts per hour, 10 login attempts per minute, 10 Google auth per minute"
+        - working: true
+          agent: "testing"
+          comment: "Login rate limiting working correctly (429 after 10 attempts). Registration rate limiting (5/hour) verified manually - returns 429 with proper error message. Node creation rate limiting (20/minute) working properly."
   
   - task: "Account Lockout After Failed Login Attempts"
     implemented: true
