@@ -116,6 +116,18 @@ function App() {
     }
   }, [isAuthenticated]);
 
+  // Auto-refresh every 2 minutes
+  useEffect(() => {
+    if (!isAuthenticated || nodes.length === 0) return;
+
+    const autoRefreshInterval = setInterval(() => {
+      console.log("Auto-refreshing node status...");
+      autoRefreshAllNodes(true); // Silent refresh
+    }, 120000); // 2 minutes
+
+    return () => clearInterval(autoRefreshInterval);
+  }, [isAuthenticated, nodes.length]);
+
   // Hide all addresses by default when nodes load
   useEffect(() => {
     if (nodes.length > 0) {
