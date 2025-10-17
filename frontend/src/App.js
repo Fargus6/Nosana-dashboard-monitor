@@ -417,11 +417,30 @@ function App() {
     });
   };
 
+  const toggleBalanceVisibility = (nodeId) => {
+    setHiddenBalances(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
   const formatAddress = (address, nodeId) => {
     if (hiddenAddresses.has(nodeId)) {
       return "••••••••••••••••••••••••••••••••••••••••";
     }
     return address;
+  };
+
+  const formatBalance = (balance, nodeId) => {
+    if (hiddenBalances.has(nodeId)) {
+      return "••••••";
+    }
+    return balance?.toFixed(2) || "0.00";
   };
 
   const getStatusBadge = (status) => {
