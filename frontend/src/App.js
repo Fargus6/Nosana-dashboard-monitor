@@ -307,42 +307,42 @@ function App() {
                               variant="ghost"
                               size="icon"
                               onClick={() => toggleAddressVisibility(node.id)}
-                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 h-8 w-8 sm:h-10 sm:w-10"
                               data-testid={`toggle-address-${node.id}`}
                               title={hiddenAddresses.has(node.id) ? "Show address" : "Hide address"}
                             >
                               {hiddenAddresses.has(node.id) ? (
-                                <EyeOff className="w-4 h-4" />
+                                <EyeOff className="w-3 h-3 sm:w-4 sm:h-4" />
                               ) : (
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                               )}
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => openDashboard(node.address)}
-                              className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                              className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 h-8 w-8 sm:h-10 sm:w-10"
                               data-testid={`open-dashboard-${node.id}`}
                             >
-                              <ExternalLink className="w-4 h-4" />
+                              <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => startEdit(node)}
-                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 h-8 w-8 sm:h-10 sm:w-10"
                               data-testid={`edit-node-${node.id}`}
                             >
-                              <Edit2 className="w-4 h-4" />
+                              <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={() => deleteNode(node.id)}
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 sm:h-10 sm:w-10"
                               data-testid={`delete-node-${node.id}`}
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                             </Button>
                           </>
                         )}
