@@ -15,6 +15,9 @@ from solders.pubkey import Pubkey
 import base64
 import struct
 
+# Set Playwright browser path
+os.environ['PLAYWRIGHT_BROWSERS_PATH'] = '/pw-browsers'
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
