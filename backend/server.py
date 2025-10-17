@@ -554,6 +554,10 @@ async def refresh_all_nodes_status(current_user: User = Depends(get_current_user
                 {"$set": {
                     "status": current_status,
                     "job_status": status_data.get('job_status'),
+                    "sol_balance": status_data.get('sol_balance'),
+                    "nos_balance": status_data.get('nos_balance'),
+                    "total_jobs": status_data.get('total_jobs'),
+                    "availability_score": status_data.get('availability_score'),
                     "last_updated": datetime.now(timezone.utc).isoformat()
                 }}
             )
