@@ -27,6 +27,14 @@ function App() {
     loadNodes();
   }, []);
 
+  // Hide all addresses by default when nodes load
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const allNodeIds = new Set(nodes.map(node => node.id));
+      setHiddenAddresses(allNodeIds);
+    }
+  }, [nodes.length]);
+
   const loadNodes = async () => {
     try {
       setLoading(true);
