@@ -818,12 +818,19 @@ async def get_dashboard_link(address: str):
 # Include the router in the main app
 app.include_router(api_router)
 
+# CORS middleware with more restrictive settings
+allowed_origins = os.environ.get('CORS_ORIGINS', '*')
+if allowed_origins == '*':
+    logger.warning("CORS set to allow all origins. Set CORS_ORIGINS environment variable for production.")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
+    allow_origins=allowed_origins.split(',') if allowed_origins != '*' else ['*'],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["X-Total-Count"],
+    max_age=600,  # Cache preflight requests for 10 minutes
 )
 
 # Configure logging
@@ -832,6 +839,24 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# Global exception handler for better error handling
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Global exception handler to prevent information leakage"""
+    logger.error(f"Unhandled exception: {str(exc)}", exc_info=True)
+    
+    # Don't expose internal errors to users
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal error occurred. Please try again later."}
+    )
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
