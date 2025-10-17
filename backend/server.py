@@ -579,9 +579,14 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
 
 
 @api_router.post("/auth/google")
-async def google_auth(session_id: str):
+@limiter.limit("10/minute")
+async def google_auth(request: Request, session_id: str):
     """Process Google OAuth session"""
     try:
+        # Validate session_id format
+        if not session_id or len(session_id) < 10:
+            raise HTTPException(status_code=401, detail="Invalid session")
+        
         # Call Emergent auth service to get session data
         headers = {"X-Session-ID": session_id}
         response = requests.get(
@@ -591,6 +596,7 @@ async def google_auth(session_id: str):
         )
         
         if response.status_code != 200:
+            logger.warning(f"Google auth failed: Invalid session {session_id[:10]}...")
             raise HTTPException(status_code=401, detail="Invalid session")
         
         data = response.json()
@@ -600,6 +606,9 @@ async def google_auth(session_id: str):
         
         if not email or not session_token:
             raise HTTPException(status_code=401, detail="Invalid session data")
+        
+        # Sanitize and normalize email
+        email = email.lower().strip()
         
         # Check if user exists, if not create one
         user = await db.users.find_one({"email": email}, {"_id": 0})
@@ -614,6 +623,9 @@ async def google_auth(session_id: str):
             user_dict['created_at'] = user_dict['created_at'].isoformat()
             await db.users.insert_one(user_dict)
             user = user_dict
+            logger.info(f"New Google user registered: {email}")
+        else:
+            logger.info(f"Google login: {email}")
         
         # Store session token in database with expiry
         expiry = datetime.now(timezone.utc) + timedelta(days=7)
