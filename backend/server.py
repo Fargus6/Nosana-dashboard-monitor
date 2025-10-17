@@ -398,9 +398,9 @@ async def check_node_status_blockchain(address: str):
 
 
 @api_router.post("/nodes/refresh-all-status")
-async def refresh_all_nodes_status():
+async def refresh_all_nodes_status(current_user: User = Depends(get_current_user)):
     """Automatically refresh status for all nodes from Solana blockchain"""
-    nodes = await db.nodes.find({}, {"_id": 0}).to_list(1000)
+    nodes = await db.nodes.find({"user_id": current_user.id}, {"_id": 0}).to_list(1000)
     updated_count = 0
     errors = []
     
@@ -415,7 +415,7 @@ async def refresh_all_nodes_status():
             
             # Update node in database
             await db.nodes.update_one(
-                {"address": address},
+                {"address": address, "user_id": current_user.id},
                 {"$set": {
                     "status": current_status,
                     "job_status": status_data.get('job_status'),
