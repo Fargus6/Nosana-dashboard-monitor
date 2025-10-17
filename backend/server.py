@@ -187,13 +187,11 @@ async def delete_node(node_id: str):
     return {"message": "Node deleted successfully"}
 
 
-@api_router.get("/nodes/{address}/dashboard", response_model=DashboardLink)
-async def get_dashboard_link(address: str):
-    """Get Nosana dashboard link for a node"""
-    return DashboardLink(
-        address=address,
-        url=f"https://dashboard.nosana.com/host/{address}"
-    )
+@api_router.get("/nodes/{address}/check-status")
+async def check_node_status_blockchain(address: str):
+    """Check node status from Solana blockchain"""
+    status_data = await fetch_node_status_from_solana(address)
+    return status_data
 
 
 # Include the router in the main app
