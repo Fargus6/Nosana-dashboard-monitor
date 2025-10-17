@@ -35,24 +35,24 @@ const themes = {
   },
   neon80s: {
     name: "80s Neon",
-    background: "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-purple-900",
-    card: "border-pink-500 border-2 shadow-[0_0_15px_rgba(236,72,153,0.5)] backdrop-blur-sm bg-black/80",
-    cardHover: "hover:shadow-[0_0_25px_rgba(236,72,153,0.8)]",
-    title: "bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent",
-    button: "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-[0_0_10px_rgba(236,72,153,0.5)]",
-    buttonGradient: "bg-gradient-to-r from-cyan-400 to-pink-500 hover:from-cyan-500 hover:to-pink-600 shadow-[0_0_10px_rgba(6,182,212,0.5)]",
+    background: "min-h-screen bg-gradient-to-br from-gray-900 via-emerald-950 to-gray-900",
+    card: "border-emerald-500 border-2 shadow-[0_0_15px_rgba(16,185,129,0.5)] backdrop-blur-sm bg-black/80",
+    cardHover: "hover:shadow-[0_0_25px_rgba(16,185,129,0.8)]",
+    title: "bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent",
+    button: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_0_10px_rgba(16,185,129,0.5)]",
+    buttonGradient: "bg-gradient-to-r from-teal-400 to-emerald-500 hover:from-teal-500 hover:to-emerald-600 shadow-[0_0_10px_rgba(20,184,166,0.5)]",
     badge: {
-      online: "bg-green-400 text-black shadow-[0_0_10px_rgba(74,222,128,0.6)]",
+      online: "bg-emerald-400 text-black shadow-[0_0_10px_rgba(52,211,153,0.6)]",
       offline: "bg-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.6)]",
       unknown: "bg-gray-500 text-white shadow-[0_0_10px_rgba(107,114,128,0.6)]",
       running: "bg-cyan-400 text-black shadow-[0_0_10px_rgba(34,211,238,0.6)]",
       queue: "bg-yellow-400 text-black shadow-[0_0_10px_rgba(250,204,21,0.6)]",
-      idle: "bg-purple-400 text-white shadow-[0_0_10px_rgba(192,132,252,0.6)]"
+      idle: "bg-teal-400 text-black shadow-[0_0_10px_rgba(45,212,191,0.6)]"
     },
     text: {
-      primary: "text-pink-200",
-      secondary: "text-cyan-300",
-      muted: "text-purple-300"
+      primary: "text-emerald-200",
+      secondary: "text-teal-300",
+      muted: "text-emerald-300"
     }
   }
 };
