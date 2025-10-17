@@ -210,15 +210,26 @@ function App() {
 
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-700">Your Nodes ({nodes.length})</h2>
-          <Button
-            onClick={loadNodes}
-            variant="outline"
-            className="gap-2"
-            data-testid="refresh-button"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={autoRefreshAllNodes}
+              disabled={autoRefreshing || nodes.length === 0}
+              className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+              data-testid="auto-refresh-button"
+            >
+              <RefreshCw className={`w-4 h-4 ${autoRefreshing ? "animate-spin" : ""}`} />
+              Auto-Refresh from Blockchain
+            </Button>
+            <Button
+              onClick={loadNodes}
+              variant="outline"
+              className="gap-2"
+              data-testid="refresh-button"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Reload
+            </Button>
+          </div>
         </div>
 
         {loading ? (
