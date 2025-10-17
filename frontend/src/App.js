@@ -689,9 +689,16 @@ function App() {
         </Card>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
-          <h2 className={"text-lg sm:text-xl font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
-            Your Nodes ({nodes.length})
-          </h2>
+          <div>
+            <h2 className={"text-lg sm:text-xl font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+              Your Nodes ({nodes.length})
+            </h2>
+            {nextRefresh && (
+              <p className={"text-xs mt-1 " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")}>
+                🔄 Auto-refresh in {Math.ceil((nextRefresh - new Date()) / 1000 / 60)} min
+              </p>
+            )}
+          </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               onClick={autoRefreshAllNodes}
