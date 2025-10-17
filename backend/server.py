@@ -749,14 +749,20 @@ async def delete_node(node_id: str, current_user: User = Depends(get_current_use
 
 
 @api_router.get("/nodes/{address}/check-status")
-async def check_node_status_blockchain(address: str):
+@limiter.limit("30/minute")  # Rate limit status checks
+async def check_node_status_blockchain(request: Request, address: str):
     """Check node status from Solana blockchain"""
+    # Validate address format
+    if not validate_solana_address(address):
+        raise HTTPException(status_code=400, detail="Invalid Solana address format")
+    
     status_data = await fetch_node_status_from_solana(address)
     return status_data
 
 
 @api_router.post("/nodes/refresh-all-status")
-async def refresh_all_nodes_status(current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")  # Rate limit bulk refresh
+async def refresh_all_nodes_status(request: Request, current_user: User = Depends(get_current_user)):
     """Automatically refresh status for all nodes from Solana blockchain"""
     nodes = await db.nodes.find({"user_id": current_user.id}, {"_id": 0}).to_list(1000)
     updated_count = 0
@@ -790,6 +796,8 @@ async def refresh_all_nodes_status(current_user: User = Depends(get_current_user
         except Exception as e:
             errors.append({"address": node['address'], "error": str(e)})
             logger.error(f"Error updating node {node['address']}: {str(e)}")
+    
+    logger.info(f"Refreshed {updated_count} nodes for user {current_user.email}")
     
     return {
         "updated": updated_count,
