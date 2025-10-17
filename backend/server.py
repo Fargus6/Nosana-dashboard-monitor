@@ -260,6 +260,12 @@ class NodeUpdate(BaseModel):
     status: Optional[str] = None
     job_status: Optional[str] = None
     notes: Optional[str] = None
+    
+    @validator('name', 'notes')
+    def sanitize_text(cls, v):
+        if v:
+            return sanitize_string(v)
+        return v
 
 class DashboardLink(BaseModel):
     address: str
