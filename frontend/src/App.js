@@ -190,12 +190,17 @@ function App() {
   const handleGoogleAuth = async (sessionId) => {
     try {
       setAuthLoading(true);
+      // Validate session ID format
+      if (!sessionId || sessionId.length < 10) {
+        throw new Error("Invalid session ID");
+      }
+      
       const response = await axios.post(`${API}/auth/google`, null, {
-        params: { session_id: sessionId }
+        params: { session_id: sanitizeInput(sessionId) }
       });
       
       const token = response.data.access_token;
-      localStorage.setItem('token', token);
+      secureStorage.set('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setIsAuthenticated(true);
