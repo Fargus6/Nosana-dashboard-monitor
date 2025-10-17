@@ -301,6 +301,20 @@ function App() {
                             <Button
                               variant="ghost"
                               size="icon"
+                              onClick={() => toggleAddressVisibility(node.id)}
+                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                              data-testid={`toggle-address-${node.id}`}
+                              title={hiddenAddresses.has(node.id) ? "Show address" : "Hide address"}
+                            >
+                              {hiddenAddresses.has(node.id) ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               onClick={() => openDashboard(node.address)}
                               className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
                               data-testid={`open-dashboard-${node.id}`}
