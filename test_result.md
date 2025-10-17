@@ -224,6 +224,30 @@ backend:
         - working: true
           agent: "testing"
           comment: "CORS configuration working correctly. Proper headers present in responses with appropriate methods, credentials, and caching configuration."
+  
+  - task: "Password Strength Validation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "Password validation working correctly. Weak passwords (too short, no uppercase, no lowercase, no numbers) are properly rejected with appropriate error messages."
+  
+  - task: "JWT Token Authentication"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "JWT authentication working correctly. Invalid tokens are rejected with 401 status. Valid tokens are accepted and allow access to protected endpoints."
 
 frontend:
   - task: "Input Validation and Sanitization"
