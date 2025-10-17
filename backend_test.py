@@ -256,7 +256,8 @@ class SecurityTester:
         print("🔒 Testing Security Headers...")
         
         try:
-            response = self.session.get(f"{BASE_URL}/../health")  # Health endpoint
+            # Test any API endpoint to check security headers
+            response = self.session.get(f"{BASE_URL}/auth/me")  # This will return 401 but with headers
             
             required_headers = {
                 "X-Content-Type-Options": "nosniff",
