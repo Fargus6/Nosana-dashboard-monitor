@@ -83,23 +83,19 @@ async def fetch_node_status_from_solana(address: str) -> dict:
         account_info = response.value
         
         # Check if account has lamports (SOL balance)
-        # Active nodes typically maintain some balance
         has_balance = account_info.lamports > 0
-        
-        # Check if account is executable or has data
-        # Nosana nodes have data stored
         has_data = account_info.data is not None and len(account_info.data) > 0
         
-        # Determine status based on account state
+        # Determine basic status
         if has_balance and has_data:
             status = 'online'
-            job_status = 'idle'  # Default to idle, could be enhanced
         elif has_balance:
             status = 'online'
-            job_status = 'idle'
         else:
             status = 'offline'
-            job_status = None
+        
+        # Check for active jobs from Nosana Jobs program
+        job_status = await check_node_jobs(address, solana_client)
         
         return {
             'status': status,
@@ -117,6 +113,40 @@ async def fetch_node_status_from_solana(address: str) -> dict:
             'online': False,
             'error': str(e)
         }
+
+
+async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str:
+    """Check if node has active jobs from Nosana Jobs program"""
+    try:
+        # Nosana Jobs program ID
+        NOSANA_JOBS_PROGRAM = Pubkey.from_string("nosJhNRqr2bc9g1nfGDcXXTXvYUmxD4cVwy2pMWhrYM")
+        
+        # Get all accounts for the Jobs program
+        # Note: This is a simplified check - in production you'd want to filter by node address
+        response = solana_client.get_program_accounts(
+            NOSANA_JOBS_PROGRAM,
+            encoding="base64"
+        )
+        
+        if response.value:
+            # Check if any jobs are associated with this node
+            # For now, we'll do a basic check - this could be enhanced with proper account parsing
+            for account in response.value[:50]:  # Limit to avoid timeout
+                account_data = account.account.data
+                # Check if node address appears in account data (basic heuristic)
+                if node_address in str(account_data):
+                    # Found potential job, return running
+                    return 'running'
+            
+            # If node is online but no jobs found, likely idle or in queue
+            return 'idle'
+        else:
+            return 'idle'
+            
+    except Exception as e:
+        logger.error(f"Error checking node jobs: {str(e)}")
+        # Return idle as fallback
+        return 'idle'
 
 
 @api_router.post("/nodes", response_model=Node)
