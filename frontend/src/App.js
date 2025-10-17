@@ -216,26 +216,53 @@ function App() {
   };
 
   const handleRegister = async () => {
-    if (!email || !password) {
-      toast.error("Please enter email and password");
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email).toLowerCase().trim();
+    const sanitizedPassword = password; // Don't sanitize password, just validate
+    
+    // Validate email
+    if (!validateEmail(sanitizedEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    // Validate password strength
+    const passwordValidation = validatePassword(sanitizedPassword);
+    if (!passwordValidation.isValid) {
+      toast.error(passwordValidation.errors[0]); // Show first error
+      return;
+    }
+
+    // Check rate limit
+    const rateLimitCheck = loginRateLimiter.checkLimit('register');
+    if (!rateLimitCheck.allowed) {
+      toast.error(`Too many registration attempts. Please wait ${rateLimitCheck.resetIn} seconds.`);
       return;
     }
 
     try {
       setAuthLoading(true);
-      const response = await axios.post(`${API}/auth/register`, { email, password });
+      const response = await axios.post(`${API}/auth/register`, { 
+        email: sanitizedEmail, 
+        password: sanitizedPassword 
+      });
       const token = response.data.access_token;
       
-      localStorage.setItem('token', token);
+      secureStorage.set('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setIsAuthenticated(true);
-      setCurrentUser({ email });
+      setCurrentUser({ email: sanitizedEmail });
       toast.success("Account created successfully!");
       setEmail("");
       setPassword("");
+      
+      // Reset rate limit on success
+      loginRateLimiter.reset('register');
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Registration failed");
+      const errorMessage = error.response?.data?.detail || "Registration failed";
+      toast.error(errorMessage);
+      console.error("Registration error:", error);
     } finally {
       setAuthLoading(false);
     }
