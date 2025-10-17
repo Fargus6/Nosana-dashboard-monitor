@@ -117,7 +117,16 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // Auto-refresh every 2 minutes
+  // Update countdown display every minute
+  useEffect(() => {
+    if (!nextRefresh) return;
+
+    const countdownInterval = setInterval(() => {
+      setNextRefresh(prevTime => prevTime); // Force re-render
+    }, 60000); // Update display every minute
+
+    return () => clearInterval(countdownInterval);
+  }, [nextRefresh]);
   useEffect(() => {
     if (!isAuthenticated || nodes.length === 0) {
       setNextRefresh(null);
