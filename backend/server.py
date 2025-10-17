@@ -315,6 +315,76 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
+@api_router.post("/auth/google")
+async def google_auth(session_id: str):
+    """Process Google OAuth session"""
+    try:
+        # Call Emergent auth service to get session data
+        headers = {"X-Session-ID": session_id}
+        response = requests.get(
+            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=401, detail="Invalid session")
+        
+        data = response.json()
+        email = data.get("email")
+        name = data.get("name")
+        session_token = data.get("session_token")
+        
+        if not email or not session_token:
+            raise HTTPException(status_code=401, detail="Invalid session data")
+        
+        # Check if user exists, if not create one
+        user = await db.users.find_one({"email": email}, {"_id": 0})
+        
+        if not user:
+            # Create new user with Google auth
+            new_user = User(
+                email=email,
+                hashed_password=""  # No password for Google auth users
+            )
+            user_dict = new_user.model_dump()
+            user_dict['created_at'] = user_dict['created_at'].isoformat()
+            await db.users.insert_one(user_dict)
+            user = user_dict
+        
+        # Store session token in database with expiry
+        expiry = datetime.now(timezone.utc) + timedelta(days=7)
+        await db.sessions.update_one(
+            {"email": email},
+            {
+                "$set": {
+                    "session_token": session_token,
+                    "expiry": expiry.isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            upsert=True
+        )
+        
+        # Create JWT token
+        access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        access_token = create_access_token(
+            data={"sub": email}, expires_delta=access_token_expires
+        )
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "session_token": session_token
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Google auth error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Authentication failed")
+
+
 @api_router.get("/auth/me")
 async def get_me(current_user: User = Depends(get_current_user)):
     """Get current user info"""
