@@ -505,7 +505,7 @@ function App() {
                   <Button
                     onClick={handleRegister}
                     disabled={authLoading}
-                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                    className={"w-full " + theme.buttonGradient}
                     data-testid="register-button"
                   >
                     {authLoading ? "Creating account..." : "Create Account"}
