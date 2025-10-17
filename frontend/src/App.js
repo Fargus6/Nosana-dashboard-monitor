@@ -557,18 +557,34 @@ function App() {
 
   // Main App UI (after login)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className={theme.background}>
+      {/* Theme Toggle Button */}
+      <Button
+        onClick={toggleTheme}
+        variant="outline"
+        size="icon"
+        className="fixed top-4 right-16 z-50"
+        title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Modern Blue"} theme`}
+        data-testid="theme-toggle"
+      >
+        <Palette className="w-4 h-4" />
+      </Button>
+
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
         {/* Header with Logout */}
         <div className="mb-4 sm:mb-8 flex justify-between items-start">
           <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2" data-testid="app-title">
+            <h1 className={theme.title + " text-3xl sm:text-4xl lg:text-5xl font-bold mb-2"} data-testid="app-title">
               Nosana Node Monitor
             </h1>
-            <p className="text-sm sm:text-base text-gray-600">Monitor your Nosana AI network nodes in real-time</p>
+            <p className={"text-sm sm:text-base " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+              Monitor your Nosana AI network nodes in real-time
+            </p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <p className="text-xs sm:text-sm text-gray-600">{currentUser?.email}</p>
+            <p className={"text-xs sm:text-sm " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-600")}>
+              {currentUser?.email}
+            </p>
             <Button
               onClick={handleLogout}
               variant="outline"
@@ -583,13 +599,15 @@ function App() {
         </div>
 
         {/* Add Node Section */}
-        <Card className="mb-4 sm:mb-8 border-blue-200 shadow-lg backdrop-blur-sm bg-white/90" data-testid="add-node-card">
+        <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg"} data-testid="add-node-card">
           <CardHeader className="pb-3 sm:pb-6">
-            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <CardTitle className={"flex items-center gap-2 text-base sm:text-lg " + (currentTheme === "neon80s" ? theme.text.primary : "")}>
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Add New Node
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Enter your Nosana node address and optional name</CardDescription>
+            <CardDescription className={currentTheme === "neon80s" ? theme.text.muted + " text-xs sm:text-sm" : "text-xs sm:text-sm"}>
+              Enter your Nosana node address and optional name
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-2 sm:gap-3">
