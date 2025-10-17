@@ -436,7 +436,7 @@ function App() {
                   <Button
                     onClick={handleLogin}
                     disabled={authLoading}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className={"w-full " + theme.button}
                     data-testid="login-button"
                   >
                     {authLoading ? "Logging in..." : "Login"}
