@@ -33,6 +33,14 @@ function App() {
 
   // Check if user is logged in on mount
   useEffect(() => {
+    // Check for Google OAuth session_id in URL fragment
+    const hash = window.location.hash;
+    if (hash.includes('session_id=')) {
+      const sessionId = hash.split('session_id=')[1].split('&')[0];
+      handleGoogleAuth(sessionId);
+      return;
+    }
+
     const token = localStorage.getItem('token');
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
