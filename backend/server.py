@@ -667,12 +667,22 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 
 @api_router.post("/nodes", response_model=Node)
-async def add_node(input: NodeCreate, current_user: User = Depends(get_current_user)):
+@limiter.limit("20/minute")  # Rate limit node creation
+async def add_node(request: Request, input: NodeCreate, current_user: User = Depends(get_current_user)):
     """Add a new node to monitor"""
+    # Additional validation
+    if not validate_solana_address(input.address):
+        raise HTTPException(status_code=400, detail="Invalid Solana address format")
+    
     # Check if node already exists for this user
     existing = await db.nodes.find_one({"address": input.address, "user_id": current_user.id}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Node already exists")
+    
+    # Check user's node limit (prevent abuse)
+    user_node_count = await db.nodes.count_documents({"user_id": current_user.id})
+    if user_node_count >= 100:  # Limit to 100 nodes per user
+        raise HTTPException(status_code=400, detail="Maximum node limit reached (100 nodes)")
     
     node_dict = input.model_dump()
     node_dict['user_id'] = current_user.id  # Associate with current user
@@ -683,6 +693,9 @@ async def add_node(input: NodeCreate, current_user: User = Depends(get_current_u
     doc['last_updated'] = doc['last_updated'].isoformat()
     
     await db.nodes.insert_one(doc)
+    
+    logger.info(f"Node added by {current_user.email}: {input.address[:8]}...")
+    
     return node_obj
 
 
