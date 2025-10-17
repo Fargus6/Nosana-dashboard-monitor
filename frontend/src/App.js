@@ -417,22 +417,22 @@ function App() {
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600 font-medium">Status:</span>
+                          <span className="text-xs sm:text-sm text-gray-600 font-medium">Status:</span>
                           {getStatusBadge(node.status)}
                         </div>
 
                         {node.job_status && (
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600 font-medium">Job Status:</span>
+                            <span className="text-xs sm:text-sm text-gray-600 font-medium">Job Status:</span>
                             {getJobStatusBadge(node.job_status)}
                           </div>
                         )}
 
                         {node.notes && (
                           <div className="pt-2 border-t">
-                            <p className="text-xs text-gray-500 italic">{node.notes}</p>
+                            <p className="text-xs text-gray-500 italic break-words">{node.notes}</p>
                           </div>
                         )}
 
