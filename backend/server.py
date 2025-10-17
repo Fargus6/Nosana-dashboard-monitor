@@ -59,14 +59,64 @@ class DashboardLink(BaseModel):
     url: str
 
 
-def check_node_exists(address: str) -> bool:
-    """Check if node page exists on Nosana dashboard"""
+async def fetch_node_status_from_solana(address: str) -> dict:
+    """Fetch node status from Solana blockchain"""
     try:
-        url = f"https://dashboard.nosana.com/host/{address}"
-        response = requests.head(url, timeout=5)
-        return response.status_code == 200
-    except:
-        return False
+        # Connect to Solana mainnet
+        solana_client = SolanaClient("https://api.mainnet-beta.solana.com")
+        
+        # Convert address string to Pubkey
+        pubkey = Pubkey.from_string(address)
+        
+        # Get account info from Solana
+        response = solana_client.get_account_info(pubkey)
+        
+        if response.value is None:
+            return {
+                'status': 'offline',
+                'job_status': None,
+                'online': False,
+                'error': 'Account not found on Solana'
+            }
+        
+        # Account exists on blockchain
+        account_info = response.value
+        
+        # Check if account has lamports (SOL balance)
+        # Active nodes typically maintain some balance
+        has_balance = account_info.lamports > 0
+        
+        # Check if account is executable or has data
+        # Nosana nodes have data stored
+        has_data = account_info.data is not None and len(account_info.data) > 0
+        
+        # Determine status based on account state
+        if has_balance and has_data:
+            status = 'online'
+            job_status = 'idle'  # Default to idle, could be enhanced
+        elif has_balance:
+            status = 'online'
+            job_status = 'idle'
+        else:
+            status = 'offline'
+            job_status = None
+        
+        return {
+            'status': status,
+            'job_status': job_status,
+            'online': True,
+            'lamports': account_info.lamports,
+            'has_data': has_data
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching node status from Solana: {str(e)}")
+        return {
+            'status': 'unknown',
+            'job_status': None,
+            'online': False,
+            'error': str(e)
+        }
 
 
 @api_router.post("/nodes", response_model=Node)
