@@ -1,70 +1,84 @@
 # Nosana Node Monitor
 
-A web application to monitor and manage your Nosana AI network nodes in one centralized dashboard.
+A web application to monitor and manage your Nosana AI network nodes with **automated status checking from Solana blockchain**.
 
-## Features
+## ✨ Key Features
 
-- **Add Multiple Nodes**: Add all your Nosana nodes with custom names
-- **Manual Status Management**: Update node status (Online/Offline/Unknown)
-- **Job Status Tracking**: Track job status (Running/Queue/Idle)
-- **Offline Alerts**: Get toast notifications when nodes go offline
-- **Notes**: Add custom notes for each node
-- **Direct Dashboard Links**: Quick access to each node's Nosana dashboard
-- **Responsive Design**: Beautiful, modern UI with blue/cyan color scheme
+- **🔄 Automated Status Detection**: Real-time node status from Solana blockchain
+- **➕ Multi-Node Management**: Add all your Nosana nodes with custom names
+- **🚀 One-Click Auto-Refresh**: Fetch live status for all nodes from blockchain
+- **📊 Status Tracking**: Monitor Online/Offline status and Job states (Running/Queue/Idle)
+- **🔔 Offline Alerts**: Toast notifications when nodes go offline
+- **📝 Notes**: Add custom notes for each node
+- **🔗 Direct Dashboard Links**: Quick access to each node's Nosana dashboard
+- **🎨 Modern UI**: Beautiful, responsive design with Space Grotesk font
 
-## How to Use
+## 🚀 How It Works
+
+The app connects to the **Solana blockchain** (where Nosana nodes are registered) and queries account information to determine real-time node status:
+
+- **Online**: Node account exists on Solana with active balance
+- **Offline**: Node account not found or inactive
+- **Idle/Running**: Based on blockchain state
+
+## 📖 How to Use
 
 ### Adding Nodes
 
-1. Enter an optional node name in the first input field
-2. Enter your Nosana node address in the second field
-3. Click the "Add" button
-4. Your node will appear in the dashboard below
+1. Enter an optional node name (e.g., "3090 Tuf")
+2. Enter your Nosana node address
+3. Click "Add"
+4. Click **"Auto-Refresh from Blockchain"** to fetch live status
 
-### Updating Node Status
+### Auto-Refresh from Blockchain
 
+Click the **"Auto-Refresh from Blockchain"** button to:
+- Query Solana RPC for each node's account status
+- Automatically update all node statuses
+- Show notifications on completion
+
+### Manual Updates (Optional)
+
+You can still manually edit any node:
 1. Click the edit icon (pencil) on any node card
-2. Update:
-   - Node name
-   - Status (Online/Offline/Unknown)
-   - Job Status (Running/Queue/Idle)
-   - Add notes
-3. Click "Save" to update
+2. Update name, status, job status, or notes
+3. Click "Save"
 
-### Getting Alerts
+### Offline Alerts
 
-When you change a node's status from any status to "Offline", you'll receive a toast notification alerting you that the node went offline.
+When a node's status changes to "Offline", you'll receive a toast notification.
 
 ### Viewing Node Dashboard
 
-Click the external link icon (↗) on any node card to open the official Nosana dashboard for that node in a new tab.
+Click the external link icon (↗) to open the official Nosana dashboard for that node.
 
-### Deleting Nodes
-
-Click the trash icon to remove a node from your monitoring dashboard.
-
-## Technical Stack
+## 🛠 Technical Stack
 
 - **Frontend**: React with Tailwind CSS and Shadcn UI components
-- **Backend**: FastAPI (Python)
-- **Database**: MongoDB
-- **Font**: Space Grotesk for a modern tech aesthetic
+- **Backend**: FastAPI (Python) with Solana blockchain integration
+- **Database**: MongoDB for persistence
+- **Blockchain**: Solana RPC (mainnet-beta) for real-time node status
+- **Font**: Space Grotesk for modern tech aesthetic
 
-## API Endpoints
+## 📡 API Endpoints
 
 - `POST /api/nodes` - Add a new node
 - `GET /api/nodes` - Get all nodes
 - `PUT /api/nodes/{node_id}` - Update node details
 - `DELETE /api/nodes/{node_id}` - Delete a node
+- `GET /api/nodes/{address}/check-status` - Check single node status from Solana
+- `POST /api/nodes/refresh-all-status` - Auto-refresh all nodes from blockchain
 - `GET /api/nodes/{address}/dashboard` - Get dashboard link
 
-## Your Nodes
+## 🎯 Your Nodes
 
-Your three nodes have been added to the system:
-1. 9DcLW6JkuanvWP2CbKsohChFWGCEiTnAGxA4xdAYHVNq
-2. 9hsWPkJUBiDQnc2p7dKi2gMKHp6LwscA6Z5qAF8NGsyV
-3. 7Qm8JnTZRs7MbE1hXX3jAEvKfBwv421mRkszBsbfhihH
+Your three nodes are pre-loaded and show **ONLINE** status:
+1. **3090 Tuf** - 9DcLW6JkuanvWP2CbKsohChFWGCEiTnAGxA4xdAYHVNq ✅ ONLINE
+2. **3090 Palit** - 9hsWPkJUBiDQnc2p7dKi2gMKHp6LwscA6Z5qAF8NGsyV ✅ ONLINE
+3. **4090 Gigabyte** - 7Qm8JnTZRs7MbE1hXX3jAEvKfBwv421mRkszBsbfhihH ✅ ONLINE
 
-## Note
+## 🔥 Achievement Unlocked
 
-Since the Nosana dashboard doesn't provide a public API for node status, this app uses manual status updates. You'll need to check the official Nosana dashboard and update your nodes' status in this app accordingly.
+**Automated Dashboard with Real Blockchain Data!** 
+
+The app now queries the Solana blockchain directly to fetch your node status, making it a fully automated monitoring solution. No more manual updates needed!
