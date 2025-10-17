@@ -242,6 +242,18 @@ class Node(BaseModel):
 class NodeCreate(BaseModel):
     address: str
     name: Optional[str] = None
+    
+    @validator('address')
+    def validate_address(cls, v):
+        if not validate_solana_address(v):
+            raise ValueError('Invalid Solana address format')
+        return v
+    
+    @validator('name')
+    def sanitize_name(cls, v):
+        if v:
+            return sanitize_string(v)
+        return v
 
 class NodeUpdate(BaseModel):
     name: Optional[str] = None
