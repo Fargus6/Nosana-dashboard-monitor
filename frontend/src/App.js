@@ -362,14 +362,8 @@ function App() {
   };
 
   const getStatusBadge = (status) => {
-    const styles = {
-      online: "bg-green-500 text-white",
-      offline: "bg-red-500 text-white",
-      unknown: "bg-gray-400 text-white",
-    };
-
     return (
-      <Badge className={styles[status] || styles.unknown} data-testid={`status-badge-${status}`}>
+      <Badge className={theme.badge[status] || theme.badge.unknown} data-testid={`status-badge-${status}`}>
         {status?.toUpperCase() || "UNKNOWN"}
       </Badge>
     );
@@ -378,14 +372,8 @@ function App() {
   const getJobStatusBadge = (jobStatus) => {
     if (!jobStatus) return null;
 
-    const colors = {
-      running: "bg-blue-500 text-white",
-      queue: "bg-yellow-500 text-white",
-      idle: "bg-gray-500 text-white",
-    };
-
     return (
-      <Badge className={colors[jobStatus] || ""} data-testid={`job-badge-${jobStatus}`}>
+      <Badge className={theme.badge[jobStatus] || ""} data-testid={`job-badge-${jobStatus}`}>
         {jobStatus?.toUpperCase()}
       </Badge>
     );
