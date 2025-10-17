@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, ConfigDict, EmailStr, validator
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta
@@ -17,6 +17,10 @@ import base64
 import struct
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+import re
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
 # Set Playwright browser path
 os.environ['PLAYWRIGHT_BROWSERS_PATH'] = '/pw-browsers'
@@ -32,6 +36,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 43200  # 30 days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+
+# Rate limiting
+limiter = Limiter(key_func=get_remote_address)
+
+# Password strength validator
+def validate_password_strength(password: str) -> bool:
+    """Validate password meets security requirements"""
+    if len(password) < 8:
+        return False
+    if not re.search(r"[A-Z]", password):
+        return False
+    if not re.search(r"[a-z]", password):
+        return False
+    if not re.search(r"\d", password):
+        return False
+    return True
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
