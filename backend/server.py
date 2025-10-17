@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 import requests
 from bs4 import BeautifulSoup
 import re
+from playwright.async_api import async_playwright
+import asyncio
 
 
 ROOT_DIR = Path(__file__).parent
