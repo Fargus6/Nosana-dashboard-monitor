@@ -269,30 +269,52 @@ function App() {
   };
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      toast.error("Please enter email and password");
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email).toLowerCase().trim();
+    const sanitizedPassword = password;
+    
+    // Validate email
+    if (!validateEmail(sanitizedEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    if (!sanitizedPassword) {
+      toast.error("Please enter your password");
+      return;
+    }
+
+    // Check rate limit
+    const rateLimitCheck = loginRateLimiter.checkLimit('login');
+    if (!rateLimitCheck.allowed) {
+      toast.error(`Too many login attempts. Please wait ${rateLimitCheck.resetIn} seconds.`);
       return;
     }
 
     try {
       setAuthLoading(true);
       const formData = new FormData();
-      formData.append('username', email);
-      formData.append('password', password);
+      formData.append('username', sanitizedEmail);
+      formData.append('password', sanitizedPassword);
       
       const response = await axios.post(`${API}/auth/login`, formData);
       const token = response.data.access_token;
       
-      localStorage.setItem('token', token);
+      secureStorage.set('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setIsAuthenticated(true);
-      setCurrentUser({ email });
+      setCurrentUser({ email: sanitizedEmail });
       toast.success("Logged in successfully!");
       setEmail("");
       setPassword("");
+      
+      // Reset rate limit on successful login
+      loginRateLimiter.reset('login');
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Login failed");
+      const errorMessage = error.response?.data?.detail || "Login failed";
+      toast.error(errorMessage);
+      console.error("Login error:", error);
     } finally {
       setAuthLoading(false);
     }
