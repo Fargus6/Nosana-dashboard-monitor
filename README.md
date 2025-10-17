@@ -1,25 +1,51 @@
 # Nosana Node Monitor
 
-A web application to monitor and manage your Nosana AI network nodes with **automated status checking from Solana blockchain**.
+A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nodes with **automated status checking from Solana blockchain**.
 
 ## ✨ Key Features
 
+- **📱 Mobile-Optimized PWA**: Install on Android & iOS as a standalone app
 - **🔄 Automated Status Detection**: Real-time node status from Solana blockchain
 - **➕ Multi-Node Management**: Add all your Nosana nodes with custom names
 - **🚀 One-Click Auto-Refresh**: Fetch live status for all nodes from blockchain
 - **📊 Status Tracking**: Monitor Online/Offline status and Job states (Running/Queue/Idle)
 - **🔔 Offline Alerts**: Toast notifications when nodes go offline
+- **👁️ Privacy Toggle**: Show/hide node addresses with eye icon
 - **📝 Notes**: Add custom notes for each node
 - **🔗 Direct Dashboard Links**: Quick access to each node's Nosana dashboard
-- **🎨 Modern UI**: Beautiful, responsive design with Space Grotesk font
+- **🎨 Modern UI**: Beautiful, responsive design optimized for mobile and desktop
+
+## 📱 Install as Mobile App
+
+### On Android (Chrome/Edge):
+1. Open https://your-app-url.com in Chrome
+2. Tap the **3-dot menu** → "Add to Home screen"
+3. Tap "Install" or "Add"
+4. App appears on your home screen like a native app!
+
+### On iOS (Safari):
+1. Open https://your-app-url.com in Safari
+2. Tap the **Share button** (square with arrow)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add"
+5. App appears on your home screen!
+
+### Benefits of PWA:
+✅ Works offline (basic functionality)  
+✅ Fast loading and smooth performance  
+✅ No app store approval needed  
+✅ Auto-updates when you refresh  
+✅ Smaller size than native apps
 
 ## 🚀 How It Works
 
-The app connects to the **Solana blockchain** (where Nosana nodes are registered) and queries account information to determine real-time node status:
+The app connects to the **Solana blockchain** (where Nosana nodes are registered) and **scrapes the Nosana dashboard** to determine real-time node and job status:
 
 - **Online**: Node account exists on Solana with active balance
 - **Offline**: Node account not found or inactive
-- **Idle/Running**: Based on blockchain state
+- **Running**: Node is actively processing deployments
+- **Queue**: Jobs waiting in queue
+- **Idle**: Node online but no active jobs
 
 ## 📖 How to Use
 
