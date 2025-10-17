@@ -22,6 +22,10 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Initialize rate limiters for client-side protection
+const loginRateLimiter = new RateLimiter(5, 300000); // 5 attempts per 5 minutes
+const apiRateLimiter = new RateLimiter(30, 60000); // 30 requests per minute
+
 // Theme configurations
 const themes = {
   default: {
