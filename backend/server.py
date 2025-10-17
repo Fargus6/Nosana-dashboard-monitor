@@ -840,13 +840,6 @@ app.add_middleware(
     max_age=600,  # Cache preflight requests for 10 minutes
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
 # Global exception handler for better error handling
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
