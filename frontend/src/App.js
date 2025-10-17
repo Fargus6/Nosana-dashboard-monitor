@@ -271,7 +271,7 @@ function App() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {nodes.map((node) => {
               const isEditing = editingNode === node.id;
               return (
@@ -280,19 +280,19 @@ function App() {
                   className="border-blue-100 shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm bg-white/95"
                   data-testid={`node-card-${node.id}`}
                 >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start gap-3">
+                  <CardHeader className="pb-2 sm:pb-3">
+                    <div className="flex justify-between items-start gap-2 sm:gap-3">
                       <div className="flex-1 min-w-0">
                         {isEditing ? (
                           <Input
                             value={editData.name}
                             onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                             placeholder="Node name"
-                            className="mb-2"
+                            className="mb-2 text-sm sm:text-base h-9 sm:h-auto"
                             data-testid={`edit-name-${node.id}`}
                           />
                         ) : (
-                          <CardTitle className="text-lg mb-1" data-testid={`node-name-${node.id}`}>
+                          <CardTitle className="text-base sm:text-lg mb-1" data-testid={`node-name-${node.id}`}>
                             {node.name || "Unnamed Node"}
                           </CardTitle>
                         )}
