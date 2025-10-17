@@ -805,7 +805,7 @@ function App() {
                         <div className="flex gap-2 pt-2">
                           <Button
                             onClick={() => saveEdit(node.id)}
-                            className="flex-1 bg-green-600 hover:bg-green-700 h-9 sm:h-10 text-sm"
+                            className={"flex-1 bg-green-600 hover:bg-green-700 h-9 sm:h-10 text-sm " + (currentTheme === "neon80s" ? "shadow-[0_0_10px_rgba(74,222,128,0.5)]" : "")}
                             data-testid={`save-edit-${node.id}`}
                           >
                             <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
