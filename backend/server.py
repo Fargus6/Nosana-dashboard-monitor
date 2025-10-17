@@ -601,7 +601,7 @@ async def google_auth(request: Request, session_id: str):
         
         data = response.json()
         email = data.get("email")
-        name = data.get("name")
+        # name = data.get("name")  # Not used currently
         session_token = data.get("session_token")
         
         if not email or not session_token:
