@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "@/App.css";
 import axios from "axios";
-import { Plus, Trash2, RefreshCw, Activity, ExternalLink, Edit2, Check, X, Eye, EyeOff, LogOut } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Activity, ExternalLink, Edit2, Check, X, Eye, EyeOff, LogOut, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,49 @@ import { toast } from "sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Theme configurations
+const themes = {
+  default: {
+    name: "Modern Blue",
+    background: "min-h-screen bg-gradient-to-br from-slate-50 to-blue-50",
+    card: "border-blue-200 shadow-lg backdrop-blur-sm bg-white/90",
+    cardHover: "hover:shadow-xl",
+    title: "bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent",
+    button: "bg-blue-600 hover:bg-blue-700",
+    buttonGradient: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700",
+    badge: {
+      online: "bg-green-500 text-white",
+      offline: "bg-red-500 text-white",
+      unknown: "bg-gray-400 text-white",
+      running: "bg-blue-500 text-white",
+      queue: "bg-yellow-500 text-white",
+      idle: "bg-gray-500 text-white"
+    }
+  },
+  neon80s: {
+    name: "80s Neon",
+    background: "min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-purple-900",
+    card: "border-pink-500 border-2 shadow-[0_0_15px_rgba(236,72,153,0.5)] backdrop-blur-sm bg-black/80",
+    cardHover: "hover:shadow-[0_0_25px_rgba(236,72,153,0.8)]",
+    title: "bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 bg-clip-text text-transparent",
+    button: "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-[0_0_10px_rgba(236,72,153,0.5)]",
+    buttonGradient: "bg-gradient-to-r from-cyan-400 to-pink-500 hover:from-cyan-500 hover:to-pink-600 shadow-[0_0_10px_rgba(6,182,212,0.5)]",
+    badge: {
+      online: "bg-green-400 text-black shadow-[0_0_10px_rgba(74,222,128,0.6)]",
+      offline: "bg-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.6)]",
+      unknown: "bg-gray-500 text-white shadow-[0_0_10px_rgba(107,114,128,0.6)]",
+      running: "bg-cyan-400 text-black shadow-[0_0_10px_rgba(34,211,238,0.6)]",
+      queue: "bg-yellow-400 text-black shadow-[0_0_10px_rgba(250,204,21,0.6)]",
+      idle: "bg-purple-400 text-white shadow-[0_0_10px_rgba(192,132,252,0.6)]"
+    },
+    text: {
+      primary: "text-pink-200",
+      secondary: "text-cyan-300",
+      muted: "text-purple-300"
+    }
+  }
+};
 
 function App() {
   const [nodes, setNodes] = useState([]);
