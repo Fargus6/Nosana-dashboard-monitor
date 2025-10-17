@@ -116,53 +116,34 @@ async def fetch_node_status_from_solana(address: str) -> dict:
 
 
 async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str:
-    """Check if node has active jobs from Nosana Jobs program"""
+    """Check if node has active jobs using Nosana SDK service"""
     try:
-        # Nosana Jobs program ID
-        NOSANA_JOBS_PROGRAM = Pubkey.from_string("nosJhNRqr2bc9g1nfGDcXXTXvYUmxD4cVwy2pMWhrYM")
+        # Call the Node.js Nosana SDK service
+        response = requests.get(
+            f"http://localhost:3001/check-node/{node_address}",
+            timeout=10
+        )
         
-        node_pubkey = Pubkey.from_string(node_address)
-        
-        # Use memcmp filter to find jobs associated with this node
-        # nodeAccessKey is at offset 114 in Market accounts
-        filters = [
-            {
-                "memcmp": {
-                    "offset": 114,
-                    "bytes": str(node_pubkey)
-                }
-            }
-        ]
-        
-        # Query with filters - more efficient than getting all accounts
-        try:
-            response = solana_client.get_program_accounts(
-                NOSANA_JOBS_PROGRAM,
-                encoding="base64",
-                filters=filters
-            )
-            
-            if response.value and len(response.value) > 0:
-                # Found accounts associated with this node
-                # If there are active market/job accounts, node is likely running or queued
-                account_count = len(response.value)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('success'):
+                job_status = data.get('jobStatus', 'idle')
+                active_jobs = data.get('activeJobs', 0)
                 
-                if account_count > 0:
-                    # Check account data to determine if running or queued
-                    # This is a simplified heuristic - actual state would require full account parsing
-                    return 'running' if account_count > 2 else 'queue'
-                else:
-                    return 'idle'
+                logger.info(f"Node {node_address[:8]}... has {active_jobs} active jobs, status: {job_status}")
+                return job_status
             else:
+                logger.warning(f"Nosana SDK returned error: {data.get('error')}")
                 return 'idle'
-                
-        except Exception as filter_error:
-            logger.warning(f"Error with filtered query: {str(filter_error)}, falling back to basic check")
-            # Fallback: return idle
+        else:
+            logger.warning(f"Nosana SDK service returned status {response.status_code}")
             return 'idle'
             
+    except requests.Timeout:
+        logger.warning("Nosana SDK service timeout")
+        return 'idle'
     except Exception as e:
-        logger.error(f"Error checking node jobs: {str(e)}")
+        logger.error(f"Error calling Nosana SDK service: {str(e)}")
         return 'idle'
 
 
