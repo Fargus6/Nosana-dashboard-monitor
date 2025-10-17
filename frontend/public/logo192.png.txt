@@ -1,0 +1,3 @@
+Note: For a production PWA, you would need actual PNG icons.
+For now, the app will work on mobile browsers without custom icons.
+You can generate icons at: https://www.favicon-generator.org/
