@@ -643,6 +643,9 @@ function App() {
   // Main App UI (after login)
   return (
     <div className={theme.background}>
+      {/* Pixelated tech background for neon theme */}
+      {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
+      
       {/* Theme Toggle Button */}
       <Button
         onClick={toggleTheme}
@@ -655,7 +658,7 @@ function App() {
         <Palette className="w-4 h-4" />
       </Button>
 
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl relative z-10">
         {/* Header with Logout */}
         <div className="mb-4 sm:mb-8 flex justify-between items-start">
           <div>
