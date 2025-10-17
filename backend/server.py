@@ -322,14 +322,15 @@ async def get_me(current_user: User = Depends(get_current_user)):
 
 
 @api_router.post("/nodes", response_model=Node)
-async def add_node(input: NodeCreate):
+async def add_node(input: NodeCreate, current_user: User = Depends(get_current_user)):
     """Add a new node to monitor"""
-    # Check if node already exists
-    existing = await db.nodes.find_one({"address": input.address}, {"_id": 0})
+    # Check if node already exists for this user
+    existing = await db.nodes.find_one({"address": input.address, "user_id": current_user.id}, {"_id": 0})
     if existing:
         raise HTTPException(status_code=400, detail="Node already exists")
     
     node_dict = input.model_dump()
+    node_dict['user_id'] = current_user.id  # Associate with current user
     node_obj = Node(**node_dict)
     
     doc = node_obj.model_dump()
@@ -341,9 +342,9 @@ async def add_node(input: NodeCreate):
 
 
 @api_router.get("/nodes", response_model=List[Node])
-async def get_nodes():
-    """Get all monitored nodes"""
-    nodes = await db.nodes.find({}, {"_id": 0}).to_list(1000)
+async def get_nodes(current_user: User = Depends(get_current_user)):
+    """Get all monitored nodes for current user"""
+    nodes = await db.nodes.find({"user_id": current_user.id}, {"_id": 0}).to_list(1000)
     
     for node in nodes:
         if isinstance(node.get('created_at'), str):
@@ -355,9 +356,9 @@ async def get_nodes():
 
 
 @api_router.put("/nodes/{node_id}", response_model=Node)
-async def update_node(node_id: str, update: NodeUpdate):
+async def update_node(node_id: str, update: NodeUpdate, current_user: User = Depends(get_current_user)):
     """Update node information"""
-    node = await db.nodes.find_one({"id": node_id}, {"_id": 0})
+    node = await db.nodes.find_one({"id": node_id, "user_id": current_user.id}, {"_id": 0})
     if not node:
         raise HTTPException(status_code=404, detail="Node not found")
     
@@ -365,7 +366,7 @@ async def update_node(node_id: str, update: NodeUpdate):
     update_data['last_updated'] = datetime.now(timezone.utc).isoformat()
     
     await db.nodes.update_one(
-        {"id": node_id},
+        {"id": node_id, "user_id": current_user.id},
         {"$set": update_data}
     )
     
@@ -381,9 +382,9 @@ async def update_node(node_id: str, update: NodeUpdate):
 
 
 @api_router.delete("/nodes/{node_id}")
-async def delete_node(node_id: str):
+async def delete_node(node_id: str, current_user: User = Depends(get_current_user)):
     """Delete a node"""
-    result = await db.nodes.delete_one({"id": node_id})
+    result = await db.nodes.delete_one({"id": node_id, "user_id": current_user.id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Node not found")
     return {"message": "Node deleted successfully"}
