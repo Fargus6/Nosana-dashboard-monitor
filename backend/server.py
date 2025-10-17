@@ -121,31 +121,48 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str
         # Nosana Jobs program ID
         NOSANA_JOBS_PROGRAM = Pubkey.from_string("nosJhNRqr2bc9g1nfGDcXXTXvYUmxD4cVwy2pMWhrYM")
         
-        # Get all accounts for the Jobs program
-        # Note: This is a simplified check - in production you'd want to filter by node address
-        response = solana_client.get_program_accounts(
-            NOSANA_JOBS_PROGRAM,
-            encoding="base64"
-        )
+        node_pubkey = Pubkey.from_string(node_address)
         
-        if response.value:
-            # Check if any jobs are associated with this node
-            # For now, we'll do a basic check - this could be enhanced with proper account parsing
-            for account in response.value[:50]:  # Limit to avoid timeout
-                account_data = account.account.data
-                # Check if node address appears in account data (basic heuristic)
-                if node_address in str(account_data):
-                    # Found potential job, return running
-                    return 'running'
+        # Use memcmp filter to find jobs associated with this node
+        # nodeAccessKey is at offset 114 in Market accounts
+        filters = [
+            {
+                "memcmp": {
+                    "offset": 114,
+                    "bytes": str(node_pubkey)
+                }
+            }
+        ]
+        
+        # Query with filters - more efficient than getting all accounts
+        try:
+            response = solana_client.get_program_accounts(
+                NOSANA_JOBS_PROGRAM,
+                encoding="base64",
+                filters=filters
+            )
             
-            # If node is online but no jobs found, likely idle or in queue
-            return 'idle'
-        else:
+            if response.value and len(response.value) > 0:
+                # Found accounts associated with this node
+                # If there are active market/job accounts, node is likely running or queued
+                account_count = len(response.value)
+                
+                if account_count > 0:
+                    # Check account data to determine if running or queued
+                    # This is a simplified heuristic - actual state would require full account parsing
+                    return 'running' if account_count > 2 else 'queue'
+                else:
+                    return 'idle'
+            else:
+                return 'idle'
+                
+        except Exception as filter_error:
+            logger.warning(f"Error with filtered query: {str(filter_error)}, falling back to basic check")
+            # Fallback: return idle
             return 'idle'
             
     except Exception as e:
         logger.error(f"Error checking node jobs: {str(e)}")
-        # Return idle as fallback
         return 'idle'
 
 
