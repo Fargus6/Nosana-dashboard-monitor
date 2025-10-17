@@ -79,6 +79,10 @@ class Node(BaseModel):
     status: str = "unknown"  # online, offline, unknown
     job_status: Optional[str] = None  # running, queue, idle
     notes: Optional[str] = None
+    nos_balance: Optional[float] = None
+    sol_balance: Optional[float] = None
+    total_jobs: Optional[int] = None
+    availability_score: Optional[float] = None
     last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
