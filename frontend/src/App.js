@@ -637,12 +637,14 @@ function App() {
         </Card>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-700">Your Nodes ({nodes.length})</h2>
+          <h2 className={"text-lg sm:text-xl font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+            Your Nodes ({nodes.length})
+          </h2>
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               onClick={autoRefreshAllNodes}
               disabled={autoRefreshing || nodes.length === 0}
-              className="flex-1 sm:flex-none gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-xs sm:text-sm h-9 sm:h-10"
+              className={"flex-1 sm:flex-none gap-2 text-xs sm:text-sm h-9 sm:h-10 " + theme.buttonGradient}
               data-testid="auto-refresh-button"
             >
               <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${autoRefreshing ? "animate-spin" : ""}`} />
