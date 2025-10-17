@@ -403,15 +403,31 @@ function App() {
   };
 
   const addNode = async () => {
-    if (!newNodeAddress.trim()) {
+    const sanitizedAddress = sanitizeInput(newNodeAddress).trim();
+    const sanitizedName = sanitizeInput(newNodeName).trim();
+    
+    if (!sanitizedAddress) {
       toast.error("Please enter a node address");
+      return;
+    }
+    
+    // Validate Solana address format
+    if (!validateSolanaAddress(sanitizedAddress)) {
+      toast.error("Invalid Solana address format. Please check and try again.");
+      return;
+    }
+    
+    // Check rate limit
+    const rateLimitCheck = apiRateLimiter.checkLimit('addNode');
+    if (!rateLimitCheck.allowed) {
+      toast.error(`Too many requests. Please wait ${rateLimitCheck.resetIn} seconds.`);
       return;
     }
 
     try {
       await axios.post(`${API}/nodes`, {
-        address: newNodeAddress.trim(),
-        name: newNodeName.trim() || null,
+        address: sanitizedAddress,
+        name: sanitizedName || null,
       });
       toast.success("Node added successfully");
       setNewNodeAddress("");
@@ -420,6 +436,7 @@ function App() {
     } catch (error) {
       const message = error.response?.data?.detail || "Failed to add node";
       toast.error(message);
+      console.error("Add node error:", error);
     }
   };
 
