@@ -20,6 +20,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [editingNode, setEditingNode] = useState(null);
   const [editData, setEditData] = useState({});
+  const [autoRefreshing, setAutoRefreshing] = useState(false);
 
   useEffect(() => {
     loadNodes();
