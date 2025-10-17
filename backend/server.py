@@ -10,10 +10,6 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import requests
-from bs4 import BeautifulSoup
-import re
-from playwright.async_api import async_playwright
-import asyncio
 
 
 ROOT_DIR = Path(__file__).parent
@@ -38,109 +34,35 @@ class Node(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     address: str
     name: Optional[str] = None
-    last_status: Optional[str] = None  # online, offline
-    last_job_status: Optional[str] = None  # running, queue, idle
-    last_checked: Optional[datetime] = None
+    status: str = "unknown"  # online, offline, unknown
+    job_status: Optional[str] = None  # running, queue, idle
+    notes: Optional[str] = None
+    last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class NodeCreate(BaseModel):
     address: str
     name: Optional[str] = None
 
-class NodeStatus(BaseModel):
+class NodeUpdate(BaseModel):
+    name: Optional[str] = None
+    status: Optional[str] = None
+    job_status: Optional[str] = None
+    notes: Optional[str] = None
+
+class DashboardLink(BaseModel):
     address: str
-    status: str  # online, offline, error
-    job_status: Optional[str] = None  # running, queue, idle
-    job_count: Optional[int] = None
-    last_checked: datetime
-    status_changed: bool = False
+    url: str
 
 
-async def scrape_node_status(address: str) -> dict:
-    """Scrape node status from Nosana dashboard using Playwright"""
+def check_node_exists(address: str) -> bool:
+    """Check if node page exists on Nosana dashboard"""
     try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
-            
-            url = f"https://dashboard.nosana.com/host/{address}"
-            
-            # Navigate to page with timeout
-            try:
-                response = await page.goto(url, wait_until='networkidle', timeout=15000)
-                
-                # Check if page returned 404 or error
-                if response and response.status == 404:
-                    await browser.close()
-                    return {
-                        'status': 'error',
-                        'job_status': None,
-                        'job_count': 0
-                    }
-                
-                # Wait for content to load
-                await page.wait_for_timeout(2000)
-                
-                # Get page text content
-                page_text = await page.text_content('body')
-                page_text_lower = page_text.lower() if page_text else ''
-                
-                # Check for error states
-                if 'not found' in page_text_lower or 'error' in page_text_lower:
-                    await browser.close()
-                    return {
-                        'status': 'error',
-                        'job_status': None,
-                        'job_count': 0
-                    }
-                
-                # Determine status based on page content
-                status = 'online'  # Default
-                job_status = 'idle'
-                job_count = 0
-                
-                # Check for status indicators
-                if 'offline' in page_text_lower:
-                    status = 'offline'
-                elif 'online' in page_text_lower or 'active' in page_text_lower:
-                    status = 'online'
-                
-                # Check for job status
-                if 'running' in page_text_lower:
-                    job_status = 'running'
-                elif 'queue' in page_text_lower or 'queued' in page_text_lower:
-                    job_status = 'queue'
-                
-                # Try to extract job count
-                if page_text:
-                    job_matches = re.findall(r'(\d+)\s*job', page_text_lower)
-                    if job_matches:
-                        job_count = int(job_matches[0])
-                
-                await browser.close()
-                
-                return {
-                    'status': status,
-                    'job_status': job_status,
-                    'job_count': job_count
-                }
-                
-            except Exception as e:
-                await browser.close()
-                logger.error(f"Error navigating to {url}: {str(e)}")
-                return {
-                    'status': 'offline',
-                    'job_status': None,
-                    'job_count': 0
-                }
-        
-    except Exception as e:
-        logger.error(f"Error scraping node {address}: {str(e)}")
-        return {
-            'status': 'error',
-            'job_status': None,
-            'job_count': 0
-        }
+        url = f"https://dashboard.nosana.com/host/{address}"
+        response = requests.head(url, timeout=5)
+        return response.status_code == 200
+    except:
+        return False
 
 
 @api_router.post("/nodes", response_model=Node)
@@ -156,8 +78,7 @@ async def add_node(input: NodeCreate):
     
     doc = node_obj.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
-    if doc['last_checked']:
-        doc['last_checked'] = doc['last_checked'].isoformat()
+    doc['last_updated'] = doc['last_updated'].isoformat()
     
     await db.nodes.insert_one(doc)
     return node_obj
@@ -171,10 +92,36 @@ async def get_nodes():
     for node in nodes:
         if isinstance(node.get('created_at'), str):
             node['created_at'] = datetime.fromisoformat(node['created_at'])
-        if isinstance(node.get('last_checked'), str):
-            node['last_checked'] = datetime.fromisoformat(node['last_checked'])
+        if isinstance(node.get('last_updated'), str):
+            node['last_updated'] = datetime.fromisoformat(node['last_updated'])
     
     return nodes
+
+
+@api_router.put("/nodes/{node_id}", response_model=Node)
+async def update_node(node_id: str, update: NodeUpdate):
+    """Update node information"""
+    node = await db.nodes.find_one({"id": node_id}, {"_id": 0})
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
+    
+    update_data = update.model_dump(exclude_none=True)
+    update_data['last_updated'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.nodes.update_one(
+        {"id": node_id},
+        {"$set": update_data}
+    )
+    
+    updated_node = await db.nodes.find_one({"id": node_id}, {"_id": 0})
+    
+    # Convert dates
+    if isinstance(updated_node.get('created_at'), str):
+        updated_node['created_at'] = datetime.fromisoformat(updated_node['created_at'])
+    if isinstance(updated_node.get('last_updated'), str):
+        updated_node['last_updated'] = datetime.fromisoformat(updated_node['last_updated'])
+    
+    return Node(**updated_node)
 
 
 @api_router.delete("/nodes/{node_id}")
@@ -186,82 +133,13 @@ async def delete_node(node_id: str):
     return {"message": "Node deleted successfully"}
 
 
-@api_router.get("/nodes/{address}/status", response_model=NodeStatus)
-async def get_node_status(address: str):
-    """Get current status of a specific node"""
-    # Get previous status from DB
-    node = await db.nodes.find_one({"address": address}, {"_id": 0})
-    previous_status = node.get('last_status') if node else None
-    
-    # Scrape current status
-    scraped_data = await scrape_node_status(address)
-    current_status = scraped_data['status']
-    
-    # Check if status changed from online to offline
-    status_changed = False
-    if previous_status == 'online' and current_status == 'offline':
-        status_changed = True
-    
-    # Update node in DB
-    if node:
-        await db.nodes.update_one(
-            {"address": address},
-            {"$set": {
-                "last_status": current_status,
-                "last_job_status": scraped_data['job_status'],
-                "last_checked": datetime.now(timezone.utc).isoformat()
-            }}
-        )
-    
-    return NodeStatus(
+@api_router.get("/nodes/{address}/dashboard", response_model=DashboardLink)
+async def get_dashboard_link(address: str):
+    """Get Nosana dashboard link for a node"""
+    return DashboardLink(
         address=address,
-        status=current_status,
-        job_status=scraped_data['job_status'],
-        job_count=scraped_data['job_count'],
-        last_checked=datetime.now(timezone.utc),
-        status_changed=status_changed
+        url=f"https://dashboard.nosana.com/host/{address}"
     )
-
-
-@api_router.get("/nodes/status/all", response_model=List[NodeStatus])
-async def get_all_nodes_status():
-    """Get current status of all monitored nodes"""
-    nodes = await db.nodes.find({}, {"_id": 0}).to_list(1000)
-    
-    statuses = []
-    for node in nodes:
-        address = node['address']
-        previous_status = node.get('last_status')
-        
-        # Scrape current status
-        scraped_data = await scrape_node_status(address)
-        current_status = scraped_data['status']
-        
-        # Check if status changed from online to offline
-        status_changed = False
-        if previous_status == 'online' and current_status == 'offline':
-            status_changed = True
-        
-        # Update node in DB
-        await db.nodes.update_one(
-            {"address": address},
-            {"$set": {
-                "last_status": current_status,
-                "last_job_status": scraped_data['job_status'],
-                "last_checked": datetime.now(timezone.utc).isoformat()
-            }}
-        )
-        
-        statuses.append(NodeStatus(
-            address=address,
-            status=current_status,
-            job_status=scraped_data['job_status'],
-            job_count=scraped_data['job_count'],
-            last_checked=datetime.now(timezone.utc),
-            status_changed=status_changed
-        ))
-    
-    return statuses
 
 
 # Include the router in the main app
