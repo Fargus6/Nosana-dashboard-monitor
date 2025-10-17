@@ -21,6 +21,7 @@ function App() {
   const [editingNode, setEditingNode] = useState(null);
   const [editData, setEditData] = useState({});
   const [autoRefreshing, setAutoRefreshing] = useState(false);
+  const [hiddenAddresses, setHiddenAddresses] = useState(new Set());
 
   useEffect(() => {
     loadNodes();
