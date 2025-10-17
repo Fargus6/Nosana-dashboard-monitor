@@ -73,6 +73,25 @@ function App() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  
+  // Theme state
+  const [currentTheme, setCurrentTheme] = useState("default");
+  const theme = themes[currentTheme];
+
+  // Load theme preference on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme && themes[savedTheme]) {
+      setCurrentTheme(savedTheme);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = currentTheme === "default" ? "neon80s" : "default";
+    setCurrentTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    toast.success(`Switched to ${themes[newTheme].name} theme!`);
+  };
 
   // Check if user is logged in on mount
   useEffect(() => {
