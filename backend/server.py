@@ -195,7 +195,7 @@ async def fetch_node_status_from_solana(address: str) -> dict:
         }
 
 
-async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str:
+async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dict:
     """Check if node has active jobs by scraping Nosana dashboard"""
     try:
         # First, try the Node.js Nosana SDK service as primary method
@@ -208,12 +208,19 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str
             if response.status_code == 200:
                 data = response.json()
                 if data.get('success') and data.get('jobStatus') != 'idle':
-                    return data.get('jobStatus', 'idle')
+                    return {
+                        'job_status': data.get('jobStatus', 'idle'),
+                        'nos_balance': None,
+                        'sol_balance': None,
+                        'total_jobs': None,
+                        'availability_score': None
+                    }
         except Exception as sdk_error:
             logger.debug(f"SDK service unavailable, trying web scraping: {str(sdk_error)}")
         
         # Fallback to web scraping the dashboard
         from playwright.async_api import async_playwright
+        import re
         
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
@@ -231,38 +238,77 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str
                 
                 await browser.close()
                 
-                # Parse status from page
-                # Look for "STATUS" section and "RUNNING DEPLOYMENT" indicator
+                # Parse job status
+                job_status = 'idle'
                 if 'status' in text_lower and 'running' in text_lower:
-                    # Check if there's an active running deployment
                     if 'running deployment' in text_lower:
                         logger.info(f"Node {node_address[:8]}... has RUNNING deployment")
-                        return 'running'
+                        job_status = 'running'
                     elif 'status\nrunning' in text_lower or 'status:\nrunning' in text_lower:
                         logger.info(f"Node {node_address[:8]}... status is RUNNING")
-                        return 'running'
+                        job_status = 'running'
                 
-                # Check for queued status
                 if 'queued' in text_lower or 'queue' in text_lower:
                     logger.info(f"Node {node_address[:8]}... has queued jobs")
-                    return 'queue'
+                    job_status = 'queue'
                 
-                # If online but no running/queued jobs
                 if 'online' in text_lower or 'host api status\nonline' in text_lower:
                     logger.info(f"Node {node_address[:8]}... is online but idle")
-                    return 'idle'
                 
-                # Default to idle
-                return 'idle'
+                # Extract NOS balance
+                nos_balance = None
+                nos_match = re.search(r'(\d+\.?\d*)\s*nos', text_lower)
+                if nos_match:
+                    nos_balance = float(nos_match.group(1))
+                
+                # Extract SOL balance
+                sol_balance = None
+                sol_match = re.search(r'(\d+\.?\d*)\s*sol', text_lower)
+                if sol_match:
+                    sol_balance = float(sol_match.group(1))
+                
+                # Extract total jobs
+                total_jobs = None
+                jobs_match = re.search(r'(\d+)\s*job', text_lower)
+                if jobs_match:
+                    total_jobs = int(jobs_match.group(1))
+                
+                # Extract availability score (percentage)
+                availability_score = None
+                avail_match = re.search(r'availability[:\s]+(\d+\.?\d*)%', text_lower)
+                if not avail_match:
+                    avail_match = re.search(r'uptime[:\s]+(\d+\.?\d*)%', text_lower)
+                if avail_match:
+                    availability_score = float(avail_match.group(1))
+                
+                return {
+                    'job_status': job_status,
+                    'nos_balance': nos_balance,
+                    'sol_balance': sol_balance,
+                    'total_jobs': total_jobs,
+                    'availability_score': availability_score
+                }
                 
             except Exception as page_error:
                 await browser.close()
                 logger.warning(f"Error scraping dashboard for {node_address[:8]}: {str(page_error)}")
-                return 'idle'
+                return {
+                    'job_status': 'idle',
+                    'nos_balance': None,
+                    'sol_balance': None,
+                    'total_jobs': None,
+                    'availability_score': None
+                }
             
     except Exception as e:
         logger.error(f"Error checking node jobs: {str(e)}")
-        return 'idle'
+        return {
+            'job_status': 'idle',
+            'nos_balance': None,
+            'sol_balance': None,
+            'total_jobs': None,
+            'availability_score': None
+        }
 
 
 # Authentication endpoints
