@@ -499,21 +499,27 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
 
 # Authentication endpoints
 @api_router.post("/auth/register", response_model=Token)
-async def register(user_create: UserCreate):
+@limiter.limit("5/hour")  # Limit registration attempts
+async def register(request: Request, user_create: UserCreate):
     """Register a new user"""
+    # Sanitize email (already validated by EmailStr)
+    email = user_create.email.lower().strip()
+    
     # Check if user exists
-    existing_user = await db.users.find_one({"email": user_create.email}, {"_id": 0})
+    existing_user = await db.users.find_one({"email": email}, {"_id": 0})
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
     # Create new user
     hashed_password = get_password_hash(user_create.password)
-    user = User(email=user_create.email, hashed_password=hashed_password)
+    user = User(email=email, hashed_password=hashed_password)
     
     user_dict = user.model_dump()
     user_dict['created_at'] = user_dict['created_at'].isoformat()
     
     await db.users.insert_one(user_dict)
+    
+    logger.info(f"New user registered: {email}")
     
     # Create access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -525,10 +531,25 @@ async def register(user_create: UserCreate):
 
 
 @api_router.post("/auth/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@limiter.limit("10/minute")  # Rate limit login attempts
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     """Login user"""
-    user = await db.users.find_one({"email": form_data.username}, {"_id": 0})
+    email = form_data.username.lower().strip()
+    
+    # Check if account is locked
+    if is_account_locked(email):
+        remaining_time = locked_accounts.get(email)
+        if remaining_time:
+            minutes_left = int((remaining_time - datetime.now(timezone.utc)).total_seconds() / 60)
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Account temporarily locked due to multiple failed login attempts. Try again in {minutes_left} minutes.",
+            )
+    
+    user = await db.users.find_one({"email": email}, {"_id": 0})
     if not user:
+        record_failed_login(email)
+        logger.warning(f"Failed login attempt for non-existent user: {email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -536,11 +557,17 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     
     if not verify_password(form_data.password, user['hashed_password']):
+        record_failed_login(email)
+        logger.warning(f"Failed login attempt for user: {email}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
+    # Clear failed attempts on successful login
+    clear_failed_login(email)
+    logger.info(f"Successful login: {email}")
     
     # Create access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
