@@ -180,9 +180,10 @@ function App() {
       setCurrentUser(response.data);
       setIsAuthenticated(true);
     } catch (error) {
-      localStorage.removeItem('token');
+      secureStorage.remove('token');
       delete axios.defaults.headers.common['Authorization'];
       setIsAuthenticated(false);
+      console.error("Token verification failed:", error);
     }
   };
 
