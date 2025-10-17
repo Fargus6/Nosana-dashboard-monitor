@@ -397,20 +397,22 @@ function App() {
                         <div className="flex gap-2 pt-2">
                           <Button
                             onClick={() => saveEdit(node.id)}
-                            className="flex-1 bg-green-600 hover:bg-green-700"
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-sm sm:text-base h-9 sm:h-10"
                             data-testid={`save-edit-${node.id}`}
                           >
-                            <Check className="w-4 h-4 mr-2" />
-                            Save
+                            <Check className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                            <span className="hidden sm:inline">Save</span>
+                            <span className="sm:hidden">✓</span>
                           </Button>
                           <Button
                             onClick={cancelEdit}
                             variant="outline"
-                            className="flex-1"
+                            className="flex-1 text-sm sm:text-base h-9 sm:h-10"
                             data-testid={`cancel-edit-${node.id}`}
                           >
-                            <X className="w-4 h-4 mr-2" />
-                            Cancel
+                            <X className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                            <span className="hidden sm:inline">Cancel</span>
+                            <span className="sm:hidden">✕</span>
                           </Button>
                         </div>
                       </div>
