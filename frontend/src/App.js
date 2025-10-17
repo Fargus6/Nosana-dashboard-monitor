@@ -292,7 +292,7 @@ function App() {
                           </CardTitle>
                         )}
                         <p className="text-xs text-gray-500 font-mono break-all" data-testid={`node-address-${node.id}`}>
-                          {node.address}
+                          {formatAddress(node.address, node.id)}
                         </p>
                       </div>
                       <div className="flex gap-1">
