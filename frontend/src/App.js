@@ -77,6 +77,7 @@ function App() {
   // Theme state
   const [currentTheme, setCurrentTheme] = useState("default");
   const theme = themes[currentTheme];
+  const [nextRefresh, setNextRefresh] = useState(null);
 
   // Load theme preference on mount
   useEffect(() => {
