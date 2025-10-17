@@ -261,6 +261,66 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> str
         return 'idle'
 
 
+# Authentication endpoints
+@api_router.post("/auth/register", response_model=Token)
+async def register(user_create: UserCreate):
+    """Register a new user"""
+    # Check if user exists
+    existing_user = await db.users.find_one({"email": user_create.email}, {"_id": 0})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    # Create new user
+    hashed_password = get_password_hash(user_create.password)
+    user = User(email=user_create.email, hashed_password=hashed_password)
+    
+    user_dict = user.model_dump()
+    user_dict['created_at'] = user_dict['created_at'].isoformat()
+    
+    await db.users.insert_one(user_dict)
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@api_router.post("/auth/login", response_model=Token)
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    """Login user"""
+    user = await db.users.find_one({"email": form_data.username}, {"_id": 0})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not verify_password(form_data.password, user['hashed_password']):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user['email']}, expires_delta=access_token_expires
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@api_router.get("/auth/me")
+async def get_me(current_user: User = Depends(get_current_user)):
+    """Get current user info"""
+    return {"email": current_user.email, "id": current_user.id}
+
+
 @api_router.post("/nodes", response_model=Node)
 async def add_node(input: NodeCreate):
     """Add a new node to monitor"""
