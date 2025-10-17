@@ -608,7 +608,7 @@ function App() {
                   <Button
                     onClick={handleGoogleSignIn}
                     variant="outline"
-                    className="w-full"
+                    className={"w-full " + (currentTheme === "neon80s" ? "text-white hover:text-emerald-300 border-emerald-500" : "")}
                     data-testid="google-register-button"
                   >
                     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
