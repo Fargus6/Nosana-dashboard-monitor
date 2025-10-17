@@ -66,6 +66,7 @@ function App() {
   const [editData, setEditData] = useState({});
   const [autoRefreshing, setAutoRefreshing] = useState(false);
   const [hiddenAddresses, setHiddenAddresses] = useState(new Set());
+  const [hiddenBalances, setHiddenBalances] = useState(new Set());
   
   // Auth states
   const [isAuthenticated, setIsAuthenticated] = useState(false);
