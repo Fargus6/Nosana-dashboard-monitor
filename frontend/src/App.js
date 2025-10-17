@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import "@/App.css";
 import axios from "axios";
-import { Plus, Trash2, RefreshCw, Activity, ExternalLink, Edit2, Check, X, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Activity, ExternalLink, Edit2, Check, X, Eye, EyeOff, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -22,10 +23,28 @@ function App() {
   const [editData, setEditData] = useState({});
   const [autoRefreshing, setAutoRefreshing] = useState(false);
   const [hiddenAddresses, setHiddenAddresses] = useState(new Set());
+  
+  // Auth states
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authLoading, setAuthLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Check if user is logged in on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      verifyToken();
+    }
+  }, []);
 
   useEffect(() => {
-    loadNodes();
-  }, []);
+    if (isAuthenticated) {
+      loadNodes();
+    }
+  }, [isAuthenticated]);
 
   // Hide all addresses by default when nodes load
   useEffect(() => {
@@ -35,6 +54,83 @@ function App() {
     }
   }, [nodes.length]);
 
+  const verifyToken = async () => {
+    try {
+      const response = await axios.get(`${API}/auth/me`);
+      setCurrentUser(response.data);
+      setIsAuthenticated(true);
+    } catch (error) {
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+      setIsAuthenticated(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    if (!email || !password) {
+      toast.error("Please enter email and password");
+      return;
+    }
+
+    try {
+      setAuthLoading(true);
+      const response = await axios.post(`${API}/auth/register`, { email, password });
+      const token = response.data.access_token;
+      
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      setIsAuthenticated(true);
+      setCurrentUser({ email });
+      toast.success("Account created successfully!");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Registration failed");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error("Please enter email and password");
+      return;
+    }
+
+    try {
+      setAuthLoading(true);
+      const formData = new FormData();
+      formData.append('username', email);
+      formData.append('password', password);
+      
+      const response = await axios.post(`${API}/auth/login`, formData);
+      const token = response.data.access_token;
+      
+      localStorage.setItem('token', token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      setIsAuthenticated(true);
+      setCurrentUser({ email });
+      toast.success("Logged in successfully!");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Login failed");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    setNodes([]);
+    toast.success("Logged out successfully");
+  };
+
   const loadNodes = async () => {
     try {
       setLoading(true);
@@ -42,7 +138,11 @@ function App() {
       setNodes(response.data);
     } catch (error) {
       console.error("Error loading nodes:", error);
-      toast.error("Failed to load nodes");
+      if (error.response?.status === 401) {
+        handleLogout();
+      } else {
+        toast.error("Failed to load nodes");
+      }
     } finally {
       setLoading(false);
     }
@@ -123,7 +223,6 @@ function App() {
     try {
       await axios.put(`${API}/nodes/${nodeId}`, editData);
       
-      // Show alert if status changed to offline
       const node = nodes.find(n => n.id === nodeId);
       if (node.status !== "offline" && editData.status === "offline") {
         toast.error(`Node ${node.name || node.address.substring(0, 8) + '...'} is now offline!`, {
@@ -193,15 +292,121 @@ function App() {
     );
   };
 
+  // Login/Register UI
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-blue-200 shadow-xl">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+              Nosana Node Monitor
+            </CardTitle>
+            <CardDescription>Login or create an account to monitor your nodes</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="register">Register</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="login">
+                <div className="space-y-4">
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+                      data-testid="login-email"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+                      data-testid="login-password"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleLogin}
+                    disabled={authLoading}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    data-testid="login-button"
+                  >
+                    {authLoading ? "Logging in..." : "Login"}
+                  </Button>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="register">
+                <div className="space-y-4">
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleRegister()}
+                      data-testid="register-email"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="password"
+                      placeholder="Password (min 6 characters)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleRegister()}
+                      data-testid="register-password"
+                    />
+                  </div>
+                  <Button
+                    onClick={handleRegister}
+                    disabled={authLoading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                    data-testid="register-button"
+                  >
+                    {authLoading ? "Creating account..." : "Create Account"}
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Main App UI (after login)
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
-        {/* Header */}
-        <div className="mb-4 sm:mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2" data-testid="app-title">
-            Nosana Node Monitor
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600">Track and manage your Nosana AI network nodes</p>
+        {/* Header with Logout */}
+        <div className="mb-4 sm:mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2" data-testid="app-title">
+              Nosana Node Monitor
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600">Monitor your Nosana AI network nodes in real-time</p>
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <p className="text-xs sm:text-sm text-gray-600">{currentUser?.email}</p>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              data-testid="logout-button"
+            >
+              <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
+          </div>
         </div>
 
         {/* Add Node Section */}
@@ -265,6 +470,7 @@ function App() {
           </div>
         </div>
 
+        {/* Rest of the nodes display code remains the same */}
         {loading ? (
           <div className="text-center py-12" data-testid="loading-indicator">
             <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600" />
@@ -357,16 +563,16 @@ function App() {
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-2 sm:pt-4">
                     {isEditing ? (
                       <div className="space-y-3">
                         <div>
-                          <label className="text-sm font-medium text-gray-600 mb-1 block">Status</label>
+                          <label className="text-xs sm:text-sm font-medium text-gray-600 mb-1 block">Status</label>
                           <Select
                             value={editData.status}
                             onValueChange={(value) => setEditData({ ...editData, status: value })}
                           >
-                            <SelectTrigger data-testid={`edit-status-${node.id}`}>
+                            <SelectTrigger data-testid={`edit-status-${node.id}`} className="h-9 sm:h-10 text-sm">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -377,12 +583,12 @@ function App() {
                           </Select>
                         </div>
                         <div>
-                          <label className="text-sm font-medium text-gray-600 mb-1 block">Job Status</label>
+                          <label className="text-xs sm:text-sm font-medium text-gray-600 mb-1 block">Job Status</label>
                           <Select
                             value={editData.job_status}
                             onValueChange={(value) => setEditData({ ...editData, job_status: value })}
                           >
-                            <SelectTrigger data-testid={`edit-job-status-${node.id}`}>
+                            <SelectTrigger data-testid={`edit-job-status-${node.id}`} className="h-9 sm:h-10 text-sm">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -393,34 +599,33 @@ function App() {
                           </Select>
                         </div>
                         <div>
-                          <label className="text-sm font-medium text-gray-600 mb-1 block">Notes</label>
+                          <label className="text-xs sm:text-sm font-medium text-gray-600 mb-1 block">Notes</label>
                           <Textarea
                             value={editData.notes}
                             onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
                             placeholder="Add notes..."
                             rows={2}
+                            className="text-sm"
                             data-testid={`edit-notes-${node.id}`}
                           />
                         </div>
                         <div className="flex gap-2 pt-2">
                           <Button
                             onClick={() => saveEdit(node.id)}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-sm sm:text-base h-9 sm:h-10"
+                            className="flex-1 bg-green-600 hover:bg-green-700 h-9 sm:h-10 text-sm"
                             data-testid={`save-edit-${node.id}`}
                           >
-                            <Check className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
-                            <span className="hidden sm:inline">Save</span>
-                            <span className="sm:hidden">✓</span>
+                            <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                            Save
                           </Button>
                           <Button
                             onClick={cancelEdit}
                             variant="outline"
-                            className="flex-1 text-sm sm:text-base h-9 sm:h-10"
+                            className="flex-1 h-9 sm:h-10 text-sm"
                             data-testid={`cancel-edit-${node.id}`}
                           >
-                            <X className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
-                            <span className="hidden sm:inline">Cancel</span>
-                            <span className="sm:hidden">✕</span>
+                            <X className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                            Cancel
                           </Button>
                         </div>
                       </div>
@@ -440,7 +645,7 @@ function App() {
 
                         {node.notes && (
                           <div className="pt-2 border-t">
-                            <p className="text-xs text-gray-500 italic break-words">{node.notes}</p>
+                            <p className="text-xs text-gray-500 italic">{node.notes}</p>
                           </div>
                         )}
 
