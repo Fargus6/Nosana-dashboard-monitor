@@ -158,6 +158,7 @@ function App() {
     if (nodes.length > 0) {
       const allNodeIds = new Set(nodes.map(node => node.id));
       setHiddenAddresses(allNodeIds);
+      setHiddenBalances(allNodeIds); // Also hide balances by default
     }
   }, [nodes.length]);
 
