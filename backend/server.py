@@ -10,7 +10,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr, validator
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone, timedelta
 import requests
@@ -26,6 +26,8 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import html
 import secrets
+import firebase_admin
+from firebase_admin import credentials, messaging
 
 # Set Playwright browser path
 os.environ['PLAYWRIGHT_BROWSERS_PATH'] = '/pw-browsers'
