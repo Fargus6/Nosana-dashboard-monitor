@@ -217,13 +217,13 @@ function App() {
   const handleGoogleAuth = async (sessionId) => {
     try {
       setAuthLoading(true);
-      // Validate session ID format
+      // Validate session ID format (but don't sanitize - it's a secure token)
       if (!sessionId || sessionId.length < 10) {
         throw new Error("Invalid session ID");
       }
       
       const response = await axios.post(`${API}/auth/google`, null, {
-        params: { session_id: sanitizeInput(sessionId) }
+        params: { session_id: sessionId }  // Don't sanitize tokens/session IDs
       });
       
       const token = response.data.access_token;
