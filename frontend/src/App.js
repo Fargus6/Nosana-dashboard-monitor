@@ -189,6 +189,12 @@ function App() {
   });
   const [showSettings, setShowSettings] = useState(false);
   
+  // Telegram states
+  const [telegramLinked, setTelegramLinked] = useState(false);
+  const [telegramUsername, setTelegramUsername] = useState('');
+  const [telegramLinkCode, setTelegramLinkCode] = useState('');
+  const [telegramLinking, setTelegramLinking] = useState(false);
+  
   // Service worker update detection
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState(null);
