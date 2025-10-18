@@ -99,8 +99,8 @@ const themes = {
     },
     text: {
       primary: "text-white cyberpunk-font-body",
-      secondary: "text-[#00ff00] cyberpunk-font-body",
-      muted: "text-[#888] cyberpunk-font-body"
+      secondary: "text-white/90 cyberpunk-font-body",
+      muted: "text-white/50 cyberpunk-font-body"
     },
     control: {
       button: "bg-transparent border-[#00ff00] border-2 text-[#00f0ff] hover:bg-[#00ff00]/20 hover:shadow-[0_0_20px_rgba(0,255,0,0.6)] cyberpunk-font-heading font-bold",
