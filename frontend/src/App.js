@@ -206,6 +206,61 @@ function App() {
     }
   }, []);
 
+  // Register service worker and detect updates
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      // Register the main service worker
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          console.log('[App] Service Worker registered:', registration);
+          
+          // Check for updates every 60 seconds
+          setInterval(() => {
+            registration.update();
+          }, 60000);
+          
+          // Listen for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New version available
+                console.log('[App] New version available!');
+                setUpdateAvailable(true);
+                setWaitingWorker(newWorker);
+                toast.info('New version available! Tap to update.', {
+                  duration: 10000,
+                  action: {
+                    label: 'Update Now',
+                    onClick: () => updateApp()
+                  }
+                });
+              }
+            });
+          });
+        })
+        .catch((error) => {
+          console.error('[App] Service Worker registration failed:', error);
+        });
+      
+      // Listen for controller changes
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[App] Controller changed - reloading page');
+        window.location.reload();
+      });
+    }
+  }, []);
+  
+  // Update app when new version is available
+  const updateApp = () => {
+    if (waitingWorker) {
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+      setUpdateAvailable(false);
+      toast.success('Updating to new version...');
+    }
+  };
+
   const handleThemeChange = (newTheme) => {
     setCurrentTheme(newTheme);
     localStorage.setItem('theme', newTheme);
