@@ -867,7 +867,7 @@ function App() {
               <h1 className={theme.title + " text-2xl sm:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2"} data-testid="app-title">
                 Nosana Node Monitor
               </h1>
-              <p className={"text-xs sm:text-base " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+              <p className={"text-xs sm:text-base " + theme.text.secondary}>
                 Monitor your Nosana AI network nodes in real-time
               </p>
             </div>
