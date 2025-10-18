@@ -43,11 +43,14 @@ VALID_SOLANA_ADDRESSES = [
     "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
 ]
 
-class SecurityTester:
+class ProductionLoadTester:
     def __init__(self):
         self.session = requests.Session()
         self.test_results = []
         self.auth_token = None
+        self.test_users = []  # Store created test users
+        self.concurrent_results = Queue()
+        self.performance_metrics = {}
         
     def log_result(self, test_name, passed, details=""):
         """Log test result"""
