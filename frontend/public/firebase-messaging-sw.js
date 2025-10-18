@@ -66,10 +66,34 @@ messaging.onBackgroundMessage((payload) => {
 
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
+  console.log('Notification clicked:', event.action);
   event.notification.close();
   
-  // Open the app
+  // Handle different actions
+  if (event.action === 'close') {
+    // Just close the notification
+    return;
+  }
+  
+  // For 'open' action or clicking the notification body
   event.waitUntil(
-    clients.openWindow('/')
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if app is already open
+        for (let client of clientList) {
+          if (client.url.includes(self.registration.scope) && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If not open, open a new window
+        if (clients.openWindow) {
+          return clients.openWindow('/');
+        }
+      })
   );
+});
+
+// Handle notification close event
+self.addEventListener('notificationclose', (event) => {
+  console.log('Notification closed:', event.notification.tag);
 });
