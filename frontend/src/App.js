@@ -843,56 +843,72 @@ function App() {
     <div className={theme.background}>
       {/* Pixelated tech background for neon theme */}
       {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
-      
-      {/* Theme Toggle Button */}
-      <Button
-        onClick={toggleTheme}
-        variant="outline"
-        size="icon"
-        className="fixed top-4 right-16 z-50"
-        title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Modern Blue"} theme`}
-        data-testid="theme-toggle"
-      >
-        <Palette className="w-4 h-4" />
-      </Button>
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl relative z-10">
-        {/* Header with Logout */}
-        <div className="mb-4 sm:mb-8 flex justify-between items-start">
-          <div>
-            <h1 className={theme.title + " text-3xl sm:text-4xl lg:text-5xl font-bold mb-2"} data-testid="app-title">
-              Nosana Node Monitor
-            </h1>
-            <p className={"text-sm sm:text-base " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
-              Monitor your Nosana AI network nodes in real-time
-            </p>
+        {/* Header with all controls */}
+        <div className="mb-4 sm:mb-8">
+          {/* Top row: Title and Controls */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
+            {/* Left: Title */}
+            <div className="flex-1">
+              <h1 className={theme.title + " text-2xl sm:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2"} data-testid="app-title">
+                Nosana Node Monitor
+              </h1>
+              <p className={"text-xs sm:text-base " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                Monitor your Nosana AI network nodes in real-time
+              </p>
+            </div>
+            
+            {/* Right: All Controls (stacked on mobile, row on desktop) */}
+            <div className="flex flex-col items-stretch sm:items-end gap-2">
+              {/* Email */}
+              <p className={"text-xs sm:text-sm text-right " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-600")}>
+                {currentUser?.email}
+              </p>
+              
+              {/* Control Buttons Row */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Theme Toggle */}
+                <Button
+                  onClick={toggleTheme}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 sm:h-9 px-2 sm:px-3"
+                  title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Modern Blue"} theme`}
+                  data-testid="theme-toggle"
+                >
+                  <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
+                </Button>
+                
+                {/* Auto-refresh interval selector */}
+                <Select value={refreshInterval.toString()} onValueChange={(val) => handleRefreshIntervalChange(parseInt(val))}>
+                  <SelectTrigger className="w-[100px] sm:w-[130px] h-8 sm:h-9 text-xs sm:text-sm">
+                    <SelectValue placeholder="Refresh" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {refreshIntervalOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value.toString()}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {/* Logout Button */}
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3"
+                  data-testid="logout-button"
+                >
+                  <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm">Logout</span>
+                </Button>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <p className={"text-xs sm:text-sm " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-600")}>
-              {currentUser?.email}
-            </p>
-            <div className="flex items-center gap-2">
-              {/* Auto-refresh interval selector */}
-              <Select value={refreshInterval.toString()} onValueChange={(val) => handleRefreshIntervalChange(parseInt(val))}>
-                <SelectTrigger className="w-[110px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm">
-                  <SelectValue placeholder="Refresh" />
-                </SelectTrigger>
-                <SelectContent>
-                  {refreshIntervalOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value.toString()}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                size="sm"
-                className="gap-2 h-8 sm:h-9"
-                data-testid="logout-button"
-              >
-                <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+        </div>
                 <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
