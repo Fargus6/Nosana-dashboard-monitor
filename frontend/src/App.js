@@ -944,29 +944,31 @@ function App() {
             </h2>
             {nextRefresh && (
               <p className={"text-xs mt-1 " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")}>
-                🔄 Auto-refresh in {Math.ceil((nextRefresh - new Date()) / 1000 / 60)} min
+                🔄 Next auto-refresh in {Math.max(0, Math.ceil((nextRefresh - new Date()) / 1000 / 60))} min
               </p>
             )}
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
-              onClick={autoRefreshAllNodes}
+              onClick={() => autoRefreshAllNodes(false)}
               disabled={autoRefreshing || nodes.length === 0}
               className={"flex-1 sm:flex-none gap-2 text-xs sm:text-sm h-9 sm:h-10 " + theme.buttonGradient}
               data-testid="auto-refresh-button"
             >
               <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${autoRefreshing ? "animate-spin" : ""}`} />
-              <span className="hidden sm:inline">Auto-Refresh from Blockchain</span>
-              <span className="sm:hidden">Auto-Refresh</span>
+              <span className="hidden sm:inline">Refresh from Blockchain</span>
+              <span className="sm:hidden">Blockchain</span>
             </Button>
             <Button
-              onClick={loadNodes}
+              onClick={() => loadNodes()}
               variant="outline"
+              disabled={loading}
               className="gap-2 text-xs sm:text-sm h-9 sm:h-10 px-3"
               data-testid="refresh-button"
             >
-              <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Reload</span>
+              <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${loading ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Reload GUI</span>
+              <span className="sm:hidden">GUI</span>
             </Button>
           </div>
         </div>
