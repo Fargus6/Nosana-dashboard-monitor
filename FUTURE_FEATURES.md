@@ -1,5 +1,71 @@
 # 🚀 Future Features & Enhancements
 
+## 📱 Push Notifications via Firebase FCM (IN PROGRESS - NEXT)
+
+**Status:** Ready to implement - waiting for Firebase credentials
+
+**User Requirements:**
+- ✅ Firebase Cloud Messaging (FCM) - better iOS support
+- ✅ Choosable event triggers (offline, online, job started, job completed)
+- ✅ Vibration on notifications
+- ✅ Sound toggle
+- ✅ Real-time updates
+- ✅ Auto-refresh intervals: 1, 2, 3, 10 minutes selector
+
+**Firebase Setup Steps for User:**
+1. Create Firebase project at https://console.firebase.google.com/
+2. Enable Cloud Messaging
+3. Add web app
+4. Generate VAPID key
+
+**Credentials Needed:**
+```
+From "General" tab:
+- API Key: AIza...
+- Project ID: your-project-123
+- App ID: 1:123456789:web:abc123...
+
+From "Cloud Messaging" tab:
+- Sender ID: 123456789
+- Server Key (backend): AAAA...xxx
+- VAPID Key: BN7x...
+```
+
+**Implementation Plan:**
+
+**Backend:**
+- Install `firebase-admin` for Python
+- Store FCM device tokens in database (per user)
+- API endpoints:
+  - `POST /api/notifications/register` - Register device token
+  - `POST /api/notifications/preferences` - Save user preferences
+  - `GET /api/notifications/preferences` - Get user preferences
+- Background job to detect node status changes and send notifications
+- Rate limiting: max 100 notifications per user per day
+
+**Frontend:**
+- Install `firebase` npm package
+- Request notification permission on login
+- Settings page with toggles:
+  - Node goes offline ✓
+  - Node comes online ✓
+  - Job started (running) ✓
+  - Job completed (idle) ✓
+  - Vibration on/off
+  - Sound on/off
+  - Do Not Disturb hours
+- Auto-refresh interval dropdown (1, 2, 3, 10 min)
+- Test notification button
+- Firebase service worker for background notifications
+
+**Features to Add:**
+- Notification history/log
+- Mute specific nodes
+- Smart batching (multiple events = single notification)
+- Notification analytics
+
+---
+
 ## 🔄 Remote Node Restart (HIGH PRIORITY)
 
 **Feature Description:**
