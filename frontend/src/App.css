@@ -95,7 +95,7 @@
 
 .cyberpunk-glitch::before {
   left: 2px;
-  text-shadow: -2px 0 #ff00ff;
+  text-shadow: -2px 0 #00ff00;
   clip: rect(24px, 9999px, 90px, 0);
   animation: glitch-anim 3s infinite linear alternate-reverse;
 }
