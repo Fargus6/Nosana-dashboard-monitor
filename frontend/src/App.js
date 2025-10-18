@@ -1482,7 +1482,7 @@ function App() {
 
         {/* Notification Settings Modal */}
         {showSettings && (
-          <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg"}>
+          <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg max-h-[80vh] overflow-y-auto"}>
             <CardHeader>
               <CardTitle className={"flex items-center gap-2 " + theme.text.primary}>
                 <Settings className="w-5 h-5" />
@@ -1492,7 +1492,7 @@ function App() {
                 Configure push notifications for node status changes
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pb-6">{/* Added padding bottom */}
               {/* iOS PWA Warning */}
               {(() => {
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
