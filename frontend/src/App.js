@@ -1102,17 +1102,18 @@ function App() {
               
               {/* Control Buttons Row */}
               <div className="flex items-center gap-2 flex-wrap">
-                {/* Theme Toggle */}
-                <Button
-                  onClick={toggleTheme}
-                  variant="outline"
-                  size="sm"
-                  className={"h-8 sm:h-9 px-2 sm:px-3 " + theme.control.button}
-                  title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Dark Mode"} theme`}
-                  data-testid="theme-toggle"
-                >
-                  <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
-                </Button>
+                {/* Theme Selector */}
+                <Select value={currentTheme} onValueChange={handleThemeChange}>
+                  <SelectTrigger className={"w-[110px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm gap-1 " + theme.control.dropdown}>
+                    <Moon className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className={theme.control.dropdown}>
+                    <SelectItem value="default">Dark Mode</SelectItem>
+                    <SelectItem value="neon80s">80s Neon</SelectItem>
+                    <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
+                  </SelectContent>
+                </Select>
                 
                 {/* Notifications Button */}
                 <Button
