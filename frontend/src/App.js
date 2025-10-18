@@ -1066,6 +1066,127 @@ function App() {
           </div>
         </div>
 
+        {/* Notification Settings Modal */}
+        {showSettings && (
+          <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg"}>
+            <CardHeader>
+              <CardTitle className={"flex items-center gap-2 " + theme.text.primary}>
+                <Settings className="w-5 h-5" />
+                Notification Settings
+              </CardTitle>
+              <CardDescription className={theme.text.secondary}>
+                Configure push notifications for node status changes
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!notificationsEnabled ? (
+                <div className="text-center py-8">
+                  <Bell className={"w-16 h-16 mx-auto mb-4 " + theme.text.muted} />
+                  <h3 className={"text-lg font-semibold mb-2 " + theme.text.primary}>
+                    Enable Push Notifications
+                  </h3>
+                  <p className={"mb-4 " + theme.text.secondary}>
+                    Get instant alerts when your nodes go offline or start jobs
+                  </p>
+                  <Button
+                    onClick={requestNotificationPermission}
+                    className={theme.buttonGradient}
+                  >
+                    <Bell className="w-4 h-4 mr-2" />
+                    Enable Notifications
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className={"p-4 rounded-lg " + (currentTheme === "neon80s" ? "bg-emerald-900/20 border border-emerald-500/30" : "bg-green-50 border border-green-200")}>
+                    <p className={"text-sm font-medium " + theme.text.primary}>
+                      ✅ Push notifications are enabled
+                    </p>
+                  </div>
+
+                  {/* Notification Preferences */}
+                  <div className="space-y-3">
+                    <h4 className={"font-semibold " + theme.text.primary}>
+                      Notify me when:
+                    </h4>
+                    
+                    {[
+                      { key: 'notify_offline', label: '⚠️ Node goes offline', description: 'Alert when a node stops responding' },
+                      { key: 'notify_online', label: '✅ Node comes back online', description: 'Alert when a node reconnects' },
+                      { key: 'notify_job_started', label: '🚀 Job started', description: 'Alert when a node begins processing' },
+                      { key: 'notify_job_completed', label: '✅ Job completed', description: 'Alert when a job finishes' }
+                    ].map((pref) => (
+                      <label key={pref.key} className="flex items-start gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={notificationPreferences[pref.key]}
+                          onChange={(e) => {
+                            const newPrefs = { ...notificationPreferences, [pref.key]: e.target.checked };
+                            saveNotificationPreferences(newPrefs);
+                          }}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className={"font-medium " + theme.text.primary}>{pref.label}</div>
+                          <div className={"text-xs " + theme.text.muted}>{pref.description}</div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  {/* Sound & Vibration */}
+                  <div className="space-y-3">
+                    <h4 className={"font-semibold " + theme.text.primary}>
+                      Notification Settings:
+                    </h4>
+                    
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={notificationPreferences.vibration}
+                        onChange={(e) => {
+                          const newPrefs = { ...notificationPreferences, vibration: e.target.checked };
+                          saveNotificationPreferences(newPrefs);
+                        }}
+                      />
+                      <div>
+                        <div className={"font-medium " + theme.text.primary}>📳 Vibration</div>
+                        <div className={"text-xs " + theme.text.muted}>Vibrate on notifications</div>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={notificationPreferences.sound}
+                        onChange={(e) => {
+                          const newPrefs = { ...notificationPreferences, sound: e.target.checked };
+                          saveNotificationPreferences(newPrefs);
+                        }}
+                      />
+                      <div>
+                        <div className={"font-medium " + theme.text.primary}>🔔 Sound</div>
+                        <div className={"text-xs " + theme.text.muted}>Play sound on notifications</div>
+                      </div>
+                    </label>
+                  </div>
+
+                  {/* Test Notification */}
+                  <div className="pt-4 border-t">
+                    <Button
+                      onClick={sendTestNotification}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      🔔 Send Test Notification
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Add Node Section */}
         <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg"} data-testid="add-node-card">
           <CardHeader className="pb-3 sm:pb-6">
