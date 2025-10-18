@@ -232,25 +232,9 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - **100% Uptime** with keep-alive system
 - **Zero Manual Updates** required
 
-## 🚀 Recent Updates (v1.0.1)
-
-- ✅ Lock screen notifications with HIGH priority
-- ✅ Auto-update system (no reinstalling needed)
-- ✅ Addresses/balances visible by default
-- ✅ Registration limit increased to 30/hour
-- ✅ Improved job started notifications
-- ✅ Enhanced PWA capabilities
-- ✅ Automated daily testing
-
 ## 🙏 Acknowledgments
 
 Built with ❤️ for the Nosana community by a passionate node operator.
-
-## 📞 Support
-
-- **Discord**: Find us in the Nosana Node Monitor thread
-- **Issues**: Report bugs or request features in Discord
-- **Web**: https://cyber-monitor-2.preview.emergentagent.com
 
 ---
 
