@@ -142,6 +142,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Initialize Firebase Admin
+try:
+    cred = credentials.Certificate("/app/backend/firebase-credentials.json")
+    firebase_admin.initialize_app(cred)
+    logger.info("Firebase Admin SDK initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize Firebase: {str(e)}")
+
 # Create the main app without a prefix
 app = FastAPI()
 
