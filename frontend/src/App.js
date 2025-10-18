@@ -188,6 +188,10 @@ function App() {
     sound: true
   });
   const [showSettings, setShowSettings] = useState(false);
+  
+  // Service worker update detection
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [waitingWorker, setWaitingWorker] = useState(null);
 
   // Load theme and refresh interval preference on mount
   useEffect(() => {
