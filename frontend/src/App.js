@@ -80,6 +80,32 @@ const themes = {
       button: "bg-emerald-900/50 border-emerald-500 text-emerald-200 hover:bg-emerald-800/50",
       dropdown: "bg-emerald-900/50 border-emerald-500 text-emerald-200"
     }
+  },
+  cyberpunk: {
+    name: "Cyberpunk",
+    background: "min-h-screen bg-[#0a0e27]",
+    card: "border-[#00f0ff] border-2 shadow-[0_0_30px_rgba(0,240,255,0.3)] backdrop-blur-sm bg-[rgba(10,14,39,0.8)] cyberpunk-font-body",
+    cardHover: "hover:shadow-[0_0_40px_rgba(255,0,255,0.5)] hover:border-[#ff00ff]",
+    title: "bg-gradient-to-r from-[#ff00ff] via-[#00f0ff] to-[#ffff00] bg-clip-text text-transparent cyberpunk-font-heading",
+    button: "bg-gradient-to-br from-[#ff00ff] to-[#ff0080] border-2 border-[#00f0ff] text-black shadow-[0_0_20px_rgba(255,0,255,0.6)] hover:shadow-[0_0_30px_rgba(0,240,255,0.8)] hover:bg-gradient-to-br hover:from-[#00f0ff] hover:to-[#0080ff] cyberpunk-font-heading font-bold",
+    buttonGradient: "bg-gradient-to-br from-[#00f0ff] to-[#ff00ff] border-2 border-[#ffff00] text-black shadow-[0_0_25px_rgba(0,240,255,0.7)] hover:shadow-[0_0_35px_rgba(255,0,255,0.9)] cyberpunk-font-heading font-bold",
+    badge: {
+      online: "bg-[#00ff00] text-black shadow-[0_0_20px_#00ff00] font-bold uppercase",
+      offline: "bg-[#ff0000] text-white shadow-[0_0_20px_#ff0000] font-bold uppercase animate-pulse",
+      unknown: "bg-gray-500 text-white shadow-[0_0_15px_gray] font-bold uppercase",
+      running: "bg-[#00f0ff] text-black shadow-[0_0_20px_#00f0ff] font-bold uppercase",
+      queue: "bg-[#ffff00] text-black shadow-[0_0_20px_#ffff00] font-bold uppercase",
+      idle: "bg-[#888] text-white shadow-[0_0_15px_#888] font-bold uppercase"
+    },
+    text: {
+      primary: "text-[#00f0ff] cyberpunk-font-body",
+      secondary: "text-[#ff00ff] cyberpunk-font-body",
+      muted: "text-[#888] cyberpunk-font-body"
+    },
+    control: {
+      button: "bg-transparent border-[#ff00ff] border-2 text-[#00f0ff] hover:bg-[#ff00ff]/20 hover:shadow-[0_0_20px_rgba(255,0,255,0.6)] cyberpunk-font-heading font-bold",
+      dropdown: "bg-[rgba(0,0,0,0.5)] border-[#ff00ff] border-2 text-[#00f0ff] cyberpunk-font-body"
+    }
   }
 };
 
