@@ -933,14 +933,14 @@ function App() {
         {/* Theme Selector */}
         <div className="fixed top-4 right-4 z-50">
           <Select value={currentTheme} onValueChange={handleThemeChange}>
-            <SelectTrigger className={"w-[140px] h-10 text-sm gap-2 " + theme.control.dropdown}>
+            <SelectTrigger data-testid="theme-selector" className={"w-[140px] h-10 text-sm gap-2 " + theme.control.dropdown}>
               <Moon className="w-4 h-4" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent className={theme.control.dropdown}>
-              <SelectItem value="default">Dark Mode</SelectItem>
-              <SelectItem value="neon80s">80s Neon</SelectItem>
-              <SelectItem value="cyber">Cyber</SelectItem>
+              <SelectItem value="default" data-testid="theme-dark-mode">Dark Mode</SelectItem>
+              <SelectItem value="neon80s" data-testid="theme-80s-neon">80s Neon</SelectItem>
+              <SelectItem value="cyber" data-testid="theme-cyber">Cyber</SelectItem>
             </SelectContent>
           </Select>
         </div>
