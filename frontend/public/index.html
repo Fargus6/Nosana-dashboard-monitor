@@ -20,6 +20,18 @@
         <link rel="apple-touch-icon" href="%PUBLIC_URL%/favicon.png" />
         
         <title>Nosana Node Monitor</title>
+        
+        <!-- Suppress harmless ResizeObserver errors -->
+        <script>
+            // Suppress ResizeObserver loop error (common with Radix UI dropdowns)
+            window.addEventListener('error', function(e) {
+                if (e.message && e.message.includes('ResizeObserver loop')) {
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            });
+        </script>
+        
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <!--
         These two scripts have been added for the testing, please do not edit or remove them
