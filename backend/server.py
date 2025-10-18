@@ -153,6 +153,18 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize Firebase: {str(e)}")
 
+# Initialize Telegram Bot
+telegram_bot = None
+try:
+    TELEGRAM_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+    if TELEGRAM_TOKEN:
+        telegram_bot = Bot(token=TELEGRAM_TOKEN)
+        logger.info("Telegram Bot initialized successfully")
+    else:
+        logger.warning("TELEGRAM_BOT_TOKEN not found in environment")
+except Exception as e:
+    logger.error(f"Failed to initialize Telegram Bot: {str(e)}")
+
 # Create the main app without a prefix
 app = FastAPI()
 
