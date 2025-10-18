@@ -621,9 +621,8 @@ function App() {
   }, [messaging, isAuthenticated, notificationPreferences]);
 
   // Keep-alive heartbeat to prevent backend from sleeping
+  // This runs ALWAYS, even when not authenticated, to keep servers awake
   useEffect(() => {
-    if (!isAuthenticated) return;
-
     const keepAlive = setInterval(async () => {
       try {
         // Ping health endpoint to keep backend alive
@@ -633,11 +632,24 @@ function App() {
       } catch (error) {
         console.log("Keep-alive ping failed (server might be sleeping):", error.message);
         setServerStatus('waking');
+        
+        // If server is sleeping, try a few more times to wake it up
+        for (let i = 0; i < 3; i++) {
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+          try {
+            await axios.get(`${API}/health`, { timeout: 5000 });
+            console.log("Server woken up successfully");
+            setServerStatus('online');
+            break;
+          } catch (retryError) {
+            console.log(`Wake attempt ${i + 1}/3 failed`);
+          }
+        }
       }
-    }, 45000); // Every 45 seconds
+    }, 30000); // Every 30 seconds (increased frequency)
 
     return () => clearInterval(keepAlive);
-  }, [isAuthenticated]);
+  }, []); // No dependencies - always runs
 
   // Update countdown display every minute
   useEffect(() => {
