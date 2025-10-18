@@ -1426,7 +1426,7 @@ function App() {
                   onClick={() => setShowSettings(!showSettings)}
                   variant="outline"
                   size="sm"
-                  className={"h-8 sm:h-9 px-2 sm:px-3 " + theme.control.button}
+                  className={"h-8 sm:h-9 px-2 sm:px-3 flex items-center gap-1 " + theme.control.button}
                   title="Notification Settings"
                 >
                   {notificationsEnabled ? (
@@ -1434,6 +1434,7 @@ function App() {
                   ) : (
                     <BellOff className="w-3 h-3 sm:w-4 sm:h-4" />
                   )}
+                  <span className="hidden sm:inline text-xs">Settings</span>
                 </Button>
                 
                 {/* Auto-refresh interval selector */}
