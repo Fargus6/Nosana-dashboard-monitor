@@ -1334,7 +1334,7 @@ function App() {
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Add New Node
             </CardTitle>
-            <CardDescription className={currentTheme === "neon80s" ? theme.text.muted + " text-xs sm:text-sm" : "text-xs sm:text-sm"}>
+            <CardDescription className={(currentTheme === "neon80s" || currentTheme === "cyber") ? "text-white/70 text-xs sm:text-sm" : "text-xs sm:text-sm"}>
               Enter your Nosana node address and optional name
             </CardDescription>
           </CardHeader>
