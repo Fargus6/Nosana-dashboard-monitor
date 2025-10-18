@@ -169,8 +169,7 @@ function App() {
     }
   }, []);
 
-  const toggleTheme = () => {
-    const newTheme = currentTheme === "default" ? "neon80s" : "default";
+  const handleThemeChange = (newTheme) => {
     setCurrentTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     toast.success(`Switched to ${themes[newTheme].name} theme!`);
