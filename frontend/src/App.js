@@ -86,6 +86,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [authLoading, setAuthLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [serverStatus, setServerStatus] = useState('online'); // online, waking, offline
   
   // Theme state
   const [currentTheme, setCurrentTheme] = useState("default");
