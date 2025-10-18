@@ -18,13 +18,13 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 ## 📱 Install as Mobile App
 
 ### On Android (Chrome/Edge):
-1. Open https://your-app-url.com in Chrome
+1. Open **https://ai-node-tracker.preview.emergentagent.com** in Chrome
 2. Tap the **3-dot menu** → "Add to Home screen"
 3. Tap "Install" or "Add"
 4. App appears on your home screen like a native app!
 
 ### On iOS (Safari):
-1. Open https://your-app-url.com in Safari
+1. Open **https://ai-node-tracker.preview.emergentagent.com** in Safari
 2. Tap the **Share button** (square with arrow)
 3. Scroll down and tap "Add to Home Screen"
 4. Tap "Add"
