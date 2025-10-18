@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Comprehensive Security Testing for Nosana Node Monitor Application
-Tests all security features including rate limiting, account lockout, input validation, etc.
+Comprehensive Production Load Testing for Nosana Node Monitor Application
+Tests all backend functionality for 100-500 concurrent users including:
+- Authentication under load
+- Node management with concurrent operations
+- Auto-refresh blockchain integration
+- Push notifications
+- Security features under load
+- Database performance
+- Error handling and resilience
 """
 
 import requests
@@ -11,11 +18,30 @@ import sys
 from datetime import datetime
 import random
 import string
+import threading
+import concurrent.futures
+from queue import Queue
+import asyncio
+import aiohttp
 
 # Configuration
 BASE_URL = "https://ai-node-tracker.preview.emergentagent.com/api"
 TEST_EMAIL = "test@security.com"
 TEST_PASSWORD = "SecurePass123"
+
+# Valid Solana addresses for testing
+VALID_SOLANA_ADDRESSES = [
+    "9DcLW6JkuanvWP2CbKsohChFWGCEiTnAGxA4xdAYHVNq",
+    "9hsWPkJUBiDQnc2p7dKi2gMKHp6LwscA6Z5qAF8NGsyV",
+    "11111111111111111111111111111112",
+    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+    "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+    "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "So11111111111111111111111111111111111111112",
+    "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
+]
 
 class SecurityTester:
     def __init__(self):
