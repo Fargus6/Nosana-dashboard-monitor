@@ -178,9 +178,11 @@ function App() {
       try {
         // Ping health endpoint to keep backend alive
         await axios.get('/health', { timeout: 5000 });
+        setServerStatus('online');
         console.log("Keep-alive ping successful");
       } catch (error) {
         console.log("Keep-alive ping failed (server might be sleeping):", error.message);
+        setServerStatus('waking');
       }
     }, 45000); // Every 45 seconds
 
