@@ -1452,7 +1452,7 @@ function App() {
                               variant="ghost"
                               size="icon"
                               onClick={() => toggleAddressVisibility(node.id)}
-                              className="text-gray-500 hover:text-gray-700 hover:bg-gray-50 h-8 w-8 sm:h-10 sm:w-10"
+                              className={"h-8 w-8 sm:h-10 sm:w-10 " + (currentTheme === "cyber" ? "text-white hover:text-[#00ff00] hover:bg-[#00ff00]/10" : "text-gray-500 hover:text-gray-700 hover:bg-gray-50")}
                               data-testid={`toggle-address-${node.id}`}
                               title={hiddenAddresses.has(node.id) ? "Show address" : "Hide address"}
                             >
