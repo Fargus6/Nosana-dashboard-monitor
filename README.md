@@ -225,13 +225,6 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
 9. **Get Alerts**: Receive lock screen notifications when nodes need attention
 
-## 📊 Current Stats
-
-- **57+ Users** actively monitoring nodes
-- **52+ Nodes** being tracked in real-time
-- **100% Uptime** with keep-alive system
-- **Zero Manual Updates** required
-
 ## 🙏 Acknowledgments
 
 Built with ❤️ for the Nosana community by a passionate node operator.
