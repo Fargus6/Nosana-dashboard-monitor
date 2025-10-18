@@ -578,8 +578,9 @@ function App() {
       }
       
       if (error.response?.status === 401) {
-        // Only logout if token is genuinely invalid
-        handleLogout();
+        // Don't auto-logout, just show error
+        console.log("401 error - but not auto-logging out");
+        toast.error("Session may have expired. Try refreshing the page.", { duration: 5000 });
       } else if (!error.response) {
         toast.error("Server is sleeping. Please wait a moment.", { duration: 3000 });
       } else {
