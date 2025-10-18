@@ -963,11 +963,11 @@ function App() {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
           <div>
-            <h2 className={"text-lg sm:text-xl font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+            <h2 className={"text-lg sm:text-xl font-semibold " + theme.text.primary}>
               Your Nodes ({nodes.length})
             </h2>
             {nextRefresh && (
-              <p className={"text-xs mt-1 " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")}>
+              <p className={"text-xs mt-1 " + theme.text.muted}>
                 🔄 Next auto-refresh in {Math.max(0, Math.ceil((nextRefresh - new Date()) / 1000 / 60))} min
               </p>
             )}
