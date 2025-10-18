@@ -115,8 +115,15 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 
 ## 📡 API Endpoints
 
+### Authentication:
+- `POST /api/auth/register` - Register new user (email + password)
+- `POST /api/auth/login` - Login with credentials
+- `POST /api/auth/google` - Google OAuth authentication
+- `GET /api/auth/me` - Get current user info
+
+### Node Management (Protected):
 - `POST /api/nodes` - Add a new node
-- `GET /api/nodes` - Get all nodes
+- `GET /api/nodes` - Get all your nodes
 - `PUT /api/nodes/{node_id}` - Update node details
 - `DELETE /api/nodes/{node_id}` - Delete a node
 - `GET /api/nodes/{address}/check-status` - Check single node status from Solana
