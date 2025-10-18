@@ -1330,7 +1330,7 @@ function App() {
         {/* Add Node Section */}
         <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg"} data-testid="add-node-card">
           <CardHeader className="pb-3 sm:pb-6">
-            <CardTitle className={"flex items-center gap-2 text-base sm:text-lg " + (currentTheme === "neon80s" ? theme.text.primary : "")}>
+            <CardTitle className={"flex items-center gap-2 text-base sm:text-lg " + (currentTheme === "neon80s" || currentTheme === "cyber" ? theme.text.primary : "")}>
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
               Add New Node
             </CardTitle>
