@@ -107,13 +107,12 @@ function App() {
     toast.success(`Switched to ${themes[newTheme].name} theme!`);
   };
 
-  // Check if user is logged in on mount
+  // Setup axios interceptor separately
   useEffect(() => {
-    // Setup axios interceptor for global error handling
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        // Handle token expiry
+        // Handle token expiry (only if already authenticated)
         if (error.response?.status === 401 && isAuthenticated) {
           secureStorage.remove('token');
           delete axios.defaults.headers.common['Authorization'];
@@ -131,6 +130,14 @@ function App() {
       }
     );
     
+    // Cleanup interceptor on unmount
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [isAuthenticated]);
+
+  // Check if user is logged in on mount
+  useEffect(() => {
     // Check for Google OAuth session_id in URL fragment
     const hash = window.location.hash;
     if (hash.includes('session_id=')) {
@@ -144,11 +151,6 @@ function App() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       verifyToken();
     }
-    
-    // Cleanup interceptor on unmount
-    return () => {
-      axios.interceptors.response.eject(interceptor);
-    };
   }, []);
 
   useEffect(() => {
