@@ -5,6 +5,10 @@ from telegram.ext import Application, CommandHandler, ContextTypes
 from telegram.constants import ParseMode
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -21,6 +25,9 @@ db = mongo_client[DB_NAME]
 
 # Initialize Bot
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+if not TELEGRAM_TOKEN:
+    raise ValueError("TELEGRAM_BOT_TOKEN environment variable not set")
+
 bot = Bot(token=TELEGRAM_TOKEN)
 
 
