@@ -527,6 +527,65 @@ function App() {
     }
   };
 
+  // Check Telegram link status
+  const checkTelegramStatus = async () => {
+    try {
+      const response = await axios.get(`${API}/notifications/telegram/status`);
+      setTelegramLinked(response.data.linked);
+      setTelegramUsername(response.data.username || '');
+    } catch (error) {
+      console.error('Error checking Telegram status:', error);
+    }
+  };
+
+  // Link Telegram account
+  const linkTelegramAccount = async () => {
+    if (!telegramLinkCode.trim()) {
+      toast.error("Please enter the link code from Telegram bot");
+      return;
+    }
+
+    setTelegramLinking(true);
+    try {
+      await axios.post(`${API}/notifications/telegram/link`, null, {
+        params: { link_code: telegramLinkCode.toUpperCase() }
+      });
+      
+      toast.success("✅ Telegram account linked successfully!");
+      setTelegramLinkCode('');
+      await checkTelegramStatus();
+    } catch (error) {
+      console.error('Error linking Telegram:', error);
+      toast.error(error.response?.data?.detail || "Failed to link Telegram account");
+    } finally {
+      setTelegramLinking(false);
+    }
+  };
+
+  // Unlink Telegram account
+  const unlinkTelegramAccount = async () => {
+    if (!confirm("Are you sure you want to unlink your Telegram account?")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`${API}/notifications/telegram/unlink`);
+      toast.success("Telegram account unlinked");
+      setTelegramLinked(false);
+      setTelegramUsername('');
+    } catch (error) {
+      console.error('Error unlinking Telegram:', error);
+      toast.error(error.response?.data?.detail || "Failed to unlink Telegram");
+    }
+  };
+
+  // Load Telegram status when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      checkTelegramStatus();
+    }
+  }, [isAuthenticated]);
+
   // Setup axios interceptor separately
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
