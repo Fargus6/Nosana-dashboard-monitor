@@ -487,7 +487,7 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
                 if data.get('success') and data.get('jobStatus') != 'idle':
                     return {
                         'job_status': data.get('jobStatus', 'idle'),
-                        'nos_balance': nos_balance,
+                        'nos_balance': nos_balance,  # Use blockchain balance
                         'sol_balance': None,
                         'total_jobs': None,
                         'availability_score': None
