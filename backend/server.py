@@ -436,9 +436,49 @@ async def fetch_node_status_from_solana(address: str) -> dict:
 
 
 async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dict:
-    """Check if node has active jobs by scraping Nosana dashboard"""
+    """
+    Check node jobs using multiple methods (Playwright scraping)
+    Returns job status, NOS balance, SOL balance, and other stats
+    """
     try:
-        # First, try the Node.js Nosana SDK service as primary method
+        # First, try to get NOS balance directly from Solana blockchain
+        nos_balance = None
+        try:
+            from solders.pubkey import Pubkey as SoldersPubkey
+            from solana.rpc.types import TokenAccountOpts
+            
+            # NOS token mint address
+            NOS_MINT = "nosXBVoaCTtYdLvKY6Csb4AC8JCdQKKAaWYtx2ZMoo7"
+            # SPL Token Program ID
+            TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            
+            wallet_pubkey = SoldersPubkey.from_string(node_address)
+            nos_mint_pubkey = SoldersPubkey.from_string(NOS_MINT)
+            token_program_pubkey = SoldersPubkey.from_string(TOKEN_PROGRAM_ID)
+            
+            # Get all NOS token accounts for this wallet
+            opts = TokenAccountOpts(mint=nos_mint_pubkey)
+            response = solana_client.get_token_accounts_by_owner(wallet_pubkey, opts)
+            
+            if response and response.value:
+                # Sum up balances from all token accounts
+                total_nos_balance = 0.0
+                for account in response.value:
+                    token_account_pubkey = SoldersPubkey.from_string(str(account.pubkey))
+                    balance_response = solana_client.get_token_account_balance(token_account_pubkey)
+                    if balance_response and balance_response.value:
+                        # Use ui_amount for human-readable balance with decimals
+                        account_balance = balance_response.value.ui_amount
+                        if account_balance:
+                            total_nos_balance += account_balance
+                
+                if total_nos_balance > 0:
+                    nos_balance = total_nos_balance
+                    logger.info(f"✅ Got NOS balance from blockchain: {nos_balance:.2f} NOS for {node_address[:8]}...")
+        except Exception as nos_error:
+            logger.debug(f"Could not get NOS balance from blockchain: {str(nos_error)}")
+        
+        # First, try the Node.js Nosana SDK service as primary method for job status
         try:
             response = requests.get(
                 f"http://localhost:3001/check-node/{node_address}",
