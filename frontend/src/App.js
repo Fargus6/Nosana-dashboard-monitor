@@ -885,20 +885,31 @@ function App() {
   if (!isAuthenticated) {
     return (
       <div className={theme.background + " flex items-center justify-center p-4"}>
-        {/* Pixelated tech background for neon theme */}
+        {/* Background effects for themes */}
         {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
+        {currentTheme === "cyberpunk" && (
+          <>
+            <div className="cyberpunk-grid-bg"></div>
+            <div className="cyberpunk-corner-glow-left"></div>
+            <div className="cyberpunk-corner-glow-right"></div>
+            <div className="cyberpunk-scanline"></div>
+          </>
+        )}
         
-        {/* Theme Toggle Button */}
-        <Button
-          onClick={toggleTheme}
-          variant="outline"
-          size="icon"
-          className="fixed top-4 right-4 z-50"
-          title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Modern Blue"} theme`}
-          data-testid="theme-toggle"
-        >
-          <Palette className="w-4 h-4" />
-        </Button>
+        {/* Theme Selector */}
+        <div className="fixed top-4 right-4 z-50">
+          <Select value={currentTheme} onValueChange={handleThemeChange}>
+            <SelectTrigger className={"w-[140px] h-10 text-sm gap-2 " + theme.control.dropdown}>
+              <Moon className="w-4 h-4" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className={theme.control.dropdown}>
+              <SelectItem value="default">Dark Mode</SelectItem>
+              <SelectItem value="neon80s">80s Neon</SelectItem>
+              <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         <Card className={theme.card + " w-full max-w-md shadow-xl"}>
           <CardHeader className="text-center">
