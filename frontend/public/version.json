@@ -1,0 +1,10 @@
+{
+  "version": "1.0.1",
+  "buildDate": "2025-10-18",
+  "changes": [
+    "Added auto-update mechanism",
+    "Addresses and balances now visible by default",
+    "Fixed job started notifications",
+    "Improved PWA caching"
+  ]
+}
