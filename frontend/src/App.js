@@ -228,24 +228,25 @@ function App() {
       return;
     }
 
-    // Set initial next refresh time
-    const initialTime = new Date(Date.now() + 120000);
+    // Set initial next refresh time using dynamic interval
+    const initialTime = new Date(Date.now() + refreshInterval);
     setNextRefresh(initialTime);
 
     const autoRefreshInterval = setInterval(() => {
-      console.log("Auto-refreshing node status...");
-      autoRefreshAllNodes(true); // Silent refresh
+      console.log("Auto-refreshing node status and GUI...");
+      // Refresh both blockchain data AND GUI
+      autoRefreshAllNodes(true); // Silent blockchain refresh
       
       // Update next refresh time
-      const nextTime = new Date(Date.now() + 120000);
+      const nextTime = new Date(Date.now() + refreshInterval);
       setNextRefresh(nextTime);
-    }, 120000); // 2 minutes
+    }, refreshInterval); // Use dynamic interval
 
     return () => {
       clearInterval(autoRefreshInterval);
       setNextRefresh(null);
     };
-  }, [isAuthenticated, nodes.length]);
+  }, [isAuthenticated, nodes.length, refreshInterval]); // Add refreshInterval dependency
 
   // Hide all addresses by default when nodes load
   useEffect(() => {
