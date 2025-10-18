@@ -1006,9 +1006,9 @@ function App() {
         ) : nodes.length === 0 ? (
           <Card className="text-center py-12 border-dashed" data-testid="no-nodes-message">
             <CardContent className="pt-6">
-              <Activity className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Nodes Added</h3>
-              <p className="text-gray-500">Add your first Nosana node to start monitoring</p>
+              <Activity className={"w-16 h-16 mx-auto mb-4 " + theme.text.muted} />
+              <h3 className={"text-lg font-semibold mb-2 " + theme.text.primary}>No Nodes Added</h3>
+              <p className={theme.text.secondary}>Add your first Nosana node to start monitoring</p>
             </CardContent>
           </Card>
         ) : (
