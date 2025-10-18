@@ -906,7 +906,7 @@ function App() {
             <SelectContent className={theme.control.dropdown}>
               <SelectItem value="default">Dark Mode</SelectItem>
               <SelectItem value="neon80s">80s Neon</SelectItem>
-              <SelectItem value="cyber">Cyberpunk</SelectItem>
+              <SelectItem value="cyber">Cyber</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -1122,7 +1122,7 @@ function App() {
                   <SelectContent className={theme.control.dropdown}>
                     <SelectItem value="default">Dark Mode</SelectItem>
                     <SelectItem value="neon80s">80s Neon</SelectItem>
-                    <SelectItem value="cyber">Cyberpunk</SelectItem>
+                    <SelectItem value="cyber">Cyber</SelectItem>
                   </SelectContent>
                 </Select>
                 
