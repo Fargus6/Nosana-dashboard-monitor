@@ -663,8 +663,17 @@ function App() {
       // Reset rate limit on success
       loginRateLimiter.reset('register');
     } catch (error) {
-      const errorMessage = error.response?.data?.detail || "Registration failed";
-      toast.error(errorMessage);
+      let errorMessage = "Registration failed";
+      
+      // Handle rate limit errors specially
+      if (error.response?.status === 429) {
+        errorMessage = error.response?.data?.detail || "Too many registration attempts. Please wait until the next hour to create a new account.";
+        toast.error(errorMessage, { duration: 8000 }); // Show longer for important message
+      } else {
+        errorMessage = error.response?.data?.detail || errorMessage;
+        toast.error(errorMessage);
+      }
+      
       console.error("Registration error:", error);
     } finally {
       setAuthLoading(false);
