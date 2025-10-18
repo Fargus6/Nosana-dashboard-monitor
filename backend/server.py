@@ -1007,8 +1007,15 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
             # Send notifications on status changes
             node_name = node.get('name') or f"{address[:8]}..."
             
+            # Log status changes
+            if previous_status != current_status:
+                logger.info(f"Node {node_name} status changed: {previous_status} -> {current_status}")
+            if previous_job_status != current_job_status:
+                logger.info(f"Node {node_name} job status changed: {previous_job_status} -> {current_job_status}")
+            
             # Notify on offline
             if previous_status == 'online' and current_status == 'offline' and prefs.get('notify_offline', True):
+                logger.info(f"Sending offline notification for {node_name}")
                 await send_notification_to_user(
                     current_user.id,
                     "⚠️ Node Went Offline",
@@ -1018,6 +1025,7 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
             
             # Notify on online
             elif previous_status == 'offline' and current_status == 'online' and prefs.get('notify_online', True):
+                logger.info(f"Sending online notification for {node_name}")
                 await send_notification_to_user(
                     current_user.id,
                     "✅ Node Back Online",
@@ -1027,6 +1035,7 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
             
             # Notify on job started
             if previous_job_status in ['idle', 'unknown', 'queue'] and current_job_status == 'running' and prefs.get('notify_job_started', True):
+                logger.info(f"Sending job started notification for {node_name}")
                 await send_notification_to_user(
                     current_user.id,
                     "🚀 Job Started",
@@ -1036,6 +1045,7 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
             
             # Notify on job completed
             elif previous_job_status == 'running' and current_job_status in ['idle', 'queue'] and prefs.get('notify_job_completed', True):
+                logger.info(f"Sending job completed notification for {node_name}")
                 await send_notification_to_user(
                     current_user.id,
                     "✅ Job Completed",
