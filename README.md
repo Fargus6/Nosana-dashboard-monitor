@@ -207,6 +207,16 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - `POST /api/nodes/refresh-all-status` - Auto-refresh all nodes from blockchain
 - `GET /api/nodes/{address}/dashboard` - Get dashboard link
 
+### Notifications (Protected):
+- `POST /api/notifications/subscribe` - Subscribe device to push notifications
+- `POST /api/notifications/unsubscribe` - Unsubscribe device from notifications
+- `GET /api/notifications/preferences` - Get notification preferences
+- `PUT /api/notifications/preferences` - Update notification preferences
+- `POST /api/notifications/test` - Send test notification
+
+### System:
+- `GET /api/health` - Health check endpoint
+
 ## 🎯 Getting Started
 
 1. **Create an Account**: Register with email/password or use Google Sign-In
