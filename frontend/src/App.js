@@ -1261,6 +1261,19 @@ function App() {
                   <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="text-xs sm:text-sm">Logout</span>
                 </Button>
+                
+                {/* Update Available Button */}
+                {updateAvailable && (
+                  <Button
+                    onClick={updateApp}
+                    variant="default"
+                    size="sm"
+                    className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3 bg-green-600 hover:bg-green-700 text-white animate-pulse"
+                  >
+                    <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="text-xs sm:text-sm">Update Available</span>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
