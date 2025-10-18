@@ -1592,7 +1592,7 @@ function App() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => toggleBalanceVisibility(node.id)}
-                                className={"h-6 w-6 " + (currentTheme === "neon80s" ? "text-white hover:text-emerald-300" : "")}
+                                className={"h-6 w-6 " + (currentTheme === "neon80s" ? "text-white hover:text-emerald-300" : currentTheme === "cyber" ? "text-white hover:text-[#00ff00]" : "")}
                                 title={hiddenBalances.has(node.id) ? "Show balances" : "Hide balances"}
                               >
                                 {hiddenBalances.has(node.id) ? (
