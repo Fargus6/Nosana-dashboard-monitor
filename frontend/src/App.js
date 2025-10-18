@@ -1243,7 +1243,7 @@ function App() {
                           </div>
                         )}
 
-                        <div className={"text-xs pt-2 border-t " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-400")}>
+                        <div className={"text-xs pt-2 border-t " + theme.text.muted}>
                           Updated: {new Date(node.last_updated).toLocaleString()}
                         </div>
                       </div>
