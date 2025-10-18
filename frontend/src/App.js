@@ -1627,6 +1627,73 @@ function App() {
                       🔔 Send Test Notification
                     </Button>
                   </div>
+
+                  {/* Telegram Notifications Section */}
+                  <div className="pt-4 border-t space-y-4">
+                    <div>
+                      <h4 className={"font-semibold mb-1 " + theme.text.primary}>
+                        🤖 Telegram Notifications
+                      </h4>
+                      <p className={"text-xs " + theme.text.muted}>
+                        Get instant alerts via Telegram (more reliable than push notifications, especially on iOS)
+                      </p>
+                    </div>
+
+                    {!telegramLinked ? (
+                      <div className="space-y-3">
+                        <div className={"p-3 rounded-lg text-sm " + (currentTheme === "neon80s" ? "bg-blue-900/20 border border-blue-500/30" : "bg-blue-50 border border-blue-200")}>
+                          <p className={"font-medium mb-2 " + theme.text.primary}>
+                            How to connect:
+                          </p>
+                          <ol className={"text-xs space-y-1 list-decimal list-inside " + theme.text.secondary}>
+                            <li>Open Telegram and search for your bot</li>
+                            <li>Send <code className="px-1 py-0.5 bg-gray-200 rounded">/start</code> to the bot</li>
+                            <li>Copy the 8-character code</li>
+                            <li>Paste it below and click "Link"</li>
+                          </ol>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Enter link code (e.g. ABC123XY)"
+                            value={telegramLinkCode}
+                            onChange={(e) => setTelegramLinkCode(e.target.value.toUpperCase())}
+                            maxLength={8}
+                            className="flex-1 text-sm uppercase"
+                          />
+                          <Button
+                            onClick={linkTelegramAccount}
+                            disabled={telegramLinking || !telegramLinkCode.trim()}
+                            className={theme.button}
+                          >
+                            {telegramLinking ? 'Linking...' : 'Link'}
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className={"p-3 rounded-lg " + (currentTheme === "neon80s" ? "bg-green-900/20 border border-green-500/30" : "bg-green-50 border border-green-200")}>
+                          <p className={"text-sm font-medium mb-1 " + theme.text.primary}>
+                            ✅ Telegram Connected
+                          </p>
+                          <p className={"text-xs " + theme.text.secondary}>
+                            Linked to: @{telegramUsername || 'Telegram User'}
+                          </p>
+                          <p className={"text-xs mt-2 " + theme.text.muted}>
+                            You'll receive instant alerts for node status changes and low SOL balance warnings.
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={unlinkTelegramAccount}
+                          variant="outline"
+                          className="w-full text-sm"
+                        >
+                          Unlink Telegram
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </CardContent>
