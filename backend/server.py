@@ -1026,7 +1026,7 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                 )
             
             # Notify on job started
-            if previous_job_status in ['idle', 'unknown'] and current_job_status == 'running' and prefs.get('notify_job_started', True):
+            if previous_job_status in ['idle', 'unknown', 'queue'] and current_job_status == 'running' and prefs.get('notify_job_started', True):
                 await send_notification_to_user(
                     current_user.id,
                     "🚀 Job Started",
