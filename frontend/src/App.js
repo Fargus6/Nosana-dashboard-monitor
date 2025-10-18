@@ -81,16 +81,6 @@ const themes = {
     }
   }
 };
-      queue: "bg-yellow-400 text-black shadow-[0_0_10px_rgba(250,204,21,0.6)]",
-      idle: "bg-teal-400 text-black shadow-[0_0_10px_rgba(45,212,191,0.6)]"
-    },
-    text: {
-      primary: "text-emerald-200",
-      secondary: "text-teal-300",
-      muted: "text-emerald-300"
-    }
-  }
-};
 
 function App() {
   const [nodes, setNodes] = useState([]);
