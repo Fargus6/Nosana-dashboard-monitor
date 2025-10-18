@@ -1037,7 +1037,7 @@ function App() {
                             {node.name || "Unnamed Node"}
                           </CardTitle>
                         )}
-                        <p className={"text-xs font-mono break-all " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")} data-testid={`node-address-${node.id}`}>
+                        <p className={"text-xs font-mono break-all " + theme.text.muted} data-testid={`node-address-${node.id}`}>
                           {formatAddress(node.address, node.id)}
                         </p>
                       </div>
@@ -1237,7 +1237,7 @@ function App() {
 
                         {node.notes && (
                           <div className="pt-2 border-t">
-                            <p className={"text-xs italic " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-500")}>
+                            <p className={"text-xs italic " + theme.text.muted}>
                               {node.notes}
                             </p>
                           </div>
