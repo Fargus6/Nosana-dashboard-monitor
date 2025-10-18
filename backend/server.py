@@ -1041,6 +1041,13 @@ async def send_notification_to_user(user_id: str, title: str, body: str, node_ad
                     logger.warning(f"🗑️  Removing invalid token: {device['token'][:30]}...")
                     await db.device_tokens.delete_one({"token": device['token']})
         
+        # Also send Telegram notification
+        telegram_message = f"🔔 **{title}**\n\n{body}"
+        if node_address:
+            telegram_message += f"\n\n[View Dashboard](https://dashboard.nosana.com/host/{node_address})"
+        
+        await send_telegram_notification(user_id, telegram_message)
+        
         logger.info(f"=" * 70)
     except Exception as e:
         logger.error(f"=" * 70)
