@@ -81,14 +81,14 @@ const themes = {
       dropdown: "bg-emerald-900/50 border-emerald-500 text-emerald-200"
     }
   },
-  cyberpunk: {
-    name: "Cyberpunk",
+  cyber: {
+    name: "Cyber",
     background: "min-h-screen bg-[#0a0e27]",
-    card: "border-[#00f0ff] border-2 shadow-[0_0_30px_rgba(0,240,255,0.3)] backdrop-blur-sm bg-[rgba(10,14,39,0.8)] cyberpunk-font-body",
-    cardHover: "hover:shadow-[0_0_40px_rgba(255,0,255,0.5)] hover:border-[#ff00ff]",
-    title: "bg-gradient-to-r from-[#ff00ff] via-[#00f0ff] to-[#ffff00] bg-clip-text text-transparent cyberpunk-font-heading",
-    button: "bg-gradient-to-br from-[#ff00ff] to-[#ff0080] border-2 border-[#00f0ff] text-black shadow-[0_0_20px_rgba(255,0,255,0.6)] hover:shadow-[0_0_30px_rgba(0,240,255,0.8)] hover:bg-gradient-to-br hover:from-[#00f0ff] hover:to-[#0080ff] cyberpunk-font-heading font-bold",
-    buttonGradient: "bg-gradient-to-br from-[#00f0ff] to-[#ff00ff] border-2 border-[#ffff00] text-black shadow-[0_0_25px_rgba(0,240,255,0.7)] hover:shadow-[0_0_35px_rgba(255,0,255,0.9)] cyberpunk-font-heading font-bold",
+    card: "border-[#00ff00] border-2 shadow-[0_0_30px_rgba(0,255,0,0.3)] backdrop-blur-sm bg-[rgba(10,14,39,0.8)] cyberpunk-font-body",
+    cardHover: "hover:shadow-[0_0_40px_rgba(0,255,0,0.6)] hover:border-[#00ff00]",
+    title: "bg-gradient-to-r from-[#00ff00] via-[#00f0ff] to-[#ffff00] bg-clip-text text-transparent cyberpunk-font-heading",
+    button: "bg-gradient-to-br from-[#00ff00] to-[#00cc00] border-2 border-[#00f0ff] text-white shadow-[0_0_20px_rgba(0,255,0,0.6)] hover:shadow-[0_0_30px_rgba(0,240,255,0.8)] hover:bg-gradient-to-br hover:from-[#00f0ff] hover:to-[#00cc00] cyberpunk-font-heading font-bold",
+    buttonGradient: "bg-gradient-to-br from-[#00f0ff] to-[#00ff00] border-2 border-[#ffff00] text-white shadow-[0_0_25px_rgba(0,240,255,0.7)] hover:shadow-[0_0_35px_rgba(0,255,0,0.9)] cyberpunk-font-heading font-bold",
     badge: {
       online: "bg-[#00ff00] text-black shadow-[0_0_20px_#00ff00] font-bold uppercase",
       offline: "bg-[#ff0000] text-white shadow-[0_0_20px_#ff0000] font-bold uppercase animate-pulse",
@@ -98,13 +98,13 @@ const themes = {
       idle: "bg-[#888] text-white shadow-[0_0_15px_#888] font-bold uppercase"
     },
     text: {
-      primary: "text-[#00f0ff] cyberpunk-font-body",
-      secondary: "text-[#ff00ff] cyberpunk-font-body",
+      primary: "text-white cyberpunk-font-body",
+      secondary: "text-[#00ff00] cyberpunk-font-body",
       muted: "text-[#888] cyberpunk-font-body"
     },
     control: {
-      button: "bg-transparent border-[#ff00ff] border-2 text-[#00f0ff] hover:bg-[#ff00ff]/20 hover:shadow-[0_0_20px_rgba(255,0,255,0.6)] cyberpunk-font-heading font-bold",
-      dropdown: "bg-[rgba(0,0,0,0.5)] border-[#ff00ff] border-2 text-[#00f0ff] cyberpunk-font-body"
+      button: "bg-transparent border-[#00ff00] border-2 text-[#00f0ff] hover:bg-[#00ff00]/20 hover:shadow-[0_0_20px_rgba(0,255,0,0.6)] cyberpunk-font-heading font-bold",
+      dropdown: "bg-[rgba(0,0,0,0.5)] border-[#00ff00] border-2 text-[#00f0ff] cyberpunk-font-body"
     }
   }
 };
