@@ -1159,7 +1159,7 @@ function App() {
                     ) : (
                       <div className="space-y-2 sm:space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className={"text-xs sm:text-sm font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                          <span className={"text-xs sm:text-sm font-medium " + theme.text.secondary}>
                             Status:
                           </span>
                           {getStatusBadge(node.status)}
@@ -1167,7 +1167,7 @@ function App() {
 
                         {node.job_status && (
                           <div className="flex justify-between items-center">
-                            <span className={"text-xs sm:text-sm font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                            <span className={"text-xs sm:text-sm font-medium " + theme.text.secondary}>
                               Job Status:
                             </span>
                             {getJobStatusBadge(node.job_status)}
@@ -1177,7 +1177,7 @@ function App() {
                         {/* Balances Section */}
                         <div className="pt-2 border-t space-y-2">
                           <div className="flex justify-between items-center">
-                            <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                            <span className={"text-xs font-medium " + theme.text.secondary}>
                               NOS Balance:
                             </span>
                             <div className="flex items-center gap-2">
@@ -1201,7 +1201,7 @@ function App() {
                           </div>
                           
                           <div className="flex justify-between items-center">
-                            <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                            <span className={"text-xs font-medium " + theme.text.secondary}>
                               SOL Balance:
                             </span>
                             <span className={"text-xs font-mono " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
@@ -1214,7 +1214,7 @@ function App() {
                         <div className="pt-2 border-t space-y-2">
                           {node.total_jobs !== null && node.total_jobs !== undefined && (
                             <div className="flex justify-between items-center">
-                              <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                              <span className={"text-xs font-medium " + theme.text.secondary}>
                                 Total Jobs:
                               </span>
                               <span className={"text-xs font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
@@ -1225,7 +1225,7 @@ function App() {
                           
                           {node.availability_score !== null && node.availability_score !== undefined && (
                             <div className="flex justify-between items-center">
-                              <span className={"text-xs font-medium " + (currentTheme === "neon80s" ? theme.text.secondary : "text-gray-600")}>
+                              <span className={"text-xs font-medium " + theme.text.secondary}>
                                 Availability:
                               </span>
                               <span className={"text-xs font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
