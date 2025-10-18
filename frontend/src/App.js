@@ -909,11 +909,6 @@ function App() {
             </div>
           </div>
         </div>
-                <span className="hidden sm:inline">Logout</span>
-              </Button>
-            </div>
-          </div>
-        </div>
 
         {/* Add Node Section */}
         <Card className={theme.card + " mb-4 sm:mb-8 shadow-lg"} data-testid="add-node-card">
