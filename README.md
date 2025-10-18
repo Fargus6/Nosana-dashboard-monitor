@@ -1,22 +1,56 @@
 # Nosana Node Monitor
 
-A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nodes with **automated status checking from Solana blockchain**.
+A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nodes with **automated status checking from Solana blockchain** and **real-time push notifications**.
+
+## 🌐 Access the App
+
+**🖥️ Web App (Desktop & Mobile):** https://cyber-monitor-2.preview.emergentagent.com
+
+**📱 Mobile App:** Install as PWA for best experience (see instructions below)
+
+---
 
 ## ✨ Key Features
 
+### Core Monitoring
 - **📱 Mobile-Optimized PWA**: Install on Android & iOS as a standalone app
+- **🌐 Web Interface**: Full-featured web app for desktop browsers
 - **🔄 Automated Status Detection**: Real-time node status from Solana blockchain
 - **➕ Multi-Node Management**: Add all your Nosana nodes with custom names
-- **🚀 One-Click Auto-Refresh**: Fetch live status for all nodes from blockchain (every 2 minutes)
+- **🚀 Customizable Auto-Refresh**: Choose 1, 2, 3, or 10-minute intervals
 - **📊 Detailed Metrics**: Track NOS/SOL balances, total jobs, and availability scores
-- **🔔 Offline Alerts**: Toast notifications when nodes go offline
-- **👁️ Privacy Toggle**: Show/hide node addresses and financial details with eye icon
-- **🔐 Secure Authentication**: Email/password login and Google OAuth support
-- **🛡️ Enterprise-Grade Security**: Rate limiting, input validation, XSS protection
-- **🎨 Dual Themes**: Modern Blue and Nosana-inspired 80s Neon themes
-- **📝 Notes**: Add custom notes for each node
 - **🔗 Direct Dashboard Links**: Quick access to each node's Nosana dashboard
+- **📝 Notes**: Add custom notes for each node
+
+### Notifications & Alerts
+- **🔔 Push Notifications**: Firebase Cloud Messaging for real-time alerts
+- **🔒 Lock Screen Alerts**: Notifications appear on locked screen with screen wake-up
+- **📳 Strong Vibration**: Custom pattern for attention-grabbing alerts
+- **🔊 Sound Notifications**: Audible alerts for critical events
+- **⚡ HIGH Priority**: Bypasses battery optimization for reliable delivery
+- **🎯 Customizable Events**: Choose which events trigger notifications
+  - Node goes offline
+  - Node comes back online
+  - Job started
+  - Job completed
+
+### User Experience
+- **👁️ Visible by Default**: Addresses and balances shown immediately (no clicking needed!)
+- **🔄 Auto-Updates**: Get new features instantly without reinstalling
+- **🎨 Multiple Themes**: Dark Mode, 80s Neon, and Cyber (with Matrix effect!)
+- **🔐 Secure Authentication**: Email/password login and Google OAuth support
 - **💻 Responsive Design**: Beautiful UI optimized for mobile and desktop
+- **📱 Offline Support**: Basic functionality works without internet
+
+### Security & Performance
+- **🛡️ Enterprise-Grade Security**: Rate limiting, input validation, XSS protection
+- **🔒 Password Strength**: 8+ characters with uppercase, lowercase, and numbers
+- **🚫 Account Lockout**: Automatic protection against brute force attacks
+- **⚡ Keep-Alive System**: Server never sleeps, no auto-logout
+- **🔐 JWT Authentication**: Secure token-based authentication
+- **🌐 CORS Protection**: Secure cross-origin requests
+
+---
 
 ## 📱 Install as Mobile App
 
@@ -37,8 +71,48 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 ✅ Works offline (basic functionality)  
 ✅ Fast loading and smooth performance  
 ✅ No app store approval needed  
-✅ Auto-updates when you refresh  
-✅ Smaller size than native apps
+✅ **Auto-updates automatically** (no reinstalling!)  
+✅ Smaller size than native apps  
+✅ Push notifications support  
+✅ Lock screen alerts
+
+---
+
+## 🔔 Push Notifications Setup
+
+### Enable Notifications:
+1. Open app and log in
+2. Click the **Settings icon (⚙️)** in the header
+3. Click **"Enable Notifications"**
+4. Grant permission when prompted
+5. Choose which events to monitor
+
+### Lock Screen Notifications:
+Notifications will:
+- ✅ Appear on lock screen
+- ✅ Light up your phone screen
+- ✅ Vibrate with custom pattern
+- ✅ Play notification sound
+- ✅ Show even when app is closed
+
+### For Best Results:
+**Android:**
+```
+Settings → Apps → Nosana Monitor
+→ Notifications → Allow
+→ Lock screen → Show all content
+→ Priority → High
+```
+
+**iOS:**
+```
+Settings → Notifications → Nosana Monitor
+→ Allow Notifications: ON
+→ Lock Screen: ON
+→ Show Previews: Always
+```
+
+---
 
 ## 🚀 How It Works
 
