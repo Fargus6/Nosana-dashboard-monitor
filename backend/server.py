@@ -449,12 +449,9 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
             
             # NOS token mint address
             NOS_MINT = "nosXBVoaCTtYdLvKY6Csb4AC8JCdQKKAaWYtx2ZMoo7"
-            # SPL Token Program ID
-            TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
             
             wallet_pubkey = SoldersPubkey.from_string(node_address)
             nos_mint_pubkey = SoldersPubkey.from_string(NOS_MINT)
-            token_program_pubkey = SoldersPubkey.from_string(TOKEN_PROGRAM_ID)
             
             # Get all NOS token accounts for this wallet
             opts = TokenAccountOpts(mint=nos_mint_pubkey)
