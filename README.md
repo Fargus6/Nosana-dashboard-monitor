@@ -225,29 +225,6 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
 9. **Get Alerts**: Receive lock screen notifications when nodes need attention
 
-## 🔥 What Makes This Special
-
-**Automated Dashboard with Real Blockchain Data!** 
-
-The app queries the Solana blockchain directly and scrapes the Nosana dashboard to fetch your node status, making it a fully automated monitoring solution. No more manual updates needed!
-
-**Real-Time Lock Screen Alerts:**
-- HIGH priority push notifications
-- Screen wake-up on lock screen
-- Custom vibration patterns
-- Never miss a node going offline!
-
-**Privacy & Security First:**
-- Your nodes are private (only you can see them)
-- Enterprise-grade security protections
-- Secure authentication with JWT tokens
-- All data encrypted in transit
-
-**Seamless Updates:**
-- Auto-updates without reinstalling
-- New features delivered instantly
-- No app store delays
-
 ## 📊 Current Stats
 
 - **57+ Users** actively monitoring nodes
@@ -265,21 +242,9 @@ The app queries the Solana blockchain directly and scrapes the Nosana dashboard 
 - ✅ Enhanced PWA capabilities
 - ✅ Automated daily testing
 
-## 🔮 Future Roadmap
-
-- 🤖 AI Support Agent (in planning)
-  - Learn from Nosana Discord support channels
-  - Instant answers to node issues
-  - Proactive troubleshooting suggestions
-- 📊 Advanced analytics and charts
-- 🔔 SMS/Email notification options
-- 🌍 Multi-language support
-
 ## 🙏 Acknowledgments
 
 Built with ❤️ for the Nosana community by a passionate node operator.
-
-Special thanks to the Nosana team for creating a dedicated Discord thread for this app!
 
 ## 📞 Support
 
