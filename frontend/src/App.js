@@ -502,14 +502,8 @@ function App() {
     };
   }, [isAuthenticated, nodes.length, refreshInterval]); // Add refreshInterval dependency
 
-  // Hide all addresses by default when nodes load
-  useEffect(() => {
-    if (nodes.length > 0) {
-      const allNodeIds = new Set(nodes.map(node => node.id));
-      setHiddenAddresses(allNodeIds);
-      setHiddenBalances(allNodeIds); // Also hide balances by default
-    }
-  }, [nodes.length]);
+  // Addresses and balances are visible by default (user can hide them with eye icon)
+  // No default hiding behavior
 
   const verifyToken = async () => {
     try {
