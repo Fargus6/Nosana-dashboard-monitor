@@ -86,8 +86,8 @@ const themes = {
     background: "min-h-screen bg-[#0a0e27]",
     card: "border-[#00ff00] border-2 shadow-[0_0_30px_rgba(0,255,0,0.3)] backdrop-blur-sm bg-[rgba(10,14,39,0.8)] cyberpunk-font-body",
     cardHover: "hover:shadow-[0_0_40px_rgba(0,255,0,0.6)] hover:border-[#00ff00]",
-    title: "bg-gradient-to-r from-[#00ff00] via-[#00f0ff] to-[#ffff00] bg-clip-text text-transparent cyberpunk-font-heading",
-    button: "bg-gradient-to-br from-[#00ff00] to-[#00cc00] border-2 border-[#00f0ff] text-white shadow-[0_0_20px_rgba(0,255,0,0.6)] hover:shadow-[0_0_30px_rgba(0,240,255,0.8)] hover:bg-gradient-to-br hover:from-[#00f0ff] hover:to-[#00cc00] cyberpunk-font-heading font-bold",
+    title: "text-white cyberpunk-font-heading",
+    button: "bg-gradient-to-br from-[#ffffff] to-[#e0e0e0] border-2 border-[#ffffff] text-black shadow-[0_0_20px_rgba(255,255,255,0.6)] hover:shadow-[0_0_30px_rgba(255,255,255,0.8)] hover:bg-gradient-to-br hover:from-[#ffffff] hover:to-[#cccccc] cyberpunk-font-heading font-bold",
     buttonGradient: "bg-gradient-to-br from-[#00f0ff] to-[#00ff00] border-2 border-[#ffff00] text-white shadow-[0_0_25px_rgba(0,240,255,0.7)] hover:shadow-[0_0_35px_rgba(0,255,0,0.9)] cyberpunk-font-heading font-bold",
     badge: {
       online: "bg-[#00ff00] text-black shadow-[0_0_20px_#00ff00] font-bold uppercase",
