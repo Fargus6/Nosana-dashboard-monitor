@@ -901,6 +901,96 @@ async def send_test_notification(request: Request, current_user: User = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.post("/notifications/telegram/link")
+@limiter.limit("10/hour")
+async def link_telegram_account(request: Request, link_code: str, current_user: User = Depends(get_current_user)):
+    """Link Telegram account using code from /start command"""
+    try:
+        # Find the link code
+        link_data = await db.telegram_link_codes.find_one({"link_code": link_code.upper()})
+        
+        if not link_data:
+            raise HTTPException(status_code=404, detail="Invalid link code. Use /start in Telegram bot to get a new code.")
+        
+        chat_id = link_data['chat_id']
+        
+        # Check if already linked
+        existing = await db.telegram_users.find_one({"user_id": current_user.id})
+        if existing:
+            # Update existing
+            await db.telegram_users.update_one(
+                {"user_id": current_user.id},
+                {"$set": {"chat_id": chat_id, "linked_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        else:
+            # Create new link
+            await db.telegram_users.insert_one({
+                "user_id": current_user.id,
+                "chat_id": chat_id,
+                "username": link_data.get('username'),
+                "linked_at": datetime.now(timezone.utc).isoformat()
+            })
+        
+        # Delete used link code
+        await db.telegram_link_codes.delete_one({"link_code": link_code.upper()})
+        
+        # Send confirmation to Telegram
+        if telegram_bot:
+            try:
+                await telegram_bot.send_message(
+                    chat_id=chat_id,
+                    text=f"✅ **Account Linked Successfully!**\n\nYou'll now receive notifications for:\n• Node offline alerts\n• Low SOL balance warnings\n• Node online confirmations\n\nUse /status to check your nodes anytime!",
+                    parse_mode=ParseMode.MARKDOWN
+                )
+            except:
+                pass
+        
+        return {"status": "success", "message": "Telegram account linked successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error linking Telegram account: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/notifications/telegram/status")
+@limiter.limit("30/minute")
+async def get_telegram_link_status(request: Request, current_user: User = Depends(get_current_user)):
+    """Check if user has linked Telegram account"""
+    try:
+        telegram_user = await db.telegram_users.find_one({"user_id": current_user.id})
+        
+        if telegram_user:
+            return {
+                "linked": True,
+                "username": telegram_user.get('username'),
+                "linked_at": telegram_user.get('linked_at')
+            }
+        else:
+            return {"linked": False}
+    except Exception as e:
+        logger.error(f"Error checking Telegram status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/notifications/telegram/unlink")
+@limiter.limit("10/hour")
+async def unlink_telegram_account(request: Request, current_user: User = Depends(get_current_user)):
+    """Unlink Telegram account"""
+    try:
+        result = await db.telegram_users.delete_one({"user_id": current_user.id})
+        
+        if result.deleted_count > 0:
+            return {"status": "success", "message": "Telegram account unlinked"}
+        else:
+            raise HTTPException(status_code=404, detail="No linked Telegram account found")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error unlinking Telegram account: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 async def send_telegram_notification(user_id: str, message: str):
     """Send notification via Telegram"""
     if not telegram_bot:
