@@ -169,6 +169,23 @@ function App() {
     }
   }, [isAuthenticated]);
 
+  // Keep-alive heartbeat to prevent backend from sleeping
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const keepAlive = setInterval(async () => {
+      try {
+        // Ping health endpoint to keep backend alive
+        await axios.get('/health', { timeout: 5000 });
+        console.log("Keep-alive ping successful");
+      } catch (error) {
+        console.log("Keep-alive ping failed (server might be sleeping):", error.message);
+      }
+    }, 45000); // Every 45 seconds
+
+    return () => clearInterval(keepAlive);
+  }, [isAuthenticated]);
+
   // Update countdown display every minute
   useEffect(() => {
     if (!nextRefresh) return;
