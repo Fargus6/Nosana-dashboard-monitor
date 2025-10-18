@@ -118,6 +118,18 @@ function App() {
     { label: "10 minutes", value: 600000 }
   ];
 
+  // Notification states
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationPreferences, setNotificationPreferences] = useState({
+    notify_offline: true,
+    notify_online: true,
+    notify_job_started: true,
+    notify_job_completed: true,
+    vibration: true,
+    sound: true
+  });
+  const [showSettings, setShowSettings] = useState(false);
+
   // Load theme and refresh interval preference on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
