@@ -1181,7 +1181,7 @@ function App() {
                               NOS Balance:
                             </span>
                             <div className="flex items-center gap-2">
-                              <span className={"text-xs font-mono " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                              <span className={"text-xs font-mono " + theme.text.primary}>
                                 {formatBalance(node.nos_balance, node.id)} NOS
                               </span>
                               <Button
@@ -1204,7 +1204,7 @@ function App() {
                             <span className={"text-xs font-medium " + theme.text.secondary}>
                               SOL Balance:
                             </span>
-                            <span className={"text-xs font-mono " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                            <span className={"text-xs font-mono " + theme.text.primary}>
                               {formatBalance(node.sol_balance, node.id)} SOL
                             </span>
                           </div>
@@ -1217,7 +1217,7 @@ function App() {
                               <span className={"text-xs font-medium " + theme.text.secondary}>
                                 Total Jobs:
                               </span>
-                              <span className={"text-xs font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                              <span className={"text-xs font-semibold " + theme.text.primary}>
                                 {node.total_jobs}
                               </span>
                             </div>
@@ -1228,7 +1228,7 @@ function App() {
                               <span className={"text-xs font-medium " + theme.text.secondary}>
                                 Availability:
                               </span>
-                              <span className={"text-xs font-semibold " + (currentTheme === "neon80s" ? theme.text.primary : "text-gray-700")}>
+                              <span className={"text-xs font-semibold " + theme.text.primary}>
                                 {node.availability_score.toFixed(1)}%
                               </span>
                             </div>
