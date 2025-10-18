@@ -532,11 +532,14 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
                 if 'online' in text_lower or 'host api status\nonline' in text_lower:
                     logger.info(f"Node {node_address[:8]}... is online but idle")
                 
-                # Extract NOS balance
-                nos_balance = None
+                # Extract NOS balance from scraping (if not already got from blockchain)
+                scraped_nos_balance = None
                 nos_match = re.search(r'(\d+\.?\d*)\s*nos', text_lower)
                 if nos_match:
-                    nos_balance = float(nos_match.group(1))
+                    scraped_nos_balance = float(nos_match.group(1))
+                
+                # Use blockchain balance if available, otherwise use scraped balance
+                final_nos_balance = nos_balance if nos_balance is not None else scraped_nos_balance
                 
                 # Extract SOL balance
                 sol_balance = None
