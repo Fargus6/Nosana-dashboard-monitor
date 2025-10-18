@@ -92,12 +92,28 @@ function App() {
   const [currentTheme, setCurrentTheme] = useState("default");
   const theme = themes[currentTheme];
   const [nextRefresh, setNextRefresh] = useState(null);
+  
+  // Auto-refresh interval state (in milliseconds)
+  const [refreshInterval, setRefreshInterval] = useState(120000); // Default 2 minutes
+  
+  // Refresh interval options
+  const refreshIntervalOptions = [
+    { label: "1 minute", value: 60000 },
+    { label: "2 minutes", value: 120000 },
+    { label: "3 minutes", value: 180000 },
+    { label: "10 minutes", value: 600000 }
+  ];
 
-  // Load theme preference on mount
+  // Load theme and refresh interval preference on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme && themes[savedTheme]) {
       setCurrentTheme(savedTheme);
+    }
+    
+    const savedInterval = localStorage.getItem('refreshInterval');
+    if (savedInterval) {
+      setRefreshInterval(parseInt(savedInterval));
     }
   }, []);
 
@@ -106,6 +122,13 @@ function App() {
     setCurrentTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     toast.success(`Switched to ${themes[newTheme].name} theme!`);
+  };
+  
+  const handleRefreshIntervalChange = (newInterval) => {
+    setRefreshInterval(newInterval);
+    localStorage.setItem('refreshInterval', newInterval.toString());
+    const option = refreshIntervalOptions.find(opt => opt.value === newInterval);
+    toast.success(`Auto-refresh set to ${option.label}`);
   };
 
   // Setup axios interceptor separately
