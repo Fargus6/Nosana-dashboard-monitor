@@ -517,10 +517,17 @@ function App() {
       setCurrentUser(response.data);
       setIsAuthenticated(true);
     } catch (error) {
-      secureStorage.remove('token');
-      delete axios.defaults.headers.common['Authorization'];
-      setIsAuthenticated(false);
-      console.error("Token verification failed:", error);
+      // Only logout on actual auth errors, not network issues
+      if (error.response?.status === 401) {
+        // Token is invalid or expired
+        secureStorage.remove('token');
+        delete axios.defaults.headers.common['Authorization'];
+        setIsAuthenticated(false);
+        console.error("Token verification failed - invalid token");
+      } else {
+        // Network error or server waking up - don't logout
+        console.log("Token verification failed due to network issue:", error.message);
+      }
     }
   };
 
