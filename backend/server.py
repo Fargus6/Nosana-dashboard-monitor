@@ -964,21 +964,33 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
     updated_count = 0
     errors = []
     
+    # Get user notification preferences
+    prefs = await db.notification_preferences.find_one({"user_id": current_user.id})
+    if not prefs:
+        prefs = {
+            "notify_offline": True,
+            "notify_online": True,
+            "notify_job_started": True,
+            "notify_job_completed": True
+        }
+    
     for node in nodes:
         try:
             address = node['address']
-            # previous_status = node.get('status', 'unknown')  # Not used
+            previous_status = node.get('status', 'unknown')
+            previous_job_status = node.get('job_status', 'unknown')
             
             # Fetch status from Solana
             status_data = await fetch_node_status_from_solana(address)
             current_status = status_data['status']
+            current_job_status = status_data.get('job_status', 'unknown')
             
             # Update node in database
             await db.nodes.update_one(
                 {"address": address, "user_id": current_user.id},
                 {"$set": {
                     "status": current_status,
-                    "job_status": status_data.get('job_status'),
+                    "job_status": current_job_status,
                     "sol_balance": status_data.get('sol_balance'),
                     "nos_balance": status_data.get('nos_balance'),
                     "total_jobs": status_data.get('total_jobs'),
@@ -988,6 +1000,45 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
             )
             
             updated_count += 1
+            
+            # Send notifications on status changes
+            node_name = node.get('name') or f"{address[:8]}..."
+            
+            # Notify on offline
+            if previous_status == 'online' and current_status == 'offline' and prefs.get('notify_offline', True):
+                await send_notification_to_user(
+                    current_user.id,
+                    "⚠️ Node Went Offline",
+                    f"{node_name} is now OFFLINE",
+                    address
+                )
+            
+            # Notify on online
+            elif previous_status == 'offline' and current_status == 'online' and prefs.get('notify_online', True):
+                await send_notification_to_user(
+                    current_user.id,
+                    "✅ Node Back Online",
+                    f"{node_name} is back ONLINE",
+                    address
+                )
+            
+            # Notify on job started
+            if previous_job_status in ['idle', 'unknown'] and current_job_status == 'running' and prefs.get('notify_job_started', True):
+                await send_notification_to_user(
+                    current_user.id,
+                    "🚀 Job Started",
+                    f"{node_name} started processing a job",
+                    address
+                )
+            
+            # Notify on job completed
+            elif previous_job_status == 'running' and current_job_status in ['idle', 'queue'] and prefs.get('notify_job_completed', True):
+                await send_notification_to_user(
+                    current_user.id,
+                    "✅ Job Completed",
+                    f"{node_name} completed a job",
+                    address
+                )
             
         except Exception as e:
             errors.append({"address": node['address'], "error": str(e)})
