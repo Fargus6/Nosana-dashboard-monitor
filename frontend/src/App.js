@@ -1021,6 +1021,21 @@ function App() {
                   <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
                 
+                {/* Notifications Button */}
+                <Button
+                  onClick={() => setShowSettings(!showSettings)}
+                  variant="outline"
+                  size="sm"
+                  className={"h-8 sm:h-9 px-2 sm:px-3 " + theme.control.button}
+                  title="Notification Settings"
+                >
+                  {notificationsEnabled ? (
+                    <Bell className="w-3 h-3 sm:w-4 sm:h-4" />
+                  ) : (
+                    <BellOff className="w-3 h-3 sm:w-4 sm:h-4" />
+                  )}
+                </Button>
+                
                 {/* Auto-refresh interval selector */}
                 <Select value={refreshInterval.toString()} onValueChange={(val) => handleRefreshIntervalChange(parseInt(val))}>
                   <SelectTrigger className={"w-[100px] sm:w-[130px] h-8 sm:h-9 text-xs sm:text-sm " + theme.control.dropdown}>
