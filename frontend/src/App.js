@@ -875,7 +875,7 @@ function App() {
             {/* Right: All Controls (stacked on mobile, row on desktop) */}
             <div className="flex flex-col items-stretch sm:items-end gap-2">
               {/* Email */}
-              <p className={"text-xs sm:text-sm text-right " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-600")}>
+              <p className={"text-xs sm:text-sm text-right " + theme.text.muted}>
                 {currentUser?.email}
               </p>
               
@@ -886,8 +886,8 @@ function App() {
                   onClick={toggleTheme}
                   variant="outline"
                   size="sm"
-                  className="h-8 sm:h-9 px-2 sm:px-3"
-                  title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Modern Blue"} theme`}
+                  className={"h-8 sm:h-9 px-2 sm:px-3 " + theme.control.button}
+                  title={`Switch to ${currentTheme === "default" ? "80s Neon" : "Dark Mode"} theme`}
                   data-testid="theme-toggle"
                 >
                   <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -895,10 +895,10 @@ function App() {
                 
                 {/* Auto-refresh interval selector */}
                 <Select value={refreshInterval.toString()} onValueChange={(val) => handleRefreshIntervalChange(parseInt(val))}>
-                  <SelectTrigger className="w-[100px] sm:w-[130px] h-8 sm:h-9 text-xs sm:text-sm">
+                  <SelectTrigger className={"w-[100px] sm:w-[130px] h-8 sm:h-9 text-xs sm:text-sm " + theme.control.dropdown}>
                     <SelectValue placeholder="Refresh" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className={theme.control.dropdown}>
                     {refreshIntervalOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value.toString()}>
                         {option.label}
@@ -912,7 +912,7 @@ function App() {
                   onClick={handleLogout}
                   variant="outline"
                   size="sm"
-                  className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3"
+                  className={"gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3 " + theme.control.button}
                   data-testid="logout-button"
                 >
                   <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
