@@ -53,6 +53,11 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 failed_login_attempts = {}
 locked_accounts = {}
 
+# Initialize Firebase Admin
+cred = credentials.Certificate("/app/backend/firebase-credentials.json")
+firebase_admin.initialize_app(cred)
+logger.info("Firebase Admin SDK initialized successfully")
+
 # Password strength validator
 def validate_password_strength(password: str) -> bool:
     """Validate password meets security requirements"""
