@@ -112,13 +112,23 @@ function App() {
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        // Handle token expiry (only if already authenticated)
+        // Don't logout on network errors (server might be waking up)
+        if (!error.response) {
+          console.log("Network error - server might be sleeping");
+          toast.error("Connection issue. Retrying...", { duration: 2000 });
+          return Promise.reject(error);
+        }
+        
+        // Only logout on actual unauthorized errors (invalid token)
+        // Not on server startup/wakeup issues
         if (error.response?.status === 401 && isAuthenticated) {
-          secureStorage.remove('token');
-          delete axios.defaults.headers.common['Authorization'];
-          setIsAuthenticated(false);
-          setCurrentUser(null);
-          toast.error("Session expired. Please login again.");
+          // Check if it's a real auth error (not server waking up)
+          const isAuthEndpoint = error.config?.url?.includes('/auth/');
+          if (!isAuthEndpoint) {
+            // For protected endpoints, just show error, don't logout immediately
+            console.log("Auth error on protected endpoint - might be server waking up");
+            return Promise.reject(error);
+          }
         }
         
         // Handle rate limiting
