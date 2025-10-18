@@ -162,8 +162,10 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - **Database**: MongoDB for persistence
 - **Blockchain**: Solana RPC (mainnet-beta) for real-time node status
 - **Web Scraping**: Playwright for Nosana dashboard data extraction
-- **Authentication**: JWT tokens with bcrypt password hashing
-- **Security**: Rate limiting, XSS protection, input validation, DOMPurify
+- **Authentication**: JWT tokens with bcrypt password hashing, Google OAuth
+- **Push Notifications**: Firebase Cloud Messaging (FCM)
+- **Security**: Rate limiting (SlowAPI), XSS protection, input validation, DOMPurify
+- **PWA**: Service Workers for offline support and auto-updates
 - **Font**: Space Grotesk for modern tech aesthetic
 
 ## 🔐 Security Features
