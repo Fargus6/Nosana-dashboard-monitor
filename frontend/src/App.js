@@ -1063,8 +1063,16 @@ function App() {
   // Main App UI (after login)
   return (
     <div className={theme.background}>
-      {/* Pixelated tech background for neon theme */}
+      {/* Background effects for themes */}
       {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
+      {currentTheme === "cyberpunk" && (
+        <>
+          <div className="cyberpunk-grid-bg"></div>
+          <div className="cyberpunk-corner-glow-left"></div>
+          <div className="cyberpunk-corner-glow-right"></div>
+          <div className="cyberpunk-scanline"></div>
+        </>
+      )}
 
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl relative z-10">
         {/* Header with all controls */}
@@ -1073,11 +1081,15 @@ function App() {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-4">
             {/* Left: Title */}
             <div className="flex-1">
-              <h1 className={theme.title + " text-2xl sm:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2"} data-testid="app-title">
-                Nosana Node Monitor
+              <h1 
+                className={theme.title + " text-2xl sm:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 " + (currentTheme === "cyberpunk" ? "cyberpunk-glitch uppercase tracking-wider" : "")} 
+                data-testid="app-title"
+                data-text={currentTheme === "cyberpunk" ? "NOSANA NODE MONITOR" : ""}
+              >
+                {currentTheme === "cyberpunk" ? "NOSANA NODE MONITOR" : "Nosana Node Monitor"}
               </h1>
-              <p className={"text-xs sm:text-base " + theme.text.secondary}>
-                Monitor your Nosana AI network nodes in real-time
+              <p className={"text-xs sm:text-base " + theme.text.secondary + (currentTheme === "cyberpunk" ? " uppercase tracking-wide" : "")}>
+                {currentTheme === "cyberpunk" ? "// Real-time AI Network Surveillance //" : "Monitor your Nosana AI network nodes in real-time"}
               </p>
             </div>
             
