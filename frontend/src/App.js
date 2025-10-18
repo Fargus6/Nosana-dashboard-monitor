@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "@/App.css";
 import axios from "axios";
-import { Plus, Trash2, RefreshCw, Activity, ExternalLink, Edit2, Check, X, Eye, EyeOff, LogOut, Palette } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Activity, ExternalLink, Edit2, Check, X, Eye, EyeOff, LogOut, Palette, Bell, BellOff, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,7 @@ import {
   secureStorage,
   RateLimiter 
 } from "@/utils/security";
+import { messaging, getToken, onMessage, VAPID_KEY } from "@/firebase";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
