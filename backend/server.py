@@ -281,6 +281,23 @@ class NodeUpdate(BaseModel):
             return sanitize_string(v)
         return v
 
+# Notification Models
+class DeviceToken(BaseModel):
+    token: str
+    user_id: str
+    device_info: Optional[Dict] = {}
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+class NotificationPreferences(BaseModel):
+    user_id: str
+    notify_offline: bool = True
+    notify_online: bool = True
+    notify_job_started: bool = True
+    notify_job_completed: bool = True
+    vibration: bool = True
+    sound: bool = True
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
 class DashboardLink(BaseModel):
     address: str
     url: str
