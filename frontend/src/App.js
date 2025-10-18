@@ -294,8 +294,45 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       loadNodes();
+      
+      // Check if notifications are already enabled
+      if (Notification.permission === 'granted') {
+        setNotificationsEnabled(true);
+        loadNotificationPreferences();
+      }
     }
   }, [isAuthenticated]);
+
+  // Setup foreground notification listener
+  useEffect(() => {
+    if (!messaging || !isAuthenticated) return;
+
+    const unsubscribe = onMessage(messaging, (payload) => {
+      console.log('Foreground notification received:', payload);
+      
+      const title = payload.notification?.title || 'Notification';
+      const body = payload.notification?.body || '';
+      
+      // Show toast notification
+      toast.info(
+        <div>
+          <div className="font-semibold">{title}</div>
+          <div className="text-sm">{body}</div>
+        </div>,
+        { duration: 5000 }
+      );
+      
+      // Vibrate if enabled
+      if (notificationPreferences.vibration && 'vibrate' in navigator) {
+        navigator.vibrate([200, 100, 200]);
+      }
+      
+      // Reload nodes to show updated status
+      loadNodes();
+    });
+
+    return () => unsubscribe();
+  }, [messaging, isAuthenticated, notificationPreferences]);
 
   // Keep-alive heartbeat to prevent backend from sleeping
   useEffect(() => {
