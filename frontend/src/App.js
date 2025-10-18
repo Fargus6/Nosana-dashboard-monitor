@@ -1437,7 +1437,7 @@ function App() {
                             data-testid={`edit-name-${node.id}`}
                           />
                         ) : (
-                          <CardTitle className={"text-base sm:text-lg mb-1 " + (currentTheme === "neon80s" ? theme.text.primary : "")} data-testid={`node-name-${node.id}`}>
+                          <CardTitle className={"text-base sm:text-lg mb-1 " + (currentTheme === "neon80s" || currentTheme === "cyber" ? theme.text.primary : "")} data-testid={`node-name-${node.id}`}>
                             {node.name || "Unnamed Node"}
                           </CardTitle>
                         )}
