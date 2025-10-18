@@ -34,14 +34,6 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
   - Job started
   - Job completed
 
-### User Experience
-- **👁️ Visible by Default**: Addresses and balances shown immediately (no clicking needed!)
-- **🔄 Auto-Updates**: Get new features instantly without reinstalling
-- **🎨 Multiple Themes**: Dark Mode, 80s Neon, and Cyber (with Matrix effect!)
-- **🔐 Secure Authentication**: Email/password login and Google OAuth support
-- **💻 Responsive Design**: Beautiful UI optimized for mobile and desktop
-- **📱 Offline Support**: Basic functionality works without internet
-
 ### Security & Performance
 - **🛡️ Enterprise-Grade Security**: Rate limiting, input validation, XSS protection
 - **🔒 Password Strength**: 8+ characters with uppercase, lowercase, and numbers
