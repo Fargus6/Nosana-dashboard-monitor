@@ -901,6 +901,34 @@ async def send_test_notification(request: Request, current_user: User = Depends(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+async def send_telegram_notification(user_id: str, message: str):
+    """Send notification via Telegram"""
+    if not telegram_bot:
+        return
+    
+    try:
+        # Find user's Telegram chat_id
+        telegram_user = await db.telegram_users.find_one({"user_id": user_id})
+        
+        if not telegram_user:
+            logger.debug(f"No Telegram linked for user {user_id}")
+            return
+        
+        chat_id = telegram_user['chat_id']
+        
+        # Send message
+        await telegram_bot.send_message(
+            chat_id=chat_id,
+            text=message,
+            parse_mode=ParseMode.MARKDOWN
+        )
+        
+        logger.info(f"✅ Telegram notification sent to user {user_id}")
+        
+    except Exception as e:
+        logger.error(f"Failed to send Telegram notification: {str(e)}")
+
+
 async def send_notification_to_user(user_id: str, title: str, body: str, node_address: str = None):
     """Helper function to send push notification to user"""
     try:
