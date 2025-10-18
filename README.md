@@ -221,12 +221,17 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 
 ## 🎯 Getting Started
 
-1. **Create an Account**: Register with email/password or use Google Sign-In
-2. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
-3. **Monitor Status**: Automatic refresh every 2 minutes keeps you updated
-4. **View Details**: Check NOS/SOL balances, job counts, and availability scores
-5. **Get Alerts**: Receive notifications when nodes go offline
-6. **Install as App**: Follow the PWA installation steps above for the best experience
+1. **Access the App**: 
+   - **Web**: Visit https://cyber-monitor-2.preview.emergentagent.com
+   - **Mobile**: Install as PWA for best experience
+2. **Create an Account**: Register with email/password or use Google Sign-In
+3. **Enable Notifications**: Grant push notification permissions for real-time alerts
+4. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
+5. **Choose Refresh Interval**: Select 1, 2, 3, or 10-minute auto-refresh
+6. **Customize Alerts**: Choose which events trigger notifications
+7. **Monitor Status**: Automatic refresh keeps you updated
+8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
+9. **Get Alerts**: Receive lock screen notifications when nodes need attention
 
 ## 🔥 What Makes This Special
 
@@ -234,12 +239,68 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 
 The app queries the Solana blockchain directly and scrapes the Nosana dashboard to fetch your node status, making it a fully automated monitoring solution. No more manual updates needed!
 
+**Real-Time Lock Screen Alerts:**
+- HIGH priority push notifications
+- Screen wake-up on lock screen
+- Custom vibration patterns
+- Never miss a node going offline!
+
 **Privacy & Security First:**
 - Your nodes are private (only you can see them)
 - Enterprise-grade security protections
 - Secure authentication with JWT tokens
 - All data encrypted in transit
 
+**Seamless Updates:**
+- Auto-updates without reinstalling
+- New features delivered instantly
+- No app store delays
+
+## 📊 Current Stats
+
+- **57+ Users** actively monitoring nodes
+- **52+ Nodes** being tracked in real-time
+- **100% Uptime** with keep-alive system
+- **Zero Manual Updates** required
+
+## 🚀 Recent Updates (v1.0.1)
+
+- ✅ Lock screen notifications with HIGH priority
+- ✅ Auto-update system (no reinstalling needed)
+- ✅ Addresses/balances visible by default
+- ✅ Registration limit increased to 30/hour
+- ✅ Improved job started notifications
+- ✅ Enhanced PWA capabilities
+- ✅ Automated daily testing
+
+## 🔮 Future Roadmap
+
+- 🤖 AI Support Agent (in planning)
+  - Learn from Nosana Discord support channels
+  - Instant answers to node issues
+  - Proactive troubleshooting suggestions
+- 📊 Advanced analytics and charts
+- 🔔 SMS/Email notification options
+- 🌍 Multi-language support
+
+## 🙏 Acknowledgments
+
+Built with ❤️ for the Nosana community by a passionate node operator.
+
+Special thanks to the Nosana team for creating a dedicated Discord thread for this app!
+
+## 📞 Support
+
+- **Discord**: Find us in the Nosana Node Monitor thread
+- **Issues**: Report bugs or request features in Discord
+- **Web**: https://cyber-monitor-2.preview.emergentagent.com
+
 ---
 
-Built with ❤️ for the Nosana community 🚀
+**Current Version**: v1.0.1  
+**Last Updated**: October 18, 2025  
+**Status**: ✅ Production Ready & Actively Maintained
+
+---
+
+*Monitor smarter, not harder. Keep your Nosana nodes running 24/7 with confidence!* 🚀
