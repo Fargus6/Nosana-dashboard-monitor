@@ -408,14 +408,16 @@ function App() {
     }
   };
 
-  const autoRefreshAllNodes = async (silent = false) => {
+  const autoRefreshAllNodes = async (silent = false, retryCount = 0) => {
     try {
       setAutoRefreshing(true);
       if (!silent) {
         toast.info("Checking node status from Solana blockchain...");
       }
       
-      const response = await axios.post(`${API}/nodes/refresh-all-status`);
+      const response = await axios.post(`${API}/nodes/refresh-all-status`, {}, {
+        timeout: 30000 // 30 second timeout
+      });
       
       if (response.data.updated > 0) {
         if (!silent) {
@@ -450,8 +452,23 @@ function App() {
       }
     } catch (error) {
       console.error("Error auto-refreshing:", error);
+      
+      // Retry logic for network errors (server waking up)
+      if (!error.response && retryCount < 2) {
+        console.log(`Retrying auto-refresh (attempt ${retryCount + 1}/2)...`);
+        if (!silent) {
+          toast.info("Server waking up, retrying...", { duration: 2000 });
+        }
+        // Wait 3 seconds and retry
+        setTimeout(() => autoRefreshAllNodes(silent, retryCount + 1), 3000);
+        return;
+      }
+      
       if (!silent) {
-        toast.error("Failed to auto-refresh node status");
+        const errorMsg = !error.response 
+          ? "Server is sleeping. Please wait and try again." 
+          : "Failed to auto-refresh node status";
+        toast.error(errorMsg);
       }
     } finally {
       setAutoRefreshing(false);
