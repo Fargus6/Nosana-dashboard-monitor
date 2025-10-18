@@ -38,7 +38,7 @@ async def run_frontend_tests():
             # Test 1: Page Load
             results['total'] += 1
             try:
-                await page.goto('https://cyber-monitor-2.preview.emergentagent.com', wait_until='networkidle', timeout=15000)
+                await page.goto('https://alert-hub-11.preview.emergentagent.com', wait_until='networkidle', timeout=15000)
                 results['passed'] += 1
                 results['tests'].append(('Page Load', 'PASSED'))
                 print("✅ Test 1: Page Load - PASSED")

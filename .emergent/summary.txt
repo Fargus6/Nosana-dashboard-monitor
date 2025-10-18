@@ -1,91 +1,125 @@
 <analysis>
-The AI engineer continued enhancing the Nosana Node Monitor application, building upon its initial MVP. The trajectory details a significant focus on security hardening, implementing rate limiting, input sanitization, and robust error handling across both backend (FastAPI) and frontend (React). Subsequently, the engineer tackled UI/UX refinements, improving mobile responsiveness, introducing a theme selector with Dark Mode and a dynamic Cyber (formerly Cyberpunk) theme, complete with Matrix-like visual effects. Critical bug fixes included addressing Google sign-in post-security changes and resolving auto-logout issues. The final major feature added was a Firebase-based push notification system for node status changes, which is now fully functional. The current task involves comprehensive production-level testing.
+This trajectory details an extensive development cycle, commencing with comprehensive backend and frontend production testing. The AI engineer addressed a frontend testability issue by adding  attributes to the theme selector. Subsequent work focused on diverse user requests: iterative logo redesigns with specific aesthetic and textual modifications (e.g., N shape, Nosana Node Monitor text, green palette), intricate color adjustments for the Cyber theme (white text for node names, buttons, eye icons, labels), and critical app stability fixes including PWA auto-update mechanisms and enhanced  pings to prevent auto-logout. Key bug fixes included correcting job-started notification triggers and updating password field hints. The trajectory also covered automated daily testing setup via cron jobs, clarifying subscription expiry implications, and a detailed plan for an AI support agent (deferred). Finally, the engineer optimized notifications for lock-screen visibility and thoroughly updated the  file.
 </analysis>
 
 <product_requirements>
-The application monitors Nosana AI network nodes, providing online/offline status, job status, and alerts.
-**Initial Implementation Summary:**
-The application already features automated node and job status fetching (Solana blockchain, Nosana dashboard web scraping), UI enhancements (hide/show node addresses, PWA, dynamic theme switcher - initially 80s neon, then Nosana green pixelated, now Dark Mode and Cyber), auto-refresh with notifications, and detailed node information (balances, availability). A robust authentication system with email/password and Google OAuth ensures data privacy, allowing users to manage only their own nodes.
-**Recent Enhancements:**
-1.  **Comprehensive Security:** Implemented backend rate limiting, input sanitization, security headers, and improved frontend input validation and XSS protection.
-2.  **PWA Favicon:** Replaced the default globe icon with a custom Nosana-themed server icon.
-3.  **App Stability:** Addressed issues causing the app to go offline or auto-logout due to preview environment auto-sleep, implementing keep-alive pings and improved error handling.
-4.  **Auto-Refresh Customization:** Added a customizable auto-refresh interval selector (1, 2, 3, 10 minutes).
-5.  **Mobile UI Layout:** Corrected overlapping header controls on mobile devices.
-6.  **Theming Improvements:** Renamed Modern Blue to Dark Mode, refined the Nosana theme colors, and introduced a new Cyber (formerly Cyberpunk) theme with green accents and a Matrix-like background.
-7.  **Push Notifications:** Implemented Firebase Cloud Messaging for real-time mobile push notifications on node status changes (offline/online, job started/completed), with user-selectable event triggers, vibration, and sound toggles.
+The application, Nosana Node Monitor, is designed to monitor Nosana AI network nodes, displaying their online/offline status, job status, and offering alerts.
+
+**Current State & User Problem:**
+The app, initially an MVP, has undergone significant enhancements. It features automated node/job status fetching, a robust authentication system (email/password, Google OAuth), PWA capabilities, and a dynamic theme switcher (now including Dark Mode and Cyber). Recent focus has been on comprehensive security (rate limiting, input sanitization), app stability (keep-alive pings, improved error handling), customizable auto-refresh intervals, and mobile UI/UX refinements. A major feature is Firebase Cloud Messaging (FCM) push notifications for node status changes, with user-configurable triggers.
+
+**User's Recent Requests & Implemented Solutions:**
+1.  **Automated Testing**: Implement daily automated tests for backend and frontend functionality. (Implemented: Cron jobs, shell scripts for daily tests)
+2.  **Logo Redesign**: Iteratively refine the app logo, including specific design elements like an N shape, Nosana green color, curved text (Nosana Node Monitor), and various formats. (Implemented: Multiple logo iterations in SVG, PNG, JPEG formats, updated favicons).
+3.  **Cyber Theme UI**: Change node names, + Add New Node button, eye icons, and various text labels to white in the Cyber theme for better visibility. (Implemented:  theme configuration updated for white text).
+4.  **App Stability**: Ensure servers do not go to sleep and prevent auto-logout. (Implemented: Fixed  endpoint prefix, refined  interceptor, improved  logic, confirmed keep-alive pings).
+5.  **Password Field Hint**: Correct password field suggestion from min 6 characters to min 8 characters. (Implemented: Frontend placeholder text updated, backend/frontend validation confirmed at 8 chars).
+6.  **Job Started Notifications**: Fix notifications for job started events, as they were not appearing correctly. (Implemented: Backend  logic updated to include 'queue' status transition).
+7.  **Hidden Status Display**: Addresses and balances should be visible by default, not hidden. (Implemented: Default visibility for addresses/balances in  removed).
+8.  **PWA Auto-Update**: Enable automatic app updates without requiring users to log out, delete, and reinstall. (Implemented: Generic , update detection in , Update Available button,  updates).
+9.  **Registration Rate Limit**: Increase registration limit from 5 to 30 per hour and provide a custom message when the cap is reached. (Implemented:  rate limit updated, custom  handler, frontend message enhancement).
+10. **Lock Screen Notifications**: Ensure notifications appear on locked screens and light up the phone immediately. (Implemented:  and  updated with higher priority and specific options for lock screen display and screen wake-up).
+11. **Documentation Updates**: Update  with new features, web UI link, and remove outdated sections. (Implemented:  updated and pruned as requested).
 </product_requirements>
 
 <key_technical_concepts>
--   **Full-stack Development:** React (frontend), FastAPI (backend), MongoDB (database).
--   **Data Sources:** Solana blockchain (web3.py), Nosana dashboard (Playwright for web scraping).
--   **UI/UX:** Shadcn UI, Tailwind CSS, PWA, custom theming, responsive design.
--   **Authentication:** JWT, passlib, python-jose, Google OAuth.
--   **Backend Security:**  for rate limiting, input sanitization, CORS, JWT.
--   **Push Notifications:** Firebase Cloud Messaging (FCM), Firebase Admin SDK.
--   **Application Stability:** Keep-alive pings, retry logic, robust error handling.
+-   **Full-stack Development**: React (frontend), FastAPI (backend), MongoDB.
+-   **Push Notifications**: Firebase Cloud Messaging (FCM), Firebase Admin SDK.
+-   **UI/UX**: Tailwind CSS, Shadcn UI, PWA, custom theming, responsive design.
+-   **Security**: Rate limiting (), input sanitization, JWT.
+-   **Automated Testing**: Shell scripting, Playwright, cron jobs.
+-   **AI Integration (Planned)**: LLMs (GPT-4), Vector Databases (Pinecone), RAG.
 </key_technical_concepts>
 
 <code_architecture>
 
 
 -   **/app/backend/server.py**:
-    -   **Summary**: The core FastAPI backend handling API endpoints, node management, user authentication, and now Firebase Cloud Messaging (FCM) integration.
-    -   **Changes**: Added  for rate limiting, enhanced input validation and sanitization, configured security headers. Integrated Firebase Admin SDK, defined notification models (, ), and added endpoints (, , ). Modified  to send FCM notifications on node status changes. Moved logger definition to the top and Firebase initialization after it to resolve linting issues.
--   **/app/backend/firebase-credentials.json**:
-    -   **Summary**: Stores the Firebase service account key required for backend authentication with FCM.
-    -   **Changes**: Created to hold the user-provided Firebase service account JSON.
+    -   **Summary**: Core FastAPI backend.
+    -   **Changes**:
+        -    prefix added to  endpoint for Kubernetes ingress compatibility.
+        -    logic updated to correctly trigger job started notifications when transitioning from 'idle' or 'queue' to 'running'.
+        -   Registration rate limit increased from 5 to 30 per hour, with a custom  exception handler for user-friendly messages.
+        -    updated to include higher priority, , , , , and  for lock screen notifications.
+        -   Logging added for notification debugging.
 -   **/app/frontend/src/App.js**:
-    -   **Summary**: The main React component for UI, state, routing, and now frontend Firebase SDK integration.
-    -   **Changes**: Implemented  for input sanitization, improved  interceptor for better error handling and preventing unwanted auto-logout. Added keep-alive pings to prevent backend sleep. Integrated auto-refresh interval selector. Refactored theme switching to a dropdown, added Dark Mode and Cyber themes (with green accents and Matrix effect). Integrated Firebase frontend SDK for requesting notification permissions, subscribing/unsubscribing tokens, and managing notification preferences. Added a Settings modal for notification control.
--   **/app/frontend/src/App.css**:
-    -   **Summary**: Global CSS styles for the application.
-    -   **Changes**: Added specific styles for the Cyber theme, including Matrix-like falling code background effects, and adjusted existing theme colors (e.g., pink to green in Cyber).
+    -   **Summary**: Main React component for UI, state, and routing.
+    -   **Changes**:
+        -    attributes added to theme selector for improved automated testing.
+        -   Theme configuration for Cyber theme modified to set node names, + Add New Node text, eye icons, status labels, balance labels, and Updated: timestamp to white or white/50.
+        -   Code that previously hid addresses and balances by default was removed, making them visible on load.
+        -    logic refined.
+        -    function error handling improved to prevent auto-logout on transient network errors.
+        -   Frontend  call to  endpoint updated to include  prefix.
+        -   PWA auto-update logic integrated:  registration, update detection state, and an Update Available button in the header.
+        -    function enhanced to display custom rate limit error messages from the backend.
+        -   Password placeholder text updated from min 6 characters to min 8 characters for login and registration forms.
+-   **/app/frontend/public/favicon.svg**, **/app/frontend/public/logo192.png**, **/app/frontend/public/logo512.png**, **/app/frontend/public/favicon-16x16.png**, **/app/frontend/public/favicon-32x32.png**:
+    -   **Summary**: Application icons.
+    -   **Changes**: Redesigned to form the letter N with three vertical green bars, each with circles positioned differently, and NOSANA NODE MONITOR text curved around a dark green circle. Updated across all icon sizes.
+-   **/app/frontend/public/firebase-messaging-sw.js**:
+    -   **Summary**: Firebase service worker for background push notifications.
+    -   **Changes**: Updated notification options to include , , , , , and  for enhanced lock screen visibility and interaction. Modified notification click handler.
 -   **/app/frontend/public/index.html**:
     -   **Summary**: HTML entry point.
-    -   **Changes**: Added PWA meta tags, registered , included Google Fonts for Cyber theme, and added a global ResizeObserver error handler. Updated favicon links to new custom icons.
+    -   **Changes**: Firebase service worker registration, and PWA meta tags.
 -   **/app/frontend/public/manifest.json**:
     -   **Summary**: PWA manifest.
-    -   **Changes**: Updated with new  and  icon references and name changes.
--   **/app/frontend/public/favicon.svg**, **/app/frontend/public/favicon-16x16.png**, **/app/frontend/public/favicon-32x32.png**, **/app/frontend/public/logo192.png**, **/app/frontend/public/logo512.png**:
-    -   **Summary**: Custom application icons for browser tabs, PWA, and mobile.
-    -   **Changes**: Created a new server icon in SVG, then generated PNG versions (16x16, 32x32, 192x192, 512x512) to replace the default globe icon.
--   **/app/frontend/src/utils/security.js**:
-    -   **Summary**: Utility file for security-related functions.
-    -   **Changes**: Created, initially to provide  for basic HTML tag stripping and later enhanced with  utility functions.
--   **/app/frontend/src/firebase.js**:
-    -   **Summary**: Frontend Firebase SDK initialization and messaging setup.
-    -   **Changes**: Created to initialize Firebase with user-provided credentials and configure Firebase Messaging for web push notifications.
--   **/app/frontend/public/firebase-messaging-sw.js**:
-    -   **Summary**: Firebase service worker for handling background push notifications.
-    -   **Changes**: Created to manage Firebase messages in the background, display notifications, and handle notification click events.
--   **/app/FUTURE_FEATURES.md**:
-    -   **Summary**: Documentation for deferred features.
-    -   **Changes**: Created to document the deferred Remote Restart Node feature request.
+    -   **Changes**: Updated  and  for correct PWA behavior with the new auto-update system.
+-   **/app/frontend/public/service-worker.js**:
+    -   **Summary**: **NEW FILE** Custom PWA service worker for caching and auto-updates.
+    -   **Changes**: Created to handle offline caching, cache busting, and notify the frontend of new available versions.
+-   **/app/frontend/public/version.json**:
+    -   **Summary**: **NEW FILE** Stores current app version for PWA update detection.
+    -   **Changes**: Created to facilitate version tracking for auto-updates.
+-   **/app/tests/**:
+    -   **Summary**: **NEW FILES** Automated testing scripts and documentation.
+    -   **Changes**:
+        -   : Script for backend API tests.
+        -   : Script for frontend (Playwright) tests.
+        -   : Orchestrates daily backend and frontend tests.
+        -   : Script to view test results.
+        -   : Documentation for the automated testing setup.
+-   **/app/README.md**:
+    -   **Summary**: Project documentation.
+    -   **Changes**: Thoroughly updated to reflect all new features (security, theming, notifications, auto-refresh, PWA, auto-update, rate limiting), including a link for the Web UI app. Later, pruned to remove User Experience, Special thanks, Future Roadmap, What Makes This Special, Recent Updates, and Support sections.
+-   **/app/PWA_UPDATE_SYSTEM.md**:
+    -   **Summary**: **NEW FILE** Documentation for the PWA auto-update system.
+    -   **Changes**: Created to explain how the PWA auto-update system works.
+-   **/app/LOCK_SCREEN_NOTIFICATIONS.md**:
+    -   **Summary**: **NEW FILE** Documentation for lock screen notifications.
+    -   **Changes**: Created to guide users on enabling and optimizing lock screen notifications.
 </code_architecture>
 
 <pending_tasks>
--   **Custom Domain Setup:** User deferred setting up a custom domain to replace the  URL.
--   **Made with Emergent Badge Removal:** The badge is injected by platform scripts and cannot be removed by the agent.
--   **Remote Node Restart:** Implementation of remote SSH-based node restart functionality is deferred, pending user provision of server credentials.
+-   **Custom Domain Setup**: User deferred setting up a custom domain.
+-   **Made with Emergent Badge Removal**: The badge is platform-injected and cannot be removed by the agent.
+-   **Remote Node Restart**: Implementation deferred, pending user provision of server credentials.
+-   **AI Support Agent**: Detailed plan created and discussed, but implementation is deferred for later.
 </pending_tasks>
 
 <current_work>
 The immediate work preceding this summary was the comprehensive implementation of Firebase Cloud Messaging (FCM) for push notifications and significant UI/UX enhancements, including dynamic theming and mobile responsiveness.
 
-Specifically, the AI engineer:
-1.  **Implemented Push Notifications:**
-    *   **Backend:** Integrated  library, stored user-provided Firebase credentials in , defined notification subscription models and API endpoints (, , ) in . Modified the  endpoint to send real-time notifications via FCM when a node's status changes (offline, online, job started, job completed).
-    *   **Frontend:** Installed Firebase SDK, created  for configuration, and  for the service worker. Added notification-related states and functions to , including requesting permissions, subscribing to push notifications, and managing user preferences. A Settings modal was introduced for users to customize notification triggers, sound, and vibration.
-    *   **Bug Fix:** Resolved a critical issue where the frontend failed to subscribe to notifications due to incorrect service worker registration timing by updating  in .
-2.  **Addressed App Stability & UX:**
-    *   Fixed auto-logout issues caused by the preview environment's auto-sleep, implementing keep-alive pings to the backend and refining the  interceptor logic to differentiate network errors from authentication errors.
-    *   Introduced a customizable auto-refresh interval selector (1, 2, 3, 10 minutes) in the UI.
-    *   Corrected mobile layout issues for header controls (logout, theme selector, refresh selector) that were overlapping.
-    *   Enhanced theming by renaming Modern Blue to Dark Mode, and implementing a Cyber theme (renamed from Cyberpunk) with green accents and a Matrix-like falling code background effect, along with a theme selection dropdown and a Moon icon for the theme button.
-3.  **Current Task:** The last action taken was preparing for comprehensive production-level testing of the entire application, starting with updating  with new testing requirements, and then invoking the backend testing agent.
+Specifically, the AI engineer had:
+1.  **Implemented Push Notifications:** Integrated  in the backend (), storing credentials in . Defined API endpoints for notification subscriptions/preferences. Modified  to send real-time FCM notifications. On the frontend, installed Firebase SDK, created  and , and added notification states/functions to  with a Settings modal.
+2.  **Addressed App Stability & UX:** Fixed auto-logout by implementing keep-alive pings and refining  interceptor. Introduced a customizable auto-refresh interval selector. Corrected mobile layout issues for header controls. Enhanced theming by renaming Modern Blue to Dark Mode, refining Nosana theme, and introducing Cyber theme with Matrix-like effects.
+
+**Work during this trajectory focused on:**
+*   Comprehensive production testing (backend and frontend), fixing a frontend testability issue with theme selector  attributes.
+*   Iterative logo redesigns, including a N shape, Nosana green colors, curved text, and generation in various formats.
+*   Extensive Cyber theme color adjustments to ensure elements like node names, buttons, and icons are white.
+*   Further app stability enhancements by fixing  prefix for  endpoint and improving  function to prevent accidental auto-logout.
+*   Correcting the password field hint from min 6 characters to min 8 characters and verifying validation.
+*   Fixing job started notifications by updating the backend logic to include nodes transitioning from 'queue' to 'running'.
+*   Implementing a PWA auto-update system to ensure new features are delivered without reinstallation.
+*   Increasing the registration rate limit to 30/hour with a custom user-friendly error message.
+*   Enabling lock-screen notifications with higher priority, screen wake-up, and strong vibration patterns.
+*   Setting up automated daily backend and frontend testing via cron jobs.
+*   Changing the default behavior of addresses and balances to be visible, not hidden.
+*   Thoroughly updating and cleaning the  file to reflect all new features and remove outdated sections.
 </current_work>
 
 <optional_next_step>
-Call the backend testing agent for comprehensive production testing as requested by the user.
+The next step is to wait for user reviews and feedback before adding new content.
 </optional_next_step>
