@@ -1150,14 +1150,14 @@ function App() {
               <div className="flex items-center gap-2 flex-wrap">
                 {/* Theme Selector */}
                 <Select value={currentTheme} onValueChange={handleThemeChange}>
-                  <SelectTrigger className={"w-[110px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm gap-1 " + theme.control.dropdown}>
+                  <SelectTrigger data-testid="theme-selector" className={"w-[110px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm gap-1 " + theme.control.dropdown}>
                     <Moon className="w-3 h-3 sm:w-4 sm:h-4" />
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className={theme.control.dropdown}>
-                    <SelectItem value="default">Dark Mode</SelectItem>
-                    <SelectItem value="neon80s">80s Neon</SelectItem>
-                    <SelectItem value="cyber">Cyber</SelectItem>
+                    <SelectItem value="default" data-testid="theme-dark-mode">Dark Mode</SelectItem>
+                    <SelectItem value="neon80s" data-testid="theme-80s-neon">80s Neon</SelectItem>
+                    <SelectItem value="cyber" data-testid="theme-cyber">Cyber</SelectItem>
                   </SelectContent>
                 </Select>
                 
