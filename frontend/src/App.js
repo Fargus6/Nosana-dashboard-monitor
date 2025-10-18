@@ -109,6 +109,39 @@ const themes = {
   }
 };
 
+// Matrix Rain Effect Component
+const MatrixRain = () => {
+  useEffect(() => {
+    const characters = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const columns = Math.floor(window.innerWidth / 20);
+    const matrixContainer = document.getElementById('matrix-rain');
+    
+    if (!matrixContainer) return;
+    
+    // Clear existing columns
+    matrixContainer.innerHTML = '';
+    
+    for (let i = 0; i < columns; i++) {
+      const column = document.createElement('div');
+      column.className = 'matrix-column';
+      column.style.left = `${i * 20}px`;
+      column.style.animationDuration = `${Math.random() * 10 + 15}s`;
+      column.style.animationDelay = `${Math.random() * 5}s`;
+      
+      let text = '';
+      const lineCount = Math.floor(Math.random() * 20) + 10;
+      for (let j = 0; j < lineCount; j++) {
+        text += characters[Math.floor(Math.random() * characters.length)] + '\n';
+      }
+      column.textContent = text;
+      
+      matrixContainer.appendChild(column);
+    }
+  }, []);
+  
+  return <div id="matrix-rain" className="matrix-bg"></div>;
+};
+
 function App() {
   const [nodes, setNodes] = useState([]);
   const [newNodeAddress, setNewNodeAddress] = useState("");
