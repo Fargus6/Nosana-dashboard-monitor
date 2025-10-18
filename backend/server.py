@@ -553,7 +553,7 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
 
 # Authentication endpoints
 @api_router.post("/auth/register", response_model=Token)
-@limiter.limit("5/hour")  # Limit registration attempts
+@limiter.limit("30/hour")  # Allow 30 registrations per hour per IP
 async def register(request: Request, user_create: UserCreate):
     """Register a new user"""
     # Sanitize email (already validated by EmailStr)
