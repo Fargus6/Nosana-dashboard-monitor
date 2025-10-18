@@ -1333,6 +1333,46 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                     address
                 )
             
+            # Check for LOW SOL BALANCE (critical for node operation)
+            sol_balance = status_data.get('sol_balance')
+            previous_sol_balance = node.get('sol_balance')
+            
+            # Alert if SOL balance drops below 0.006 (critical threshold)
+            if sol_balance is not None and sol_balance < 0.006:
+                # Only send if we haven't sent alert in last 24 hours
+                last_alert = node.get('last_low_balance_alert')
+                should_alert = True
+                
+                if last_alert:
+                    from datetime import datetime as dt
+                    try:
+                        if isinstance(last_alert, str):
+                            last_alert_time = dt.fromisoformat(last_alert.replace('Z', '+00:00'))
+                        else:
+                            last_alert_time = last_alert
+                        
+                        hours_since_alert = (datetime.now(timezone.utc) - last_alert_time).total_seconds() / 3600
+                        should_alert = hours_since_alert >= 24  # Send max once per 24 hours
+                    except:
+                        should_alert = True
+                
+                if should_alert:
+                    logger.info(f"⚠️ CRITICAL: Low SOL balance detected for {node_name}: {sol_balance:.6f} SOL")
+                    
+                    # Send notification with critical warning
+                    await send_notification_to_user(
+                        current_user.id,
+                        "🟡 CRITICAL: Low SOL Balance",
+                        f"{node_name} has only {sol_balance:.6f} SOL (minimum: 0.005). Top up immediately!",
+                        address
+                    )
+                    
+                    # Record alert time
+                    await db.nodes.update_one(
+                        {"address": address, "user_id": current_user.id},
+                        {"$set": {"last_low_balance_alert": datetime.now(timezone.utc).isoformat()}}
+                    )
+            
         except Exception as e:
             errors.append({"address": node['address'], "error": str(e)})
             logger.error(f"Error updating node {node['address']}: {str(e)}")
