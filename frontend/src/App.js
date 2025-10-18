@@ -922,6 +922,7 @@ function App() {
         {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
         {currentTheme === "cyber" && (
           <>
+            <MatrixRain />
             <div className="cyberpunk-grid-bg"></div>
             <div className="cyberpunk-corner-glow-left"></div>
             <div className="cyberpunk-corner-glow-right"></div>
