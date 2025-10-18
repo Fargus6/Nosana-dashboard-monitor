@@ -391,15 +391,29 @@ function App() {
     toast.success("Logged out successfully");
   };
 
-  const loadNodes = async () => {
+  const loadNodes = async (retryCount = 0) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API}/nodes`);
+      const response = await axios.get(`${API}/nodes`, {
+        timeout: 15000 // 15 second timeout
+      });
       setNodes(response.data);
     } catch (error) {
       console.error("Error loading nodes:", error);
+      
+      // Retry on network error (server might be waking up)
+      if (!error.response && retryCount < 2) {
+        console.log(`Retrying loadNodes (attempt ${retryCount + 1}/2)...`);
+        toast.info("Reconnecting...", { duration: 2000 });
+        setTimeout(() => loadNodes(retryCount + 1), 3000);
+        return;
+      }
+      
       if (error.response?.status === 401) {
+        // Only logout if token is genuinely invalid
         handleLogout();
+      } else if (!error.response) {
+        toast.error("Server is sleeping. Please wait a moment.", { duration: 3000 });
       } else {
         toast.error("Failed to load nodes");
       }
