@@ -153,9 +153,29 @@ except Exception as e:
 # Create the main app without a prefix
 app = FastAPI()
 
+# Custom rate limit exception handler
+async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    """Custom handler for rate limit exceptions with helpful messages"""
+    path = request.url.path
+    
+    # Check if it's the registration endpoint
+    if "/auth/register" in path:
+        return JSONResponse(
+            status_code=429,
+            content={
+                "detail": "Registration limit reached. Please wait until the next hour to create a new account. We allow 30 registrations per hour to prevent abuse."
+            }
+        )
+    
+    # Default message for other endpoints
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded. Please try again later."}
+    )
+
 # Add rate limiter to app
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
 
 # Security Middleware for headers
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
