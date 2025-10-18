@@ -871,16 +871,31 @@ function App() {
             <p className={"text-xs sm:text-sm " + (currentTheme === "neon80s" ? theme.text.muted : "text-gray-600")}>
               {currentUser?.email}
             </p>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              data-testid="logout-button"
-            >
-              <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Auto-refresh interval selector */}
+              <Select value={refreshInterval.toString()} onValueChange={(val) => handleRefreshIntervalChange(parseInt(val))}>
+                <SelectTrigger className="w-[110px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm">
+                  <SelectValue placeholder="Refresh" />
+                </SelectTrigger>
+                <SelectContent>
+                  {refreshIntervalOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value.toString()}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="gap-2 h-8 sm:h-9"
+                data-testid="logout-button"
+              >
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+            </div>
           </div>
         </div>
 
