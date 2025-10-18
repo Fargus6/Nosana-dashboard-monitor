@@ -697,6 +697,171 @@ async def get_me(current_user: User = Depends(get_current_user)):
     return {"email": current_user.email, "id": current_user.id}
 
 
+# Notification endpoints
+@api_router.post("/notifications/register-token")
+@limiter.limit("10/hour")
+async def register_device_token(request: Request, token: str, current_user: User = Depends(get_current_user)):
+    """Register FCM device token for push notifications"""
+    try:
+        device_token = DeviceToken(
+            token=token,
+            user_id=current_user.id
+        )
+        
+        # Check if token already exists
+        existing = await db.device_tokens.find_one({"token": token})
+        if existing:
+            # Update existing
+            await db.device_tokens.update_one(
+                {"token": token},
+                {"$set": {"user_id": current_user.id, "created_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        else:
+            # Insert new
+            token_dict = device_token.model_dump()
+            await db.device_tokens.insert_one(token_dict)
+        
+        logger.info(f"Device token registered for user {current_user.email}")
+        return {"status": "success", "message": "Device token registered"}
+    except Exception as e:
+        logger.error(f"Error registering device token: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to register device token")
+
+
+@api_router.get("/notifications/preferences")
+async def get_notification_preferences(current_user: User = Depends(get_current_user)):
+    """Get user notification preferences"""
+    prefs = await db.notification_preferences.find_one({"user_id": current_user.id}, {"_id": 0})
+    if not prefs:
+        # Return default preferences
+        return {
+            "user_id": current_user.id,
+            "notify_offline": True,
+            "notify_online": True,
+            "notify_job_started": True,
+            "notify_job_completed": True,
+            "vibration": True,
+            "sound": True
+        }
+    return prefs
+
+
+@api_router.post("/notifications/preferences")
+@limiter.limit("20/hour")
+async def save_notification_preferences(
+    request: Request,
+    preferences: NotificationPreferences,
+    current_user: User = Depends(get_current_user)
+):
+    """Save user notification preferences"""
+    preferences.user_id = current_user.id
+    prefs_dict = preferences.model_dump()
+    
+    await db.notification_preferences.update_one(
+        {"user_id": current_user.id},
+        {"$set": prefs_dict},
+        upsert=True
+    )
+    
+    logger.info(f"Notification preferences updated for user {current_user.email}")
+    return {"status": "success", "message": "Preferences saved"}
+
+
+@api_router.post("/notifications/test")
+@limiter.limit("5/hour")
+async def send_test_notification(request: Request, current_user: User = Depends(get_current_user)):
+    """Send a test notification to user's devices"""
+    try:
+        # Get user's device tokens
+        tokens = await db.device_tokens.find({"user_id": current_user.id}).to_list(100)
+        
+        if not tokens:
+            raise HTTPException(status_code=404, detail="No devices registered for push notifications")
+        
+        # Send test notification to all devices
+        sent_count = 0
+        for device in tokens:
+            try:
+                message = messaging.Message(
+                    notification=messaging.Notification(
+                        title="🔔 Test Notification",
+                        body="Your Nosana Node Monitor notifications are working!",
+                    ),
+                    token=device['token']
+                )
+                
+                response = messaging.send(message)
+                sent_count += 1
+                logger.info(f"Test notification sent: {response}")
+            except Exception as e:
+                logger.error(f"Failed to send to token: {str(e)}")
+                # Remove invalid tokens
+                if "invalid" in str(e).lower() or "not registered" in str(e).lower():
+                    await db.device_tokens.delete_one({"token": device['token']})
+        
+        return {"status": "success", "sent": sent_count, "total": len(tokens)}
+    except Exception as e:
+        logger.error(f"Error sending test notification: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def send_notification_to_user(user_id: str, title: str, body: str, node_address: str = None):
+    """Helper function to send push notification to user"""
+    try:
+        # Get user's device tokens
+        tokens = await db.device_tokens.find({"user_id": user_id}).to_list(100)
+        
+        if not tokens:
+            return
+        
+        # Get user preferences
+        prefs = await db.notification_preferences.find_one({"user_id": user_id})
+        if not prefs:
+            prefs = {"vibration": True, "sound": True}
+        
+        # Send to all user devices
+        for device in tokens:
+            try:
+                # Build notification
+                notification = messaging.Notification(
+                    title=title,
+                    body=body
+                )
+                
+                # Build data payload
+                data = {
+                    "user_id": user_id,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+                if node_address:
+                    data["node_address"] = node_address
+                
+                # Build Android config with vibration/sound
+                android_config = messaging.AndroidConfig(
+                    notification=messaging.AndroidNotification(
+                        sound="default" if prefs.get('sound', True) else None,
+                        vibrate_timings_millis=[100, 200, 100] if prefs.get('vibration', True) else None
+                    )
+                )
+                
+                message = messaging.Message(
+                    notification=notification,
+                    data=data,
+                    android=android_config,
+                    token=device['token']
+                )
+                
+                response = messaging.send(message)
+                logger.info(f"Notification sent to {user_id}: {response}")
+            except Exception as e:
+                logger.error(f"Failed to send notification: {str(e)}")
+                # Remove invalid tokens
+                if "invalid" in str(e).lower() or "not registered" in str(e).lower():
+                    await db.device_tokens.delete_one({"token": device['token']})
+    except Exception as e:
+        logger.error(f"Error in send_notification_to_user: {str(e)}")
+
+
 @api_router.post("/nodes", response_model=Node)
 @limiter.limit("20/minute")  # Rate limit node creation
 async def add_node(request: Request, input: NodeCreate, current_user: User = Depends(get_current_user)):
