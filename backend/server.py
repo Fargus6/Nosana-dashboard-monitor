@@ -1248,7 +1248,13 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Health check endpoint
 @app.get("/api/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint - also keeps Nosana service awake"""
+    try:
+        # Ping Nosana service to keep it alive
+        requests.get("http://localhost:3001/health", timeout=2)
+    except:
+        pass  # Don't fail health check if Nosana service is down
+    
     return {"status": "healthy", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 @app.on_event("shutdown")
