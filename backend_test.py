@@ -24,7 +24,7 @@ from queue import Queue
 # Removed unused imports
 
 # Configuration
-BASE_URL = "https://ai-node-tracker.preview.emergentagent.com/api"
+BASE_URL = "https://cyber-monitor-2.preview.emergentagent.com/api"
 TEST_EMAIL = "test@security.com"
 TEST_PASSWORD = "SecurePass123"
 
