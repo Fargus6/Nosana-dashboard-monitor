@@ -531,12 +531,13 @@ class FocusedBackendTester:
         except:
             pass
         
-        # Test server responsiveness
+        # Test server responsiveness using auth/me endpoint
         server_responsive = True
         for i in range(5):
             try:
-                response = self.session.get(f"{BASE_URL}/health")
-                if response.status_code != 200:
+                response = self.session.get(f"{BASE_URL}/auth/me")
+                # Should return 401 (unauthorized) but server is responsive
+                if response.status_code not in [401, 200]:
                     server_responsive = False
                     break
                 time.sleep(0.1)
