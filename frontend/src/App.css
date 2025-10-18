@@ -8,6 +8,127 @@
   min-height: 100vh;
 }
 
+/* Cyberpunk theme fonts */
+.cyberpunk-font-heading {
+  font-family: 'Orbitron', sans-serif !important;
+}
+
+.cyberpunk-font-body {
+  font-family: 'Rajdhani', sans-serif !important;
+}
+
+/* Cyberpunk Grid Background */
+.cyberpunk-grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Cyberpunk Corner Glows */
+.cyberpunk-corner-glow-left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 0, 255, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cyberpunk-corner-glow-right {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.15), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Cyberpunk Scanline Effect */
+.cyberpunk-scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 240, 255, 0.02) 51%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+/* Cyberpunk Glitch Effect */
+.cyberpunk-glitch {
+  position: relative;
+}
+
+.cyberpunk-glitch::before,
+.cyberpunk-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cyberpunk-glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 #ff00ff;
+  clip: rect(24px, 9999px, 90px, 0);
+  animation: glitch-anim 3s infinite linear alternate-reverse;
+}
+
+.cyberpunk-glitch::after {
+  left: -2px;
+  text-shadow: -2px 0 #00f0ff;
+  clip: rect(85px, 9999px, 140px, 0);
+  animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(20px, 9999px, 80px, 0); }
+  20% { clip: rect(70px, 9999px, 20px, 0); }
+  40% { clip: rect(120px, 9999px, 60px, 0); }
+  60% { clip: rect(10px, 9999px, 100px, 0); }
+  80% { clip: rect(90px, 9999px, 30px, 0); }
+  100% { clip: rect(40px, 9999px, 70px, 0); }
+}
+
+/* Cyberpunk Glowing Border Animation */
+@keyframes glowing-border {
+  0% { background-position: 0 0; }
+  50% { background-position: 400% 0; }
+  100% { background-position: 0 0; }
+}
+
+/* Cyberpunk Pulse Animation */
+@keyframes cyberpunk-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 20px currentColor; }
+  50% { opacity: 0.6; box-shadow: 0 0 30px currentColor; }
+}
+
 /* Detailed pixelated tech background for neon theme */
 .tech-pattern-bg {
   position: fixed;
