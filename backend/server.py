@@ -845,7 +845,7 @@ async def send_notification_to_user(user_id: str, title: str, body: str, node_ad
         # Send to all user devices
         for device in tokens:
             try:
-                # Build notification
+                # Build notification with lock screen visibility
                 notification = messaging.Notification(
                     title=title,
                     body=body
@@ -854,16 +854,60 @@ async def send_notification_to_user(user_id: str, title: str, body: str, node_ad
                 # Build data payload
                 data = {
                     "user_id": user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "click_action": "/"
                 }
                 if node_address:
                     data["node_address"] = node_address
                 
-                # Build Android config with vibration/sound
+                # Build Android config with HIGH PRIORITY for lock screen
                 android_config = messaging.AndroidConfig(
+                    priority="high",  # HIGH PRIORITY - Shows on lock screen
                     notification=messaging.AndroidNotification(
                         sound="default" if prefs.get('sound', True) else None,
-                        vibrate_timings_millis=[100, 200, 100] if prefs.get('vibration', True) else None
+                        vibrate_timings_millis=[300, 100, 300, 100, 300] if prefs.get('vibration', True) else None,
+                        priority="high",  # HIGH PRIORITY
+                        visibility="public",  # Show full notification on lock screen
+                        default_sound=True if prefs.get('sound', True) else False,
+                        default_vibrate_timings=False,  # Use custom vibration
+                        notification_priority="PRIORITY_HIGH"  # Ensure high priority
+                    )
+                )
+                
+                # Build APNS (iOS) config with HIGH PRIORITY
+                apns_config = messaging.APNSConfig(
+                    headers={
+                        "apns-priority": "10",  # Maximum priority for iOS
+                        "apns-push-type": "alert"
+                    },
+                    payload=messaging.APNSPayload(
+                        aps=messaging.Aps(
+                            alert=messaging.ApsAlert(
+                                title=title,
+                                body=body
+                            ),
+                            badge=1,
+                            sound="default" if prefs.get('sound', True) else None,
+                            content_available=True,  # Wake up the device
+                            mutable_content=True  # Allow notification modifications
+                        )
+                    )
+                )
+                
+                # Build WebPush config for PWA
+                webpush_config = messaging.WebpushConfig(
+                    notification=messaging.WebpushNotification(
+                        title=title,
+                        body=body,
+                        icon="/logo192.png",
+                        badge="/favicon-32x32.png",
+                        vibrate=[300, 100, 300, 100, 300] if prefs.get('vibration', True) else [0],
+                        require_interaction=False,  # Auto-dismiss after time
+                        tag="nosana-node-alert",  # Group notifications
+                        renotify=True  # Alert even if same tag
+                    ),
+                    fcm_options=messaging.WebpushFCMOptions(
+                        link="/"  # URL to open when clicked
                     )
                 )
                 
@@ -871,11 +915,13 @@ async def send_notification_to_user(user_id: str, title: str, body: str, node_ad
                     notification=notification,
                     data=data,
                     android=android_config,
+                    apns=apns_config,
+                    webpush=webpush_config,
                     token=device['token']
                 )
                 
                 response = messaging.send(message)
-                logger.info(f"Notification sent to {user_id}: {response}")
+                logger.info(f"High-priority notification sent to {user_id}: {response}")
             except Exception as e:
                 logger.error(f"Failed to send notification: {str(e)}")
                 # Remove invalid tokens
