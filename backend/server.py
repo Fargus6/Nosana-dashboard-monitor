@@ -563,7 +563,7 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
                 
                 return {
                     'job_status': job_status,
-                    'nos_balance': nos_balance,
+                    'nos_balance': final_nos_balance,
                     'sol_balance': sol_balance,
                     'total_jobs': total_jobs,
                     'availability_score': availability_score
