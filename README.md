@@ -7,13 +7,16 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 - **📱 Mobile-Optimized PWA**: Install on Android & iOS as a standalone app
 - **🔄 Automated Status Detection**: Real-time node status from Solana blockchain
 - **➕ Multi-Node Management**: Add all your Nosana nodes with custom names
-- **🚀 One-Click Auto-Refresh**: Fetch live status for all nodes from blockchain
-- **📊 Status Tracking**: Monitor Online/Offline status and Job states (Running/Queue/Idle)
+- **🚀 One-Click Auto-Refresh**: Fetch live status for all nodes from blockchain (every 2 minutes)
+- **📊 Detailed Metrics**: Track NOS/SOL balances, total jobs, and availability scores
 - **🔔 Offline Alerts**: Toast notifications when nodes go offline
-- **👁️ Privacy Toggle**: Show/hide node addresses with eye icon
+- **👁️ Privacy Toggle**: Show/hide node addresses and financial details with eye icon
+- **🔐 Secure Authentication**: Email/password login and Google OAuth support
+- **🛡️ Enterprise-Grade Security**: Rate limiting, input validation, XSS protection
+- **🎨 Dual Themes**: Modern Blue and Nosana-inspired 80s Neon themes
 - **📝 Notes**: Add custom notes for each node
 - **🔗 Direct Dashboard Links**: Quick access to each node's Nosana dashboard
-- **🎨 Modern UI**: Beautiful, responsive design optimized for mobile and desktop
+- **💻 Responsive Design**: Beautiful UI optimized for mobile and desktop
 
 ## 📱 Install as Mobile App
 
