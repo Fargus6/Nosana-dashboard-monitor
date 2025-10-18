@@ -726,6 +726,12 @@ async def get_me(current_user: User = Depends(get_current_user)):
 async def register_device_token(request: Request, token: str, current_user: User = Depends(get_current_user)):
     """Register FCM device token for push notifications"""
     try:
+        logger.info(f"=" * 70)
+        logger.info(f"📱 REGISTERING DEVICE TOKEN")
+        logger.info(f"   User: {current_user.email}")
+        logger.info(f"   User ID: {current_user.id}")
+        logger.info(f"   Token preview: {token[:30]}...{token[-10:]}")
+        
         device_token = DeviceToken(
             token=token,
             user_id=current_user.id
@@ -734,20 +740,32 @@ async def register_device_token(request: Request, token: str, current_user: User
         # Check if token already exists
         existing = await db.device_tokens.find_one({"token": token})
         if existing:
+            logger.info(f"   ♻️  Token already exists, updating...")
             # Update existing
             await db.device_tokens.update_one(
                 {"token": token},
                 {"$set": {"user_id": current_user.id, "created_at": datetime.now(timezone.utc).isoformat()}}
             )
+            logger.info(f"   ✅ Token updated successfully")
         else:
+            logger.info(f"   ➕ Registering new token...")
             # Insert new
             token_dict = device_token.model_dump()
             await db.device_tokens.insert_one(token_dict)
+            logger.info(f"   ✅ New token registered successfully")
         
-        logger.info(f"Device token registered for user {current_user.email}")
-        return {"status": "success", "message": "Device token registered"}
+        # Count total tokens for this user
+        user_tokens_count = await db.device_tokens.count_documents({"user_id": current_user.id})
+        logger.info(f"   📊 User now has {user_tokens_count} device(s) registered")
+        logger.info(f"=" * 70)
+        
+        return {"status": "success", "message": "Device token registered", "total_devices": user_tokens_count}
     except Exception as e:
-        logger.error(f"Error registering device token: {str(e)}")
+        logger.error(f"=" * 70)
+        logger.error(f"❌ ERROR REGISTERING DEVICE TOKEN")
+        logger.error(f"   User: {current_user.email if current_user else 'Unknown'}")
+        logger.error(f"   Error: {str(e)}")
+        logger.error(f"=" * 70)
         raise HTTPException(status_code=500, detail="Failed to register device token")
 
 
