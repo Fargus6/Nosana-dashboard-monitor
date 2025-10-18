@@ -130,15 +130,27 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - `POST /api/nodes/refresh-all-status` - Auto-refresh all nodes from blockchain
 - `GET /api/nodes/{address}/dashboard` - Get dashboard link
 
-## 🎯 Your Nodes
+## 🎯 Getting Started
 
-Your three nodes are pre-loaded and show **ONLINE** status:
-1. **3090 Tuf** - 9DcLW6JkuanvWP2CbKsohChFWGCEiTnAGxA4xdAYHVNq ✅ ONLINE
-2. **3090 Palit** - 9hsWPkJUBiDQnc2p7dKi2gMKHp6LwscA6Z5qAF8NGsyV ✅ ONLINE
-3. **4090 Gigabyte** - 7Qm8JnTZRs7MbE1hXX3jAEvKfBwv421mRkszBsbfhihH ✅ ONLINE
+1. **Create an Account**: Register with email/password or use Google Sign-In
+2. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
+3. **Monitor Status**: Automatic refresh every 2 minutes keeps you updated
+4. **View Details**: Check NOS/SOL balances, job counts, and availability scores
+5. **Get Alerts**: Receive notifications when nodes go offline
+6. **Install as App**: Follow the PWA installation steps above for the best experience
 
-## 🔥 Achievement Unlocked
+## 🔥 What Makes This Special
 
 **Automated Dashboard with Real Blockchain Data!** 
 
-The app now queries the Solana blockchain directly to fetch your node status, making it a fully automated monitoring solution. No more manual updates needed!
+The app queries the Solana blockchain directly and scrapes the Nosana dashboard to fetch your node status, making it a fully automated monitoring solution. No more manual updates needed!
+
+**Privacy & Security First:**
+- Your nodes are private (only you can see them)
+- Enterprise-grade security protections
+- Secure authentication with JWT tokens
+- All data encrypted in transit
+
+---
+
+Built with ❤️ for the Nosana community 🚀
