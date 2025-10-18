@@ -930,14 +930,21 @@ async def send_notification_to_user(user_id: str, title: str, body: str, node_ad
                 )
                 
                 response = messaging.send(message)
-                logger.info(f"High-priority notification sent to {user_id}: {response}")
+                logger.info(f"✅ Notification sent successfully!")
+                logger.info(f"   FCM Response: {response}")
+                logger.info(f"   Device token: {device['token'][:30]}...")
             except Exception as e:
-                logger.error(f"Failed to send notification: {str(e)}")
+                logger.error(f"❌ Failed to send notification to device: {str(e)}")
                 # Remove invalid tokens
                 if "invalid" in str(e).lower() or "not registered" in str(e).lower():
+                    logger.warning(f"🗑️  Removing invalid token: {device['token'][:30]}...")
                     await db.device_tokens.delete_one({"token": device['token']})
+        
+        logger.info(f"=" * 70)
     except Exception as e:
-        logger.error(f"Error in send_notification_to_user: {str(e)}")
+        logger.error(f"=" * 70)
+        logger.error(f"❌ ERROR in send_notification_to_user: {str(e)}")
+        logger.error(f"=" * 70)
 
 
 @api_router.post("/nodes", response_model=Node)
