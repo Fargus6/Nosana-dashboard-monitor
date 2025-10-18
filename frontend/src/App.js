@@ -277,54 +277,90 @@ function App() {
   // Notification Functions
   const requestNotificationPermission = async () => {
     try {
+      console.log("=" + "=".repeat(69));
+      console.log("🔔 NOTIFICATION SETUP STARTED");
+      console.log("=" + "=".repeat(69));
+      
+      // Check messaging support
       if (!messaging) {
-        toast.error("Notifications not supported in this browser");
+        console.error("❌ Firebase messaging not initialized");
+        console.log("Browser:", navigator.userAgent);
+        console.log("Service Worker support:", 'serviceWorker' in navigator);
+        console.log("Notification support:", 'Notification' in window);
+        toast.error("Notifications not supported in this browser. Please use Chrome or Safari.");
+        return;
+      }
+      console.log("✅ Firebase messaging initialized");
+
+      // Check current permission status
+      console.log("Current notification permission:", Notification.permission);
+      
+      if (Notification.permission === 'denied') {
+        console.error("❌ Notifications were previously denied");
+        toast.error("Notifications blocked. Please enable in browser settings.", {
+          duration: 6000
+        });
         return;
       }
 
-      console.log("Requesting notification permission...");
+      console.log("📱 Requesting notification permission...");
+      toast.info("Please allow notifications when prompted", { duration: 3000 });
+      
       const permission = await Notification.requestPermission();
+      console.log("Permission result:", permission);
       
       if (permission === 'granted') {
-        console.log('Notification permission granted');
+        console.log('✅ Notification permission GRANTED');
         
         // Register service worker
         if ('serviceWorker' in navigator) {
-          console.log("Registering service worker...");
+          console.log("🔧 Registering service worker...");
           
           // First, unregister any existing service workers
           const existingRegistrations = await navigator.serviceWorker.getRegistrations();
+          console.log(`Found ${existingRegistrations.length} existing service worker(s)`);
+          
           for (let registration of existingRegistrations) {
             if (registration.active?.scriptURL.includes('firebase-messaging-sw')) {
-              console.log("Unregistering old service worker...");
+              console.log("🗑️  Unregistering old Firebase service worker...");
               await registration.unregister();
             }
           }
           
           // Register new service worker
+          console.log("📝 Registering Firebase messaging service worker...");
           const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
             scope: '/'
           });
           
-          console.log('Service Worker registered:', registration);
+          console.log('✅ Service Worker registered');
+          console.log('   • Scope:', registration.scope);
+          console.log('   • State:', registration.active?.state || 'installing');
           
           // Wait for service worker to be ready
+          console.log("⏳ Waiting for service worker to be ready...");
           await navigator.serviceWorker.ready;
-          console.log('Service Worker ready');
+          console.log('✅ Service Worker ready');
           
           // Additional wait to ensure service worker is fully active
           let activeWorker = registration.active || registration.installing || registration.waiting;
           if (activeWorker && activeWorker.state !== 'activated') {
+            console.log("⏳ Waiting for service worker activation...");
             await new Promise((resolve) => {
               activeWorker.addEventListener('statechange', (e) => {
+                console.log("Service worker state changed to:", e.target.state);
                 if (e.target.state === 'activated') {
                   resolve();
                 }
               });
+              // Timeout after 10 seconds
+              setTimeout(() => resolve(), 10000);
             });
           }
+          console.log('✅ Service Worker fully activated');
           
-          console.log('Getting FCM token...');
+          console.log('🎫 Getting FCM token...');
+          toast.info("Obtaining notification token...", { duration: 2000 });
           
           // Get FCM token with retry logic
           let token = null;
@@ -332,48 +368,96 @@ function App() {
           
           while (!token && retries > 0) {
             try {
+              console.log(`   Attempt ${4 - retries}/3...`);
               token = await getToken(messaging, { 
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: registration
               });
               
               if (token) {
-                console.log('FCM Token obtained:', token.substring(0, 20) + '...');
+                console.log('✅ FCM Token obtained successfully!');
+                console.log('   Token preview:', token.substring(0, 30) + '...' + token.substring(token.length - 10));
                 break;
               }
             } catch (err) {
-              console.warn(`Token attempt failed (${retries} retries left):`, err);
+              console.error(`❌ Token attempt ${4 - retries} failed:`, err);
               retries--;
               if (retries > 0) {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+                console.log(`   Retrying in 1 second... (${retries} retries left)`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
               }
             }
           }
           
           if (token) {
             // Register token with backend
-            console.log('Registering token with backend...');
-            await axios.post(`${API}/notifications/register-token`, null, {
-              params: { token }
-            });
+            console.log('📤 Registering token with backend...');
+            toast.info("Registering with notification server...", { duration: 2000 });
             
-            setNotificationsEnabled(true);
-            toast.success("Push notifications enabled!");
-            
-            // Load preferences
-            loadNotificationPreferences();
+            try {
+              await axios.post(`${API}/notifications/register-token`, null, {
+                params: { token }
+              });
+              console.log('✅ Token registered with backend successfully');
+              console.log("=" + "=".repeat(69));
+              console.log("🎉 NOTIFICATION SETUP COMPLETE!");
+              console.log("=" + "=".repeat(69));
+              
+              setNotificationsEnabled(true);
+              toast.success("🎉 Push notifications enabled! You'll now receive alerts.", {
+                duration: 5000
+              });
+              
+              // Load preferences
+              console.log('📋 Loading notification preferences...');
+              loadNotificationPreferences();
+            } catch (backendError) {
+              console.error('❌ Failed to register token with backend:', backendError);
+              throw new Error(`Backend registration failed: ${backendError.response?.data?.detail || backendError.message}`);
+            }
           } else {
-            throw new Error("Failed to obtain FCM token after retries");
+            console.error('❌ Failed to obtain FCM token after all retries');
+            throw new Error("Could not obtain notification token. Please check your internet connection and try again.");
           }
         } else {
-          throw new Error("Service Workers not supported in this browser");
+          console.error('❌ Service Workers not supported');
+          throw new Error("Service Workers not supported in this browser. Please use a modern browser like Chrome or Safari.");
         }
+      } else if (permission === 'denied') {
+        console.error('❌ Notification permission DENIED by user');
+        toast.error("Notifications blocked. To enable: Browser Settings → Site Settings → Notifications → Allow", {
+          duration: 8000
+        });
       } else {
-        toast.error("Notification permission denied");
+        console.warn('⚠️  Notification permission DEFAULT (dismissed)');
+        toast.warning("Notification permission not granted. Please try again and click Allow.");
       }
     } catch (error) {
-      console.error('Error enabling notifications:', error);
-      toast.error("Failed to enable notifications: " + error.message);
+      console.error("=" + "=".repeat(69));
+      console.error('❌ ERROR ENABLING NOTIFICATIONS');
+      console.error("=" + "=".repeat(69));
+      console.error('Error details:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      let errorMessage = "Failed to enable notifications";
+      if (error.message) {
+        errorMessage += ": " + error.message;
+      }
+      
+      toast.error(errorMessage, { duration: 8000 });
+      
+      // Show additional help
+      console.log("=" + "=".repeat(69));
+      console.log("💡 TROUBLESHOOTING TIPS:");
+      console.log("=" + "=".repeat(69));
+      console.log("1. Make sure you're on HTTPS (not HTTP)");
+      console.log("2. Make sure you clicked 'Allow' on the notification permission");
+      console.log("3. Check browser settings: Notifications should be enabled");
+      console.log("4. Try refreshing the page and enabling again");
+      console.log("5. Check: chrome://settings/content/notifications (Chrome)");
+      console.log("6. Check: Settings → Safari → Notifications (Safari)");
+      console.log("=" + "=".repeat(69));
     }
   };
 
