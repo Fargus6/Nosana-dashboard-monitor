@@ -281,6 +281,36 @@ function App() {
       console.log("🔔 NOTIFICATION SETUP STARTED");
       console.log("=" + "=".repeat(69));
       
+      // Detect iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isInStandaloneMode = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+      
+      if (isIOS) {
+        console.log("🍎 iOS device detected");
+        console.log("   Standalone mode:", isInStandaloneMode);
+        
+        if (!isInStandaloneMode) {
+          console.error("❌ NOT IN STANDALONE MODE");
+          console.log("=" + "=".repeat(69));
+          console.log("🍎 iOS SETUP INSTRUCTIONS:");
+          console.log("=" + "=".repeat(69));
+          console.log("On iOS, notifications ONLY work when app is installed:");
+          console.log("1. Tap Share button (↑) at bottom of Safari");
+          console.log("2. Scroll and tap 'Add to Home Screen'");
+          console.log("3. Tap 'Add'");
+          console.log("4. Open app from home screen icon (not Safari)");
+          console.log("5. Then enable notifications");
+          console.log("=" + "=".repeat(69));
+          
+          toast.error("iOS: Please install app to home screen first!", {
+            duration: 8000
+          });
+          return;
+        }
+        
+        console.log("✅ App is in standalone mode (installed to home screen)");
+      }
+      
       // Check messaging support
       if (!messaging) {
         console.error("❌ Firebase messaging not initialized");
