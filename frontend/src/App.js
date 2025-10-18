@@ -157,6 +157,84 @@ function App() {
     toast.success(`Auto-refresh set to ${option.label}`);
   };
 
+  // Notification Functions
+  const requestNotificationPermission = async () => {
+    try {
+      if (!messaging) {
+        toast.error("Notifications not supported in this browser");
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+      
+      if (permission === 'granted') {
+        console.log('Notification permission granted');
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          console.log('Service Worker registered:', registration);
+          
+          // Get FCM token
+          const token = await getToken(messaging, { 
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: registration
+          });
+          
+          if (token) {
+            console.log('FCM Token:', token);
+            
+            // Register token with backend
+            await axios.post(`${API}/notifications/register-token`, null, {
+              params: { token }
+            });
+            
+            setNotificationsEnabled(true);
+            toast.success("Push notifications enabled!");
+            
+            // Load preferences
+            loadNotificationPreferences();
+          }
+        }
+      } else {
+        toast.error("Notification permission denied");
+      }
+    } catch (error) {
+      console.error('Error enabling notifications:', error);
+      toast.error("Failed to enable notifications: " + error.message);
+    }
+  };
+
+  const loadNotificationPreferences = async () => {
+    try {
+      const response = await axios.get(`${API}/notifications/preferences`);
+      setNotificationPreferences(response.data);
+    } catch (error) {
+      console.error('Error loading preferences:', error);
+    }
+  };
+
+  const saveNotificationPreferences = async (prefs) => {
+    try {
+      await axios.post(`${API}/notifications/preferences`, prefs);
+      setNotificationPreferences(prefs);
+      toast.success("Notification preferences saved!");
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      toast.error("Failed to save preferences");
+    }
+  };
+
+  const sendTestNotification = async () => {
+    try {
+      const response = await axios.post(`${API}/notifications/test`);
+      toast.success(`Test notification sent to ${response.data.sent} device(s)`);
+    } catch (error) {
+      console.error('Error sending test notification:', error);
+      toast.error(error.response?.data?.detail || "Failed to send test notification");
+    }
+  };
+
   // Setup axios interceptor separately
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
