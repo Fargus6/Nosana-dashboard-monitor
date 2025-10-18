@@ -29,13 +29,13 @@ const apiRateLimiter = new RateLimiter(30, 60000); // 30 requests per minute
 // Theme configurations
 const themes = {
   default: {
-    name: "Modern Blue",
-    background: "min-h-screen bg-gradient-to-br from-slate-50 to-blue-50",
-    card: "border-blue-200 shadow-lg backdrop-blur-sm bg-white/90",
-    cardHover: "hover:shadow-xl",
-    title: "bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent",
-    button: "bg-blue-600 hover:bg-blue-700",
-    buttonGradient: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700",
+    name: "Dark Mode",
+    background: "min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900",
+    card: "border-blue-500/30 shadow-lg backdrop-blur-sm bg-slate-800/90",
+    cardHover: "hover:shadow-xl hover:shadow-blue-500/20",
+    title: "bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent",
+    button: "bg-blue-600 hover:bg-blue-700 text-white",
+    buttonGradient: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white",
     badge: {
       online: "bg-green-500 text-white",
       offline: "bg-red-500 text-white",
@@ -43,6 +43,15 @@ const themes = {
       running: "bg-blue-500 text-white",
       queue: "bg-yellow-500 text-white",
       idle: "bg-gray-500 text-white"
+    },
+    text: {
+      primary: "text-white",
+      secondary: "text-slate-300",
+      muted: "text-slate-400"
+    },
+    control: {
+      button: "bg-slate-700 border-slate-600 text-white hover:bg-slate-600",
+      dropdown: "bg-slate-700 border-slate-600 text-white"
     }
   },
   neon80s: {
@@ -51,13 +60,27 @@ const themes = {
     card: "border-emerald-500 border-2 shadow-[0_0_15px_rgba(16,185,129,0.5)] backdrop-blur-sm bg-black/80",
     cardHover: "hover:shadow-[0_0_25px_rgba(16,185,129,0.8)]",
     title: "bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent",
-    button: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_0_10px_rgba(16,185,129,0.5)]",
-    buttonGradient: "bg-gradient-to-r from-teal-400 to-emerald-500 hover:from-teal-500 hover:to-emerald-600 shadow-[0_0_10px_rgba(20,184,166,0.5)]",
+    button: "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-[0_0_10px_rgba(16,185,129,0.5)] text-white",
+    buttonGradient: "bg-gradient-to-r from-teal-400 to-emerald-500 hover:from-teal-500 hover:to-emerald-600 shadow-[0_0_10px_rgba(20,184,166,0.5)] text-black",
     badge: {
       online: "bg-emerald-400 text-black shadow-[0_0_10px_rgba(52,211,153,0.6)]",
       offline: "bg-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.6)]",
       unknown: "bg-gray-500 text-white shadow-[0_0_10px_rgba(107,114,128,0.6)]",
       running: "bg-cyan-400 text-black shadow-[0_0_10px_rgba(34,211,238,0.6)]",
+      queue: "bg-yellow-400 text-black shadow-[0_0_10px_rgba(250,204,21,0.6)]",
+      idle: "bg-teal-400 text-black shadow-[0_0_10px_rgba(45,212,191,0.6)]"
+    },
+    text: {
+      primary: "text-emerald-200",
+      secondary: "text-teal-300",
+      muted: "text-emerald-300"
+    },
+    control: {
+      button: "bg-emerald-900/50 border-emerald-500 text-emerald-200 hover:bg-emerald-800/50",
+      dropdown: "bg-emerald-900/50 border-emerald-500 text-emerald-200"
+    }
+  }
+};
       queue: "bg-yellow-400 text-black shadow-[0_0_10px_rgba(250,204,21,0.6)]",
       idle: "bg-teal-400 text-black shadow-[0_0_10px_rgba(45,212,191,0.6)]"
     },
