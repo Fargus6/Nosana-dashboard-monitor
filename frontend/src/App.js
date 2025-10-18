@@ -887,7 +887,7 @@ function App() {
       <div className={theme.background + " flex items-center justify-center p-4"}>
         {/* Background effects for themes */}
         {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
-        {currentTheme === "cyberpunk" && (
+        {currentTheme === "cyber" && (
           <>
             <div className="cyberpunk-grid-bg"></div>
             <div className="cyberpunk-corner-glow-left"></div>
@@ -1076,7 +1076,7 @@ function App() {
     <div className={theme.background}>
       {/* Background effects for themes */}
       {currentTheme === "neon80s" && <div className="tech-pattern-bg"></div>}
-      {currentTheme === "cyberpunk" && (
+      {currentTheme === "cyber" && (
         <>
           <div className="cyberpunk-grid-bg"></div>
           <div className="cyberpunk-corner-glow-left"></div>
@@ -1093,14 +1093,14 @@ function App() {
             {/* Left: Title */}
             <div className="flex-1">
               <h1 
-                className={theme.title + " text-2xl sm:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 " + (currentTheme === "cyberpunk" ? "cyberpunk-glitch uppercase tracking-wider" : "")} 
+                className={theme.title + " text-2xl sm:text-4xl lg:text-5xl font-bold mb-1 sm:mb-2 " + (currentTheme === "cyber" ? "cyberpunk-glitch uppercase tracking-wider" : "")} 
                 data-testid="app-title"
-                data-text={currentTheme === "cyberpunk" ? "NOSANA NODE MONITOR" : ""}
+                data-text={currentTheme === "cyber" ? "NOSANA NODE MONITOR" : ""}
               >
-                {currentTheme === "cyberpunk" ? "NOSANA NODE MONITOR" : "Nosana Node Monitor"}
+                {currentTheme === "cyber" ? "NOSANA NODE MONITOR" : "Nosana Node Monitor"}
               </h1>
-              <p className={"text-xs sm:text-base " + theme.text.secondary + (currentTheme === "cyberpunk" ? " uppercase tracking-wide" : "")}>
-                {currentTheme === "cyberpunk" ? "// Real-time AI Network Surveillance //" : "Monitor your Nosana AI network nodes in real-time"}
+              <p className={"text-xs sm:text-base " + theme.text.secondary + (currentTheme === "cyber" ? " uppercase tracking-wide" : "")}>
+                {currentTheme === "cyber" ? "// Real-time AI Network Surveillance //" : "Monitor your Nosana AI network nodes in real-time"}
               </p>
             </div>
             
