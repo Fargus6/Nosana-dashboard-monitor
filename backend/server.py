@@ -831,10 +831,19 @@ async def send_test_notification(request: Request, current_user: User = Depends(
 async def send_notification_to_user(user_id: str, title: str, body: str, node_address: str = None):
     """Helper function to send push notification to user"""
     try:
+        logger.info(f"=" * 70)
+        logger.info(f"🔔 SENDING NOTIFICATION to user: {user_id}")
+        logger.info(f"   Title: {title}")
+        logger.info(f"   Body: {body}")
+        logger.info(f"   Node: {node_address or 'N/A'}")
+        
         # Get user's device tokens
         tokens = await db.device_tokens.find({"user_id": user_id}).to_list(100)
+        logger.info(f"   Found {len(tokens)} device token(s)")
         
         if not tokens:
+            logger.warning(f"⚠️  No device tokens found for user {user_id}")
+            logger.info(f"=" * 70)
             return
         
         # Get user preferences
