@@ -1385,6 +1385,39 @@ function App() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* iOS PWA Warning */}
+              {(() => {
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isInStandaloneMode = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+                
+                if (isIOS && !isInStandaloneMode && !notificationsEnabled) {
+                  return (
+                    <div className="p-4 rounded-lg bg-yellow-50 border-2 border-yellow-400 mb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl">🍎</div>
+                        <div className="flex-1">
+                          <h4 className="font-bold text-yellow-900 mb-2">iOS: Install Required!</h4>
+                          <p className="text-sm text-yellow-800 mb-3">
+                            On iPhone/iPad, notifications <strong>only work when installed to home screen</strong>:
+                          </p>
+                          <ol className="text-xs text-yellow-900 space-y-1 list-decimal list-inside">
+                            <li>Tap the <strong>Share button</strong> (↑) at the bottom</li>
+                            <li>Scroll and tap <strong>"Add to Home Screen"</strong></li>
+                            <li>Tap <strong>"Add"</strong></li>
+                            <li>Open app from <strong>home screen icon</strong></li>
+                            <li>Then enable notifications here</li>
+                          </ol>
+                          <p className="text-xs text-yellow-700 mt-2 italic">
+                            💡 Regular Safari browsing doesn't support notifications on iOS
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+              
               {!notificationsEnabled ? (
                 <div className="text-center py-8">
                   <Bell className={"w-16 h-16 mx-auto mb-4 " + theme.text.muted} />
