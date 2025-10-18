@@ -56,11 +56,14 @@ class FocusedBackendTester:
             return True
             
         try:
-            # Register test user
-            self.session.post(f"{BASE_URL}/auth/register", json={
-                "email": TEST_EMAIL,
-                "password": TEST_PASSWORD
-            })
+            # Try to register test user (might already exist)
+            try:
+                self.session.post(f"{BASE_URL}/auth/register", json={
+                    "email": TEST_EMAIL,
+                    "password": TEST_PASSWORD
+                })
+            except:
+                pass  # User might already exist
             
             # Login to get token
             response = self.session.post(f"{BASE_URL}/auth/login", data={
@@ -71,6 +74,8 @@ class FocusedBackendTester:
             if response.status_code == 200:
                 self.auth_token = response.json()["access_token"]
                 return True
+            else:
+                print(f"Login failed with status {response.status_code}: {response.text}")
                 
         except Exception as e:
             print(f"Failed to get auth token: {str(e)}")
