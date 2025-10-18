@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <!-- Nosana green gradient background -->
+    <linearGradient id="bgGradGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#051a0f;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0a2818;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#071f14;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Nosana signature green gradient -->
+    <linearGradient id="nosanaGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Bright green shine effect -->
+    <linearGradient id="greenShine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#d0ffd0;stop-opacity:0.5" />
+      <stop offset="50%" style="stop-color:#90ff90;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#c8ffc8;stop-opacity:0.4" />
+    </linearGradient>
+    
+    <!-- Green glow filter -->
+    <filter id="greenGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.133
+                                           0 0 0 0 0.773
+                                           0 0 0 0 0.506
+                                           0 0 0 1 0"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Shadow with green tint -->
+    <filter id="greenShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#10b981" flood-opacity="0.6"/>
+    </filter>
+    
+    <!-- Text path for top arc -->
+    <path id="topArc" d="M 30,100 A 70,70 0 0,1 170,100" fill="none"/>
+    
+    <!-- Text path for bottom arc -->
+    <path id="bottomArc" d="M 170,100 A 70,70 0 0,1 30,100" fill="none"/>
+  </defs>
+  
+  <!-- Dark green premium background circle -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradGreen)" filter="url(#greenShadow)"/>
+  
+  <!-- Bright green outer glow ring -->
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#nosanaGreen)" stroke-width="1.5" opacity="0.4" filter="url(#greenGlow)"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#22c55e" stroke-width="1" opacity="0.3" filter="url(#greenGlow)"/>
+  
+  <!-- Premium 3D server/node stack with Nosana green -->
+  
+  <!-- Top server -->
+  <g filter="url(#greenGlow)">
+    <!-- Shadow -->
+    <rect x="52" y="67" width="96" height="24" rx="3" fill="#000000" opacity="0.3"/>
+    
+    <!-- Main body with Nosana green -->
+    <rect x="50" y="65" width="100" height="26" rx="4" fill="url(#nosanaGreen)" opacity="0.9"/>
+    <rect x="50" y="65" width="100" height="26" rx="4" fill="url(#greenShine)" opacity="0.3"/>
+    <rect x="50" y="65" width="100" height="26" rx="4" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Status lights with bright green glow -->
+    <circle cx="65" cy="78" r="4.5" fill="#22c55e" opacity="0.3"/>
+    <circle cx="65" cy="78" r="3.5" fill="#22c55e" filter="url(#greenGlow)"/>
+    <circle cx="65" cy="78" r="1.5" fill="#d0ffd0"/>
+    
+    <circle cx="78" cy="78" r="4.5" fill="#10b981" opacity="0.3"/>
+    <circle cx="78" cy="78" r="3.5" fill="#10b981" filter="url(#greenGlow)"/>
+    <circle cx="78" cy="78" r="1.5" fill="#c8ffc8"/>
+    
+    <circle cx="91" cy="78" r="4.5" fill="#059669" opacity="0.3"/>
+    <circle cx="91" cy="78" r="3.5" fill="#059669" filter="url(#greenGlow)"/>
+    <circle cx="91" cy="78" r="1.5" fill="#a0f0a0"/>
+    
+    <!-- Data lines with green tint -->
+    <rect x="105" y="74" width="35" height="2.5" rx="1" fill="#c8ffc8" opacity="0.7"/>
+    <rect x="105" y="80" width="28" height="2.5" rx="1" fill="#90ff90" opacity="0.5"/>
+  </g>
+  
+  <!-- Middle server -->
+  <g filter="url(#greenGlow)">
+    <!-- Shadow -->
+    <rect x="52" y="99" width="96" height="24" rx="3" fill="#000000" opacity="0.3"/>
+    
+    <!-- Main body -->
+    <rect x="50" y="97" width="100" height="26" rx="4" fill="url(#nosanaGreen)" opacity="0.85"/>
+    <rect x="50" y="97" width="100" height="26" rx="4" fill="url(#greenShine)" opacity="0.3"/>
+    <rect x="50" y="97" width="100" height="26" rx="4" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Status lights -->
+    <circle cx="65" cy="110" r="4.5" fill="#22c55e" opacity="0.3"/>
+    <circle cx="65" cy="110" r="3.5" fill="#22c55e" filter="url(#greenGlow)"/>
+    <circle cx="65" cy="110" r="1.5" fill="#d0ffd0"/>
+    
+    <circle cx="78" cy="110" r="4.5" fill="#10b981" opacity="0.3"/>
+    <circle cx="78" cy="110" r="3.5" fill="#10b981" filter="url(#greenGlow)"/>
+    <circle cx="78" cy="110" r="1.5" fill="#c8ffc8"/>
+    
+    <circle cx="91" cy="110" r="4.5" fill="#059669" opacity="0.3"/>
+    <circle cx="91" cy="110" r="3.5" fill="#059669" filter="url(#greenGlow)"/>
+    <circle cx="91" cy="110" r="1.5" fill="#a0f0a0"/>
+    
+    <!-- Data lines -->
+    <rect x="105" y="106" width="35" height="2.5" rx="1" fill="#c8ffc8" opacity="0.7"/>
+    <rect x="105" y="112" width="28" height="2.5" rx="1" fill="#90ff90" opacity="0.5"/>
+  </g>
+  
+  <!-- Bottom server -->
+  <g filter="url(#greenGlow)">
+    <!-- Shadow -->
+    <rect x="52" y="131" width="96" height="24" rx="3" fill="#000000" opacity="0.3"/>
+    
+    <!-- Main body -->
+    <rect x="50" y="129" width="100" height="26" rx="4" fill="url(#nosanaGreen)" opacity="0.8"/>
+    <rect x="50" y="129" width="100" height="26" rx="4" fill="url(#greenShine)" opacity="0.3"/>
+    <rect x="50" y="129" width="100" height="26" rx="4" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Status lights -->
+    <circle cx="65" cy="142" r="4.5" fill="#22c55e" opacity="0.3"/>
+    <circle cx="65" cy="142" r="3.5" fill="#22c55e" filter="url(#greenGlow)"/>
+    <circle cx="65" cy="142" r="1.5" fill="#d0ffd0"/>
+    
+    <circle cx="78" cy="142" r="4.5" fill="#10b981" opacity="0.3"/>
+    <circle cx="78" cy="142" r="3.5" fill="#10b981" filter="url(#greenGlow)"/>
+    <circle cx="78" cy="142" r="1.5" fill="#c8ffc8"/>
+    
+    <circle cx="91" cy="142" r="4.5" fill="#059669" opacity="0.3"/>
+    <circle cx="91" cy="142" r="3.5" fill="#059669" filter="url(#greenGlow)"/>
+    <circle cx="91" cy="142" r="1.5" fill="#a0f0a0"/>
+    
+    <!-- Data lines -->
+    <rect x="105" y="138" width="35" height="2.5" rx="1" fill="#c8ffc8" opacity="0.7"/>
+    <rect x="105" y="144" width="28" height="2.5" rx="1" fill="#90ff90" opacity="0.5"/>
+  </g>
+  
+  <!-- Bright green connection lines between servers -->
+  <line x1="60" y1="91" x2="60" y2="97" stroke="#22c55e" stroke-width="3" opacity="0.6" filter="url(#greenGlow)"/>
+  <line x1="140" y1="91" x2="140" y2="97" stroke="#22c55e" stroke-width="3" opacity="0.6" filter="url(#greenGlow)"/>
+  
+  <line x1="60" y1="123" x2="60" y2="129" stroke="#22c55e" stroke-width="3" opacity="0.6" filter="url(#greenGlow)"/>
+  <line x1="140" y1="123" x2="140" y2="129" stroke="#22c55e" stroke-width="3" opacity="0.6" filter="url(#greenGlow)"/>
+  
+  <!-- Curved text around the circle -->
+  <!-- Top text: "NOSANA" -->
+  <text font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="6" fill="#22c55e" opacity="0.5">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+      NOSANA
+    </textPath>
+  </text>
+  
+  <!-- Bottom text: "NODE MONITOR" -->
+  <text font-family="'Segoe UI', Arial, sans-serif" font-size="11" font-weight="400" letter-spacing="4" fill="#10b981" opacity="0.45">
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">
+      NODE MONITOR
+    </textPath>
+  </text>
+  
+  <!-- Corner accent dots in Nosana green -->
+  <circle cx="35" cy="35" r="3" fill="#22c55e" opacity="0.4" filter="url(#greenGlow)"/>
+  <circle cx="165" cy="35" r="3" fill="#22c55e" opacity="0.4" filter="url(#greenGlow)"/>
+  <circle cx="35" cy="165" r="3" fill="#22c55e" opacity="0.4" filter="url(#greenGlow)"/>
+  <circle cx="165" cy="165" r="3" fill="#22c55e" opacity="0.4" filter="url(#greenGlow)"/>
+</svg>
