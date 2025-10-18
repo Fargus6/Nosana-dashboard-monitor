@@ -28,6 +28,9 @@ import html
 import secrets
 import firebase_admin
 from firebase_admin import credentials, messaging
+from telegram import Bot
+from telegram.constants import ParseMode
+import asyncio
 
 # Set Playwright browser path
 os.environ['PLAYWRIGHT_BROWSERS_PATH'] = '/pw-browsers'
