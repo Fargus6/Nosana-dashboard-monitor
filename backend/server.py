@@ -574,7 +574,7 @@ async def check_node_jobs(node_address: str, solana_client: SolanaClient) -> dic
                 logger.warning(f"Error scraping dashboard for {node_address[:8]}: {str(page_error)}")
                 return {
                     'job_status': 'idle',
-                    'nos_balance': None,
+                    'nos_balance': nos_balance,
                     'sol_balance': None,
                     'total_jobs': None,
                     'availability_score': None
