@@ -1393,6 +1393,6 @@ class ProductionLoadTester:
         return passed_tests == total_tests
 
 if __name__ == "__main__":
-    tester = SecurityTester()
-    success = tester.run_all_tests()
+    tester = ProductionLoadTester()
+    success = tester.run_production_load_tests()
     sys.exit(0 if success else 1)
