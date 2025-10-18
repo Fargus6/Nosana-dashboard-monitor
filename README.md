@@ -170,15 +170,17 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 
 ### Backend Security:
 - **Rate Limiting**: 
-  - 5 registrations per hour
+  - **30 registrations per hour** (prevents spam while allowing legitimate users)
   - 10 login attempts per minute
   - 20 node additions per minute
+  - 10 refresh attempts per minute
 - **Account Lockout**: 5 failed login attempts = 15-minute lockout
 - **Security Headers**: HSTS, CSP, X-Frame-Options, X-XSS-Protection
 - **Input Validation**: Solana address format validation, XSS prevention
 - **Password Requirements**: 8+ characters, uppercase, lowercase, numbers
 - **Request Logging**: All API requests logged for security monitoring
 - **User Limits**: Maximum 100 nodes per user to prevent abuse
+- **Keep-Alive System**: Prevents auto-logout and server sleep
 
 ### Frontend Security:
 - **Input Sanitization**: DOMPurify for XSS protection
@@ -186,6 +188,7 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - **Secure Token Storage**: Encrypted localStorage wrapper
 - **Session Management**: Automatic token expiry handling
 - **Error Handling**: No sensitive information leakage
+- **Auto-Update System**: Service worker for secure automatic updates
 
 ## 📡 API Endpoints
 
