@@ -165,6 +165,7 @@ function App() {
         return;
       }
 
+      console.log("Requesting notification permission...");
       const permission = await Notification.requestPermission();
       
       if (permission === 'granted') {
@@ -172,19 +173,69 @@ function App() {
         
         // Register service worker
         if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-          console.log('Service Worker registered:', registration);
+          console.log("Registering service worker...");
           
-          // Get FCM token
-          const token = await getToken(messaging, { 
-            vapidKey: VAPID_KEY,
-            serviceWorkerRegistration: registration
+          // First, unregister any existing service workers
+          const existingRegistrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of existingRegistrations) {
+            if (registration.active?.scriptURL.includes('firebase-messaging-sw')) {
+              console.log("Unregistering old service worker...");
+              await registration.unregister();
+            }
+          }
+          
+          // Register new service worker
+          const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+            scope: '/'
           });
           
+          console.log('Service Worker registered:', registration);
+          
+          // Wait for service worker to be ready
+          await navigator.serviceWorker.ready;
+          console.log('Service Worker ready');
+          
+          // Additional wait to ensure service worker is fully active
+          let activeWorker = registration.active || registration.installing || registration.waiting;
+          if (activeWorker && activeWorker.state !== 'activated') {
+            await new Promise((resolve) => {
+              activeWorker.addEventListener('statechange', (e) => {
+                if (e.target.state === 'activated') {
+                  resolve();
+                }
+              });
+            });
+          }
+          
+          console.log('Getting FCM token...');
+          
+          // Get FCM token with retry logic
+          let token = null;
+          let retries = 3;
+          
+          while (!token && retries > 0) {
+            try {
+              token = await getToken(messaging, { 
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: registration
+              });
+              
+              if (token) {
+                console.log('FCM Token obtained:', token.substring(0, 20) + '...');
+                break;
+              }
+            } catch (err) {
+              console.warn(`Token attempt failed (${retries} retries left):`, err);
+              retries--;
+              if (retries > 0) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+              }
+            }
+          }
+          
           if (token) {
-            console.log('FCM Token:', token);
-            
             // Register token with backend
+            console.log('Registering token with backend...');
             await axios.post(`${API}/notifications/register-token`, null, {
               params: { token }
             });
@@ -194,7 +245,11 @@ function App() {
             
             // Load preferences
             loadNotificationPreferences();
+          } else {
+            throw new Error("Failed to obtain FCM token after retries");
           }
+        } else {
+          throw new Error("Service Workers not supported in this browser");
         }
       } else {
         toast.error("Notification permission denied");
