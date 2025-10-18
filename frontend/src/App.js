@@ -454,7 +454,7 @@ function App() {
     const keepAlive = setInterval(async () => {
       try {
         // Ping health endpoint to keep backend alive
-        await axios.get('/health', { timeout: 5000 });
+        await axios.get(`${API}/health`, { timeout: 5000 });
         setServerStatus('online');
         console.log("Keep-alive ping successful");
       } catch (error) {
