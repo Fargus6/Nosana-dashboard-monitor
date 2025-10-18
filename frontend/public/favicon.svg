@@ -1,33 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+    <linearGradient id="nosanaGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
     </linearGradient>
+    <filter id="greenGlow">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
   </defs>
   
   <!-- Background circle -->
-  <circle cx="32" cy="32" r="30" fill="url(#grad1)"/>
+  <circle cx="100" cy="100" r="95" fill="#0a1a14"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.4"/>
   
-  <!-- Server/Node icon -->
-  <!-- Top server -->
-  <rect x="16" y="14" width="32" height="10" rx="2" fill="white" opacity="0.9"/>
-  <circle cx="21" cy="19" r="1.5" fill="#10b981"/>
-  <circle cx="26" cy="19" r="1.5" fill="#14b8a6"/>
-  <rect x="30" y="17.5" width="14" height="1" fill="#10b981" opacity="0.6"/>
-  <rect x="30" y="20" width="10" height="1" fill="#14b8a6" opacity="0.6"/>
+  <!-- Left bar -->
+  <rect x="50" y="50" width="26" height="100" rx="4" fill="url(#nosanaGreen)" opacity="0.9"/>
+  <rect x="50" y="50" width="26" height="100" rx="4" fill="none" stroke="#22c55e" stroke-width="2"/>
+  <circle cx="63" cy="65" r="3" fill="#d0ffd0"/>
+  <circle cx="63" cy="78" r="3" fill="#c8ffc8"/>
+  <circle cx="63" cy="91" r="3" fill="#a0f0a0"/>
   
-  <!-- Middle server -->
-  <rect x="16" y="27" width="32" height="10" rx="2" fill="white" opacity="0.9"/>
-  <circle cx="21" cy="32" r="1.5" fill="#10b981"/>
-  <circle cx="26" cy="32" r="1.5" fill="#14b8a6"/>
-  <rect x="30" y="30.5" width="14" height="1" fill="#10b981" opacity="0.6"/>
-  <rect x="30" y="33" width="10" height="1" fill="#14b8a6" opacity="0.6"/>
+  <!-- Middle bar -->
+  <rect x="87" y="75" width="26" height="50" rx="4" fill="url(#nosanaGreen)" opacity="0.85"/>
+  <rect x="87" y="75" width="26" height="50" rx="4" fill="none" stroke="#22c55e" stroke-width="2"/>
+  <circle cx="100" cy="93" r="3" fill="#d0ffd0"/>
+  <circle cx="100" cy="100" r="3" fill="#c8ffc8"/>
+  <circle cx="100" cy="107" r="3" fill="#a0f0a0"/>
   
-  <!-- Bottom server -->
-  <rect x="16" y="40" width="32" height="10" rx="2" fill="white" opacity="0.9"/>
-  <circle cx="21" cy="45" r="1.5" fill="#10b981"/>
-  <circle cx="26" cy="45" r="1.5" fill="#14b8a6"/>
-  <rect x="30" y="43.5" width="14" height="1" fill="#10b981" opacity="0.6"/>
-  <rect x="30" y="46" width="10" height="1" fill="#14b8a6" opacity="0.6"/>
+  <!-- Right bar -->
+  <rect x="124" y="50" width="26" height="100" rx="4" fill="url(#nosanaGreen)" opacity="0.8"/>
+  <rect x="124" y="50" width="26" height="100" rx="4" fill="none" stroke="#22c55e" stroke-width="2"/>
+  <circle cx="137" cy="109" r="3" fill="#d0ffd0"/>
+  <circle cx="137" cy="122" r="3" fill="#c8ffc8"/>
+  <circle cx="137" cy="135" r="3" fill="#a0f0a0"/>
 </svg>
