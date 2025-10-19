@@ -1043,40 +1043,28 @@ async def get_nos_token_price() -> Optional[float]:
 
 def calculate_job_payment(duration_seconds: int, nos_price_usd: Optional[float], gpu_type: str = "A100") -> Optional[float]:
     """
-    Calculate estimated NOS payment for a job based on duration
+    Calculate estimated NOS payment for a job based on Nosana's REAL payment structure
     
-    Default GPU hourly rates in USD (based on Nosana market rates):
-    - A100 80GB: $0.90/hr
-    - RTX Pro 6000: $1.00/hr
-    - H100: $1.50/hr
+    REAL Nosana Formula (based on dashboard data):
+    - Fixed payment: $0.294 USD per job (regardless of duration)
+    - Typical duration: ~55 minutes
+    - Jobs run every ~2 hours (~12 jobs/day)
     
     Args:
-        duration_seconds: Job duration in seconds
+        duration_seconds: Job duration in seconds (not used in calculation, kept for compatibility)
         nos_price_usd: Current NOS token price in USD
-        gpu_type: Type of GPU (defaults to A100)
+        gpu_type: Type of GPU (not used in calculation, kept for compatibility)
     
     Returns:
         Estimated payment in NOS tokens, or None if calculation fails
     """
     try:
-        # Default GPU rates per hour in USD (assuming A100 80GB)
-        # User can customize these based on their GPU type
-        gpu_rates = {
-            "A100": 0.90,
-            "Pro6000": 1.00,
-            "H100": 1.50,
-            "default": 0.90  # Default to A100 rate
-        }
+        # REAL Nosana payment: Fixed $0.294 per job
+        FIXED_USD_PER_JOB = 0.294
         
-        hourly_rate_usd = gpu_rates.get(gpu_type, gpu_rates["default"])
-        
-        # Calculate USD earnings based on duration
-        duration_hours = duration_seconds / 3600.0
-        usd_earned = hourly_rate_usd * duration_hours
-        
-        # Convert to NOS if we have the price
+        # Convert to NOS based on current price
         if nos_price_usd and nos_price_usd > 0:
-            nos_payment = usd_earned / nos_price_usd
+            nos_payment = FIXED_USD_PER_JOB / nos_price_usd
             return nos_payment
         
         return None
