@@ -24,6 +24,7 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 
 ### Notifications & Alerts
 - **🔔 Push Notifications**: Firebase Cloud Messaging for real-time alerts
+- **📱 Telegram Bot Integration**: Enhanced notifications with job duration and payment tracking
 - **🔒 Lock Screen Alerts**: Notifications appear on locked screen with screen wake-up
 - **📳 Strong Vibration**: Custom pattern for attention-grabbing alerts
 - **🔊 Sound Notifications**: Audible alerts for critical events
@@ -32,7 +33,7 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
   - Node goes offline
   - Node comes back online
   - Job started
-  - Job completed
+  - Job completed with duration and payment info (Telegram only)
 
 ### Security & Performance
 - **🛡️ Enterprise-Grade Security**: Rate limiting, input validation, XSS protection
