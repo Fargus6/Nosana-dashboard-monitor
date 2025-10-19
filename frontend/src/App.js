@@ -998,6 +998,100 @@ function App() {
     }
   };
 
+
+  // Fetch yesterday's earnings for all nodes
+  const fetchYesterdayEarnings = async () => {
+    try {
+      const token = secureStorage.getItem('token');
+      if (!token || nodes.length === 0) return;
+      
+      const earningsPromises = nodes.map(node => 
+        axios.get(`${API}/earnings/node/${node.address}/yesterday`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => {
+          console.error(`Error fetching earnings for ${node.address}:`, err);
+          return { data: { nos_earned: 0, usd_value: 0, job_count: 0 } };
+        })
+      );
+      
+      const results = await Promise.all(earningsPromises);
+      const earningsMap = {};
+      
+      nodes.forEach((node, index) => {
+        earningsMap[node.address] = results[index].data;
+      });
+      
+      setYesterdayEarnings(earningsMap);
+    } catch (error) {
+      console.error("Error fetching yesterday earnings:", error);
+    }
+  };
+  
+  // Fetch detailed statistics for a specific node
+  const fetchNodeStatistics = async (nodeAddress) => {
+    try {
+      setStatsLoading(true);
+      const token = secureStorage.getItem('token');
+      
+      const [yesterday, today, monthly, yearly] = await Promise.all([
+        axios.get(`${API}/earnings/node/${nodeAddress}/yesterday`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API}/earnings/node/${nodeAddress}/today`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API}/earnings/node/${nodeAddress}/monthly`, {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get(`${API}/earnings/node/${nodeAddress}/yearly`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+      
+      setStatsData({
+        yesterday: yesterday.data,
+        today: today.data,
+        monthly: monthly.data,
+        yearly: yearly.data
+      });
+    } catch (error) {
+      console.error("Error fetching node statistics:", error);
+      toast.error("Failed to load statistics");
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+  
+  // Open stats modal for a node
+  const openStatsModal = async (node) => {
+    setSelectedNodeStats(node);
+    setShowStatsModal(true);
+    await fetchNodeStatistics(node.address);
+  };
+  
+  // Format duration from seconds
+  const formatDuration = (seconds) => {
+    if (!seconds || seconds === 0) return "0s";
+    if (seconds < 60) return `${seconds}s`;
+    if (seconds < 3600) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}m ${secs}s`;
+    }
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${mins}m`;
+  };
+  
+  // Format month name from YYYY-MM
+  const formatMonthName = (monthStr) => {
+    if (!monthStr) return '';
+    const [year, month] = monthStr.split('-');
+    const date = new Date(year, parseInt(month) - 1);
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
+
+
   const autoRefreshAllNodes = async (silent = false, retryCount = 0) => {
     try {
       setAutoRefreshing(true);
