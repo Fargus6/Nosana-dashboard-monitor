@@ -196,7 +196,6 @@ function App() {
   const [telegramLinking, setTelegramLinking] = useState(false);
   
   // Earnings statistics states
-  const [yesterdayEarnings, setYesterdayEarnings] = useState({});
   const [selectedNodeStats, setSelectedNodeStats] = useState(null);
   
   // Service worker update detection
