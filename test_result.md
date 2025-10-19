@@ -595,3 +595,49 @@ agent_communication:
       message: "Completed comprehensive security testing. Results: 10/11 tests passed (90.9% success rate). All critical security features working: account lockout, input validation, security headers, JWT auth, password validation, error handling. Minor issue: Registration rate limiting (5/hour) difficult to test in quick succession - manual verification shows it works. All high-priority security measures are functional."
     - agent: "testing"
       message: "Completed comprehensive frontend security testing. Results: 5/5 frontend tasks passed (100% success rate). All critical frontend security features working perfectly: 1) Input validation (passwords, emails, Solana addresses) with proper error messages, 2) Client-side rate limiting with backend coordination showing proper lockout messages, 3) Secure storage with token management and session persistence, 4) XSS protection with DOMPurify and input sanitization, 5) Global error handling with axios interceptors. Password masking, theme switcher, and all UI security features functional. Rate limiting properly enforced (429 status codes) demonstrating robust security implementation."
+
+
+user_problem_statement: "Add job duration and payment information to Telegram notifications for completed jobs"
+
+backend:
+  - task: "Enhanced Job Completed Notifications with Duration and Payment"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented enhanced job completion tracking. Added: 1) Job start time tracking when job starts, 2) NOS token price fetching from CoinGecko API, 3) Duration calculation (in human-readable format), 4) Payment calculation based on GPU hourly rates and job duration, 5) Enhanced Telegram-only notification with duration and payment info. Push notifications remain basic. Payment calculation uses default A100 GPU rate ($0.90/hr) and converts to NOS based on current token price. Telegram notification format: 'Job Completed - [Node Name]', Duration: Xm Ys, Payment: X.XX NOS (~$X.XX USD)."
+
+frontend:
+  - task: "No Frontend Changes Required"
+    implemented: true
+    working: true
+    file: "N/A"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "No frontend changes needed. All enhancements are backend-only for Telegram notifications."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Enhanced Job Completed Notifications with Duration and Payment"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "Implemented enhanced job completion notifications for Telegram only. Key features: 1) Tracks job start time when status changes to 'running', 2) Calculates duration when job completes (from running to idle/queue), 3) Fetches live NOS token price from CoinGecko API, 4) Calculates estimated payment based on GPU hourly rate (default A100: $0.90/hr) and converts to NOS, 5) Sends enhanced Telegram notification with format: 'Job Completed - [Node Name], Duration: Xm Ys, Payment: X.XX NOS (~$X.XX USD)'. Firebase push notifications remain simple. Added new Node fields: job_start_time, job_count_completed. Ready for backend testing - need to test: 1) Job start time tracking, 2) Duration calculation accuracy, 3) NOS price API call, 4) Payment calculation logic, 5) Telegram notification delivery with enhanced info."
