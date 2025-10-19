@@ -1075,6 +1075,31 @@ function App() {
     await fetchLiveEarnings(node.address);
   };
   
+  // Scrape full history for one node
+  const scrapeFullHistory = async (nodeAddress) => {
+    try {
+      toast.info("Scraping complete history... This may take 2-3 minutes", { duration: 5000 });
+      
+      const response = await axios.post(`${API}/earnings/node/${nodeAddress}/scrape-all-history`);
+      
+      if (response.data.success) {
+        toast.success(`✅ Scraped ${response.data.jobs_scraped} jobs! ${response.data.jobs_stored} new jobs stored.`, {
+          duration: 5000
+        });
+        
+        // Refresh the live earnings modal if open
+        if (showLiveEarningsModal && selectedNodeStats?.address === nodeAddress) {
+          await fetchLiveEarnings(nodeAddress);
+        }
+      } else {
+        toast.error("Failed to scrape history");
+      }
+    } catch (error) {
+      console.error("Error scraping full history:", error);
+      toast.error("Failed to scrape complete history");
+    }
+  };
+  
   // Format duration from seconds
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "0s";
