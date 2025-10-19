@@ -602,15 +602,18 @@ user_problem_statement: "Add job duration and payment information to Telegram no
 backend:
   - task: "Enhanced Job Completed Notifications with Duration and Payment"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented enhanced job completion tracking. Added: 1) Job start time tracking when job starts, 2) NOS token price fetching from CoinGecko API, 3) Duration calculation (in human-readable format), 4) Payment calculation based on GPU hourly rates and job duration, 5) Enhanced Telegram-only notification with duration and payment info. Push notifications remain basic. Payment calculation uses default A100 GPU rate ($0.90/hr) and converts to NOS based on current token price. Telegram notification format: 'Job Completed - [Node Name]', Duration: Xm Ys, Payment: X.XX NOS (~$X.XX USD)."
+        - working: true
+          agent: "testing"
+          comment: "✅ PASSED - All job completion notification features working correctly. NOS Token Price API: Successfully fetching current price ($0.4629 USD) from CoinGecko. Payment Calculation: Accurate calculations tested with multiple scenarios (30s, 5min, 1hr, 3hrs) using A100 rate ($0.90/hr). Duration Formatting: Correct human-readable format (30s, 1m 30s, 1h 1m). Database Fields: job_start_time and job_count_completed fields present and correctly typed. Job Status Transitions: Successfully tested job lifecycle with refresh-all-status endpoint processing 8 nodes. Notification Flow: All endpoints working (token registration, preferences, test notifications, Telegram status). Complete scenario test shows proper Telegram notification format: '🎉 Job Completed - Test Node A100, ⏱️ Duration: 45m 0s, 💰 Payment: 1.46 NOS (~$0.68 USD)'. Enhanced notifications ready for production use."
 
 frontend:
   - task: "No Frontend Changes Required"
