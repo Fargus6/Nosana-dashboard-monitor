@@ -315,6 +315,21 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 **Last Updated**: October 19, 2025  
 **Status**: ✅ Production Ready & Actively Maintained
 
+**Deployment Options:**
+- 🔧 Preview: Free (auto-restarts after inactivity)
+- 🚀 Production: $10/month (stable 24/7 hosting)
+- 🌐 Custom Domain: Supported (no extra cost)
+
+**Key Features:**
+- ✅ Accurate payment notifications (from Nosana dashboard)
+- ✅ No auto-logout (persistent sessions)
+- ✅ Real-time balance tracking (NOS/SOL)
+- ✅ Telegram bot integration
+- ✅ Lock screen notifications
+- ✅ PWA installable
+
+**Documentation:** [Full list above](#-documentation)
+
 ---
 
 ## 📚 Documentation
