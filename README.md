@@ -328,7 +328,7 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 - ✅ Lock screen notifications
 - ✅ PWA installable
 
-**Documentation:** [Full list above](#-documentation)
+**Documentation:** [Full list below](#-documentation)
 
 ---
 
