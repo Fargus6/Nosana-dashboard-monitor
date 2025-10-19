@@ -7,8 +7,6 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 **🖥️ Preview Environment:** https://nosanamonitor.preview.emergentagent.com  
 *Note: Preview environment may auto-restart after inactivity*
 
-**🚀 Production Deployment:** Ready for stable 24/7 hosting  
-*See [Deployment Guide](DEPLOYMENT_GUIDE.md) for production setup*
 
 **📱 Mobile App:** Install as PWA for best experience (see instructions below)
 
