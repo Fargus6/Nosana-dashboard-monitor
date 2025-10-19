@@ -2001,28 +2001,37 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                         
                         logger.info(f"⏱️ Job duration for {node_name}: {duration_str} ({duration_seconds}s)")
                         
-                        # Get NOS price and calculate payment
-                        nos_price = await get_nos_token_price()
-                        if nos_price:
-                            # Get GPU type from node (default to 3090 if not set)
-                            gpu_type = node.get('gpu_type', '3090')
+                        # Scrape ACTUAL payment from Nosana dashboard (no calculations)
+                        try:
+                            logger.info(f"🔍 Scraping actual payment from dashboard for {address}")
+                            actual_payment_usd = await scrape_latest_job_payment(address)
                             
-                            # Calculate payment based on GPU type and duration
-                            nos_payment = calculate_job_payment(duration_seconds, nos_price, gpu_type=gpu_type)
-                            if nos_payment:
-                                usd_value = nos_payment * nos_price
-                                payment_str = f"\n💰 Payment: {nos_payment:.2f} NOS (~${usd_value:.2f} USD)"
-                                logger.info(f"💰 Payment for {node_name}: {nos_payment:.2f} NOS (~${usd_value:.2f}) [GPU: {gpu_type}]")
-                                
-                                # Save earnings to statistics
-                                await save_job_earnings(
-                                    user_id=current_user.id,
-                                    node_address=address,
-                                    node_name=node_name,
-                                    duration_seconds=duration_seconds,
-                                    nos_earned=nos_payment,
-                                    usd_value=usd_value
-                                )
+                            if actual_payment_usd:
+                                # Get NOS price for conversion
+                                nos_price = await get_nos_token_price()
+                                if nos_price:
+                                    nos_earned = actual_payment_usd / nos_price
+                                    payment_str = f"\n💰 Payment: ${actual_payment_usd:.3f} USD (~{nos_earned:.2f} NOS)"
+                                    logger.info(f"💰 ACTUAL payment for {node_name}: ${actual_payment_usd:.3f} (~{nos_earned:.2f} NOS)")
+                                    
+                                    # Save earnings to statistics
+                                    await save_job_earnings(
+                                        user_id=current_user.id,
+                                        node_address=address,
+                                        node_name=node_name,
+                                        duration_seconds=duration_seconds,
+                                        nos_earned=nos_earned,
+                                        usd_value=actual_payment_usd
+                                    )
+                                else:
+                                    payment_str = f"\n💰 Payment: ${actual_payment_usd:.3f} USD"
+                                    logger.info(f"💰 ACTUAL payment for {node_name}: ${actual_payment_usd:.3f}")
+                            else:
+                                logger.warning(f"⚠️  Could not scrape payment from dashboard for {address}")
+                                payment_str = ""
+                        except Exception as scrape_error:
+                            logger.error(f"Error scraping payment from dashboard: {str(scrape_error)}")
+                            payment_str = ""
                         
                         # Increment completed jobs counter
                         job_count_completed = node.get('job_count_completed', 0) + 1
