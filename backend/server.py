@@ -1060,21 +1060,16 @@ def fetch_nos_price_coingecko() -> Optional[float]:
     return None
 
 
-async def scrape_nosana_job_history(node_address: str) -> List[Dict]:
+async def scrape_nosana_job_history(node_address: str, max_pages: int = None) -> List[Dict]:
     """
     Scrape actual job history data from Nosana dashboard using Playwright
+    Supports pagination to get all historical jobs
     
-    Returns list of jobs with real payment data:
-    [
-        {
-            "job_id": "...",
-            "started": str,
-            "duration_seconds": int,
-            "hourly_rate_usd": float,  # Actual rate from dashboard
-            "gpu_type": str,
-            "status": str
-        }
-    ]
+    Args:
+        node_address: Node address to scrape
+        max_pages: Maximum number of pages to scrape (None = all pages)
+    
+    Returns list of jobs with real payment data
     """
     try:
         from playwright.async_api import async_playwright
@@ -1093,61 +1088,106 @@ async def scrape_nosana_job_history(node_address: str) -> List[Dict]:
                 # Wait for table to load
                 await page.wait_for_selector('table', timeout=10000)
                 
-                # Extract job data from table using JavaScript
-                jobs_data = await page.evaluate('''() => {
-                    const jobs = [];
-                    const table = document.querySelector('table');
-                    if (!table) return jobs;
+                all_jobs = []
+                page_num = 1
+                
+                while True:
+                    logger.info(f"📄 Scraping page {page_num}...")
                     
-                    const rows = table.querySelectorAll('tr');
-                    
-                    for (let i = 1; i < rows.length; i++) {
-                        const row = rows[i];
-                        const cells = row.querySelectorAll('td');
+                    # Extract job data from current page
+                    jobs_data = await page.evaluate('''() => {
+                        const jobs = [];
+                        const table = document.querySelector('table');
+                        if (!table) return jobs;
                         
-                        if (cells.length >= 6) {
-                            const jobLink = cells[0].querySelector('a');
-                            const jobId = jobLink ? jobLink.getAttribute('href').split('/').pop() : null;
+                        const rows = table.querySelectorAll('tr');
+                        
+                        for (let i = 1; i < rows.length; i++) {
+                            const row = rows[i];
+                            const cells = row.querySelectorAll('td');
                             
-                            jobs.push({
-                                job_id: jobId,
-                                started: cells[2].textContent.trim(),
-                                duration: cells[3].textContent.trim(),
-                                price: cells[4].textContent.trim(),
-                                gpu: cells[5].textContent.trim(),
-                                status: cells[6].textContent.trim().includes('RUNNING') ? 'RUNNING' : 'SUCCESS'
-                            });
+                            if (cells.length >= 6) {
+                                const jobLink = cells[0].querySelector('a');
+                                const jobId = jobLink ? jobLink.getAttribute('href').split('/').pop() : null;
+                                
+                                jobs.push({
+                                    job_id: jobId,
+                                    started: cells[2].textContent.trim(),
+                                    duration: cells[3].textContent.trim(),
+                                    price: cells[4].textContent.trim(),
+                                    gpu: cells[5].textContent.trim(),
+                                    status: cells[6].textContent.trim().includes('RUNNING') ? 'RUNNING' : 'SUCCESS'
+                                });
+                            }
                         }
-                    }
+                        
+                        return jobs;
+                    }''')
                     
-                    return jobs;
-                }''')
+                    # Parse and add to all_jobs
+                    for job_data in jobs_data:
+                        duration_seconds = parse_duration_to_seconds(job_data['duration'])
+                        hourly_rate = parse_hourly_rate(job_data['price'])
+                        started_time = parse_relative_time(job_data['started'])
+                        
+                        job = {
+                            "job_id": job_data['job_id'],
+                            "started": started_time,
+                            "started_text": job_data['started'],
+                            "duration_seconds": duration_seconds,
+                            "duration_text": job_data['duration'],
+                            "hourly_rate_usd": hourly_rate,
+                            "gpu_type": job_data['gpu'],
+                            "status": job_data['status']
+                        }
+                        
+                        all_jobs.append(job)
+                    
+                    logger.info(f"✅ Page {page_num}: {len(jobs_data)} jobs")
+                    
+                    # Check if max_pages reached
+                    if max_pages and page_num >= max_pages:
+                        logger.info(f"🛑 Reached max pages limit: {max_pages}")
+                        break
+                    
+                    # Check for "Next" button
+                    next_button = await page.query_selector('button:has-text("Next"), a:has-text("Next"), button[aria-label*="next" i]')
+                    
+                    if next_button:
+                        # Check if button is disabled
+                        is_disabled = await next_button.evaluate('el => el.disabled || el.classList.contains("disabled")')
+                        
+                        if not is_disabled:
+                            # Click next button
+                            await next_button.click()
+                            await page.wait_for_timeout(2000)  # Wait for new data to load
+                            page_num += 1
+                        else:
+                            logger.info(f"✅ Reached last page (button disabled)")
+                            break
+                    else:
+                        # No next button found - check for pagination links
+                        pagination = await page.query_selector('nav[role="navigation"], div[class*="pagination"]')
+                        
+                        if pagination:
+                            # Try to find and click next page number
+                            next_page_link = await pagination.query_selector(f'a:has-text("{page_num + 1}"), button:has-text("{page_num + 1}")')
+                            
+                            if next_page_link:
+                                await next_page_link.click()
+                                await page.wait_for_timeout(2000)
+                                page_num += 1
+                            else:
+                                logger.info(f"✅ No more pages (no next link)")
+                                break
+                        else:
+                            logger.info(f"✅ Single page only (no pagination)")
+                            break
                 
                 await browser.close()
                 
-                # Parse the extracted data
-                jobs = []
-                for job_data in jobs_data:
-                    duration_seconds = parse_duration_to_seconds(job_data['duration'])
-                    hourly_rate = parse_hourly_rate(job_data['price'])
-                    started_time = parse_relative_time(job_data['started'])
-                    
-                    job = {
-                        "job_id": job_data['job_id'],
-                        "started": started_time,
-                        "started_text": job_data['started'],
-                        "duration_seconds": duration_seconds,
-                        "duration_text": job_data['duration'],
-                        "hourly_rate_usd": hourly_rate,
-                        "gpu_type": job_data['gpu'],
-                        "status": job_data['status']
-                    }
-                    
-                    jobs.append(job)
-                    logger.info(f"📊 Job {job_data['job_id'][:8] if job_data['job_id'] else 'N/A'}...: {job_data['duration']} @ ${hourly_rate}/h = ${(duration_seconds/3600.0)*hourly_rate:.4f}")
-                
-                logger.info(f"✅ Scraped {len(jobs)} jobs from Nosana dashboard")
-                return jobs
+                logger.info(f"🎉 Successfully scraped {len(all_jobs)} total jobs from {page_num} pages")
+                return all_jobs
                 
             except Exception as e:
                 await browser.close()
