@@ -7,8 +7,8 @@ The enhanced job completion notifications with duration and payment tracking are
 ## What's Live
 
 ### Backend Services
-✅ **Backend API** - Running (PID: 809, uptime: 33+ min)
-✅ **Telegram Bot** - Running (PID: 3082, uptime: 10+ min)
+✅ **Backend API** - Running
+✅ **Telegram Bot** - Running
 
 ### Implemented Features
 ✅ `get_nos_token_price()` - Fetches live NOS price from CoinGecko
