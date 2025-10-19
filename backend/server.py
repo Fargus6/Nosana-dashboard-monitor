@@ -2541,8 +2541,9 @@ async def get_yesterday_earnings_scraped(address: str, current_user: User = Depe
 @api_router.post("/earnings/node/{address}/scrape-all-history")
 async def scrape_all_history_for_node(address: str, current_user: User = Depends(get_current_user)):
     """
-    Scrape ALL historical jobs for a specific node (with pagination)
-    Use this to build complete historical data for statistics
+    Scrape recent jobs for a specific node (FIRST PAGE ONLY - last ~20 hours)
+    This ensures accurate timestamps since relative times are only accurate for recent jobs
+    Run this regularly (hourly) to build historical data over time
     """
     try:
         # Verify node belongs to user
@@ -2554,10 +2555,10 @@ async def scrape_all_history_for_node(address: str, current_user: User = Depends
         if not node:
             raise HTTPException(status_code=404, detail="Node not found")
         
-        logger.info(f"🚀 Starting full historical scrape for node: {address[:8]}...")
+        logger.info(f"🚀 Scraping recent jobs for node: {address[:8]}...")
         
-        # Scrape ALL pages (no max_pages limit)
-        jobs = await scrape_nosana_job_history(address, max_pages=None)
+        # Scrape ONLY first page (max_pages=1) to get accurate recent data
+        jobs = await scrape_nosana_job_history(address, max_pages=1)
         
         if not jobs:
             return {
@@ -2572,18 +2573,19 @@ async def scrape_all_history_for_node(address: str, current_user: User = Depends
         
         return {
             "success": True,
-            "message": f"Successfully scraped complete history for node {address[:8]}",
+            "message": f"Successfully scraped recent jobs for node {address[:8]}",
             "jobs_scraped": len(jobs),
             "jobs_stored": stored,
             "node_address": address,
-            "node_name": node.get('name', 'Unnamed Node')
+            "node_name": node.get('name', 'Unnamed Node'),
+            "note": "Only recent jobs (last ~20h) scraped for accuracy. Run hourly to build history."
         }
     
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error scraping all history: {str(e)}")
-        raise HTTPException(status_code=500, detail="Failed to scrape history")
+        logger.error(f"Error scraping recent jobs: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to scrape recent jobs")
 
 
 @api_router.post("/earnings/scrape-all-nodes")
