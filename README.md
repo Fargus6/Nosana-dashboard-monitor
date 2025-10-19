@@ -311,13 +311,17 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
    - **Web**: Visit https://node-pulse.preview.emergentagent.com
    - **Mobile**: Install as PWA for best experience
 2. **Create an Account**: Register with email/password or use Google Sign-In
-3. **Enable Notifications**: Grant push notification permissions for real-time alerts
+3. **Enable Notifications**: 
+   - **Firebase Push**: Grant push notification permissions for mobile alerts
+   - **Telegram Bot** (Recommended): Link with @NosNode_bot for enhanced job notifications
 4. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
 5. **Choose Refresh Interval**: Select 1, 2, 3, or 10-minute auto-refresh
 6. **Customize Alerts**: Choose which events trigger notifications
 7. **Monitor Status**: Automatic refresh keeps you updated
 8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
-9. **Get Alerts**: Receive lock screen notifications when nodes need attention
+9. **Get Alerts**: 
+   - Lock screen notifications on mobile
+   - Enhanced Telegram alerts with job duration and payment tracking
 
 ## 🙏 Acknowledgments
 
