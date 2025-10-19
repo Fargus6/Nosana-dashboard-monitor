@@ -311,13 +311,6 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 **Last Updated**: October 19, 2025  
 **Status**: ✅ Production Ready & Actively Maintained
 
-**Latest Features:**
-- 💰 **Accurate Payment Notifications**: Real payment amounts from Nosana dashboard
-- 🔔 **Enhanced Notifications**: Job completion alerts with duration + payment
-- 🔒 **No Auto-Logout**: Persistent SECRET_KEY prevents session loss
-- ⚡ **Server Keep-Alive**: 30-second ping prevents server sleep
-- 🤖 **Telegram Bot**: Enhanced alerts with rich formatting
-
 ---
 
 *Monitor smarter, not harder. Keep your Nosana nodes running 24/7 with confidence!* 🚀
