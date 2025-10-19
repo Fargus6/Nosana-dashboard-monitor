@@ -2298,7 +2298,7 @@ async def get_yearly_earnings(address: str, current_user: User = Depends(get_cur
 @api_router.get("/earnings/node/{address}/live")
 async def get_live_earnings_from_dashboard(address: str, current_user: User = Depends(get_current_user)):
     """
-    Get real-time earnings by scraping Nosana dashboard
+    Get real-time earnings by scraping Nosana dashboard AND store the data
     Returns actual job payment data from the live dashboard
     """
     try:
@@ -2313,6 +2313,10 @@ async def get_live_earnings_from_dashboard(address: str, current_user: User = De
         
         # Scrape live data from Nosana dashboard
         jobs = await scrape_nosana_job_history(address)
+        
+        # Store scraped jobs in database
+        if jobs:
+            await store_scraped_jobs(current_user.id, address, jobs)
         
         if not jobs:
             return {
