@@ -976,7 +976,7 @@ function App() {
       
       // Fetch yesterday's earnings for all nodes
       if (response.data.length > 0) {
-        setTimeout(() => fetchYesterdayEarnings(), 500); // Small delay to avoid race condition
+        fetchYesterdayEarnings(response.data); // Pass nodes directly
       }
     } catch (error) {
       console.error("Error loading nodes:", error);
