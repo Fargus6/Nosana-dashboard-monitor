@@ -244,6 +244,7 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - **Web Scraping**: Playwright for Nosana dashboard data extraction
 - **Authentication**: JWT tokens with bcrypt password hashing, Google OAuth
 - **Push Notifications**: Firebase Cloud Messaging (FCM)
+- **Telegram Bot**: python-telegram-bot for enhanced notifications
 - **Security**: Rate limiting (SlowAPI), XSS protection, input validation, DOMPurify
 - **PWA**: Service Workers for offline support and auto-updates
 - **Font**: Space Grotesk for modern tech aesthetic
