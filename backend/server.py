@@ -1461,12 +1461,13 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                     except Exception as calc_error:
                         logger.error(f"Error calculating job stats: {str(calc_error)}")
                 
-                # Send notification via Firebase push (basic)
+                # Send notification via Firebase push (basic) - skip Telegram as we send enhanced version below
                 await send_notification_to_user(
                     current_user.id,
                     "✅ Job Completed",
                     f"{node_name} completed a job",
-                    address
+                    address,
+                    skip_telegram=True  # Skip Telegram, send enhanced version below
                 )
                 
                 # Send ENHANCED notification via Telegram ONLY (with duration & payment)
