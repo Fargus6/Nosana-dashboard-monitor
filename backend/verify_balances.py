@@ -166,8 +166,8 @@ async def verify_node_balances(address: str):
         print(f"   Status:     ⚠️  Missing data\n")
     
     return {
-        'sol_match': blockchain['sol'] == dashboard['sol'] if (blockchain['sol'] and dashboard['sol']) else None,
-        'nos_match': abs(blockchain['nos'] - dashboard['nos']) < 0.01 if (blockchain['nos'] and dashboard['nos']) else None
+        'sol_match': abs(blockchain['sol'] - dashboard['sol']) < 0.0001 if (blockchain['sol'] is not None and dashboard['sol'] is not None) else None,
+        'nos_match': abs(blockchain['nos'] - dashboard['nos']) < 0.01 if (blockchain['nos'] is not None and dashboard['nos'] is not None) else None
     }
 
 async def main():
