@@ -1541,6 +1541,80 @@ def calculate_job_payment(duration_seconds: int, nos_price_usd: Optional[float],
         return None
 
 
+
+async def scrape_latest_job_payment(node_address: str) -> Optional[float]:
+    """
+    Scrape the ACTUAL payment amount from Nosana dashboard for the most recent job
+    
+    Args:
+        node_address: Node's Solana address
+    
+    Returns:
+        Actual payment amount in USD from dashboard's price column, or None if scraping fails
+    """
+    try:
+        from playwright.async_api import async_playwright
+        import re
+        
+        logger.info(f"🔍 Scraping latest job payment for {node_address[:12]}...")
+        
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
+            
+            url = f"https://dashboard.nosana.com/host/{node_address}"
+            await page.goto(url, wait_until='networkidle', timeout=15000)
+            await page.wait_for_selector('table', timeout=10000)
+            
+            # Extract the FIRST job (most recent) with ACTUAL price from dashboard
+            latest_job = await page.evaluate('''() => {
+                const table = document.querySelector('table');
+                if (!table) return null;
+                
+                const rows = table.querySelectorAll('tr');
+                
+                // Get first job (index 1, after header)
+                if (rows.length < 2) return null;
+                
+                const row = rows[1];
+                const cells = row.querySelectorAll('td');
+                
+                if (cells.length >= 6) {
+                    // Column 4 is the price column with ACTUAL payment
+                    const priceText = cells[4].textContent.trim();
+                    
+                    return {
+                        price: priceText,
+                        status: cells[6].textContent.trim()
+                    };
+                }
+                
+                return null;
+            }''')
+            
+            await browser.close()
+            
+            if latest_job and latest_job['price']:
+                # Parse the actual payment amount from price column
+                # Remove "/h" if present and extract numeric value
+                price_text = latest_job['price'].replace('/h', '').replace('$', '').strip()
+                
+                try:
+                    actual_payment = float(price_text)
+                    logger.info(f"✅ Scraped ACTUAL payment: ${actual_payment:.3f} (from dashboard price column)")
+                    return actual_payment
+                except:
+                    logger.error(f"⚠️  Could not parse price: {latest_job['price']}")
+                    return None
+            else:
+                logger.warning(f"⚠️  No job data found on dashboard for {node_address[:12]}")
+                return None
+                
+    except Exception as e:
+        logger.error(f"❌ Error scraping job payment: {str(e)}")
+        return None
+
+
 def format_duration(seconds: int) -> str:
     """Format duration in seconds to human-readable format"""
     if seconds < 60:
