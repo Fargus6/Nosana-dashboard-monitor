@@ -1043,6 +1043,23 @@ async def get_nos_token_price() -> Optional[float]:
     return None
 
 
+def fetch_nos_price_coingecko() -> Optional[float]:
+    """Synchronous version - Fetch current NOS token price in USD from CoinGecko API"""
+    try:
+        response = requests.get(
+            "https://api.coingecko.com/api/v3/simple/price?ids=nosana&vs_currencies=usd",
+            timeout=5
+        )
+        if response.status_code == 200:
+            data = response.json()
+            price = data.get('nosana', {}).get('usd')
+            if price:
+                return float(price)
+    except Exception as e:
+        logger.error(f"Error fetching NOS price: {str(e)}")
+    return None
+
+
 async def scrape_nosana_job_history(node_address: str) -> List[Dict]:
     """
     Scrape actual job history data from Nosana dashboard using Playwright
