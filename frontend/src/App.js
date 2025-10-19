@@ -2165,6 +2165,18 @@ function App() {
                             </p>
                           </div>
                         )}
+                        
+                        {/* Stats Button */}
+                        <div className="pt-3 border-t">
+                          <Button
+                            onClick={() => openStatsModal(node)}
+                            className={theme.button + " w-full text-sm"}
+                            size="sm"
+                          >
+                            <TrendingUp className="w-4 h-4 mr-2" />
+                            View Earnings Statistics
+                          </Button>
+                        </div>
 
                         <div className={"text-xs pt-2 border-t " + theme.text.muted}>
                           Updated: {new Date(node.last_updated).toLocaleString()}
