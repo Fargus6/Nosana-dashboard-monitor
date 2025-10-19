@@ -1330,11 +1330,22 @@ async def store_scraped_jobs(user_id: str, node_address: str, jobs: List[Dict]):
         return 0
 
 
-async def get_yesterday_scraped_earnings(user_id: str, node_address: str) -> Dict:
-    """Get yesterday's earnings from scraped data"""
+async def get_yesterday_scraped_earnings(user_id: str, node_address: str, user_timezone: str = "UTC") -> Dict:
+    """Get yesterday's earnings from scraped data using user's timezone"""
     try:
-        yesterday_start = (datetime.now(timezone.utc) - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-        yesterday_end = yesterday_start + timedelta(days=1)
+        from zoneinfo import ZoneInfo
+        
+        # Get current time in user's timezone
+        user_tz = ZoneInfo(user_timezone)
+        now_user_tz = datetime.now(user_tz)
+        
+        # Calculate yesterday's boundaries in user's timezone
+        today_start_user_tz = now_user_tz.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_start_user_tz = today_start_user_tz - timedelta(days=1)
+        
+        # Convert to UTC for database query
+        yesterday_start_utc = yesterday_start_user_tz.astimezone(timezone.utc)
+        yesterday_end_utc = today_start_user_tz.astimezone(timezone.utc)
         
         pipeline = [
             {
@@ -1343,8 +1354,8 @@ async def get_yesterday_scraped_earnings(user_id: str, node_address: str) -> Dic
                     "node_address": node_address,
                     "status": "SUCCESS",
                     "completed": {
-                        "$gte": yesterday_start.isoformat(),
-                        "$lt": yesterday_end.isoformat()
+                        "$gte": yesterday_start_utc.isoformat(),
+                        "$lt": yesterday_end_utc.isoformat()
                     }
                 }
             },
@@ -1363,7 +1374,7 @@ async def get_yesterday_scraped_earnings(user_id: str, node_address: str) -> Dic
         
         if result:
             return {
-                "date": yesterday_start.strftime("%Y-%m-%d"),
+                "date": yesterday_start_user_tz.strftime("%Y-%m-%d"),
                 "usd_earned": round(result[0]['total_usd'], 2),
                 "nos_earned": round(result[0]['total_nos'], 2),
                 "job_count": result[0]['total_jobs'],
@@ -1371,7 +1382,7 @@ async def get_yesterday_scraped_earnings(user_id: str, node_address: str) -> Dic
             }
         
         return {
-            "date": yesterday_start.strftime("%Y-%m-%d"),
+            "date": yesterday_start_user_tz.strftime("%Y-%m-%d"),
             "usd_earned": 0,
             "nos_earned": 0,
             "job_count": 0,
