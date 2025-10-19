@@ -17,9 +17,6 @@ import time
 import json
 import sys
 from datetime import datetime, timezone
-import asyncio
-import aiohttp
-from unittest.mock import patch, MagicMock
 
 # Configuration
 BASE_URL = "https://node-pulse.preview.emergentagent.com/api"
