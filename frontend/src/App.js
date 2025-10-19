@@ -2042,30 +2042,47 @@ function App() {
                     {liveEarningsData.statistics && (
                       <div className="space-y-4">
                         <h3 className={theme.text.primary + " text-lg font-semibold border-b pb-2"}>
-                          HISTORICAL STATISTICS (from scraped data)
+                          EARNINGS STATISTICS
                         </h3>
                         
-                        {/* Yesterday */}
-                        {liveEarningsData.statistics.yesterday && (
-                          <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00ff00]/10 border border-[#00ff00]/30" : currentTheme === "neon80s" ? "bg-emerald-500/10 border border-emerald-500/30" : "bg-green-50 border border-green-200")}>
-                            <h4 className={theme.text.primary + " font-semibold mb-2"}>Yesterday</h4>
-                            <div className="grid grid-cols-3 gap-4">
+                        {/* Today's Earnings */}
+                        {liveEarningsData.statistics.today && (
+                          <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00f0ff]/10 border border-[#00f0ff]/30" : currentTheme === "neon80s" ? "bg-cyan-500/10 border border-cyan-500/30" : "bg-blue-50 border border-blue-200")}>
+                            <h4 className={theme.text.primary + " font-semibold mb-2"}>📊 TODAY ({liveEarningsData.statistics.today.date})</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className={theme.text.secondary + " text-xs"}>Jobs Completed</p>
+                                <p className={theme.text.primary + " text-xl font-bold"}>{liveEarningsData.statistics.today.job_count || 0}</p>
+                              </div>
                               <div>
                                 <p className={theme.text.secondary + " text-xs"}>Earnings</p>
-                                <p className={theme.text.primary + " font-bold"}>
+                                <p className={theme.text.primary + " text-xl font-bold"}>
+                                  ${liveEarningsData.statistics.today.usd_earned?.toFixed(2) || "0.00"}
+                                </p>
+                                <p className={theme.text.secondary + " text-sm"}>
+                                  {liveEarningsData.statistics.today.nos_earned?.toFixed(2) || "0.00"} NOS
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Yesterday's Earnings */}
+                        {liveEarningsData.statistics.yesterday && (
+                          <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00ff00]/10 border border-[#00ff00]/30" : currentTheme === "neon80s" ? "bg-emerald-500/10 border border-emerald-500/30" : "bg-green-50 border border-green-200")}>
+                            <h4 className={theme.text.primary + " font-semibold mb-2"}>📅 YESTERDAY ({liveEarningsData.statistics.yesterday.date})</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className={theme.text.secondary + " text-xs"}>Jobs Completed</p>
+                                <p className={theme.text.primary + " text-xl font-bold"}>{liveEarningsData.statistics.yesterday.job_count || 0}</p>
+                              </div>
+                              <div>
+                                <p className={theme.text.secondary + " text-xs"}>Earnings</p>
+                                <p className={theme.text.primary + " text-xl font-bold"}>
+                                  ${liveEarningsData.statistics.yesterday.usd_earned?.toFixed(2) || "0.00"}
+                                </p>
+                                <p className={theme.text.secondary + " text-sm"}>
                                   {liveEarningsData.statistics.yesterday.nos_earned?.toFixed(2) || "0.00"} NOS
-                                </p>
-                              </div>
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>USD Value</p>
-                                <p className={theme.text.primary + " font-bold"}>
-                                  ${liveEarningsData.statistics.yesterday.usd_value?.toFixed(2) || "0.00"}
-                                </p>
-                              </div>
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>Jobs</p>
-                                <p className={theme.text.primary + " font-bold"}>
-                                  {liveEarningsData.statistics.yesterday.job_count || 0}
                                 </p>
                               </div>
                             </div>
@@ -2073,9 +2090,9 @@ function App() {
                         )}
 
                         {/* Monthly Breakdown */}
-                        {liveEarningsData.statistics?.monthly?.months && liveEarningsData.statistics.monthly.months.length > 0 && (
+                        {liveEarningsData.statistics.monthly?.months && liveEarningsData.statistics.monthly.months.length > 0 && (
                           <div>
-                            <h4 className={theme.text.primary + " font-semibold mb-2 border-b pb-2"}>Monthly Breakdown</h4>
+                            <h4 className={theme.text.primary + " font-semibold mb-2 border-b pb-2"}>📆 MONTHLY BREAKDOWN</h4>
                             <div className="space-y-2 max-h-64 overflow-y-auto">
                               {liveEarningsData.statistics.monthly.months.map((month, idx) => (
                                 <div 
@@ -2086,12 +2103,17 @@ function App() {
                                     <h5 className={theme.text.primary + " font-semibold text-sm"}>
                                       {month.month_name || month.month}
                                     </h5>
-                                    <span className={theme.text.primary + " font-bold"}>
-                                      {month.nos_earned?.toFixed(2) || "0.00"} NOS
-                                    </span>
+                                    <div className="text-right">
+                                      <p className={theme.text.primary + " font-bold"}>
+                                        ${month.usd_earned?.toFixed(2) || "0.00"}
+                                      </p>
+                                      <p className={theme.text.secondary + " text-xs"}>
+                                        {month.nos_earned?.toFixed(2) || "0.00"} NOS
+                                      </p>
+                                    </div>
                                   </div>
-                                  <p className={theme.text.secondary + " text-xs mt-1"}>
-                                    ${month.usd_earned?.toFixed(2) || "0.00"} USD | {month.job_count || 0} jobs
+                                  <p className={theme.text.secondary + " text-xs"}>
+                                    {month.job_count || 0} jobs
                                   </p>
                                 </div>
                               ))}
@@ -2099,32 +2121,26 @@ function App() {
                           </div>
                         )}
 
-                        {/* Yearly Breakdown */}
-                        {liveEarningsData.statistics?.yearly?.years && liveEarningsData.statistics.yearly.years.length > 0 && (
-                          <div>
-                            <h4 className={theme.text.primary + " font-semibold mb-2 border-b pb-2"}>Yearly Totals</h4>
-                            <div className="space-y-2">
-                              {liveEarningsData.statistics.yearly.years.map((year, idx) => (
-                                <div 
-                                  key={year.year || idx}
-                                  className={"p-4 rounded-lg " + (idx === 0 
-                                    ? (currentTheme === "cyber" ? "bg-[#00ff00]/20 border-2 border-[#00ff00]" : currentTheme === "neon80s" ? "bg-emerald-500/20 border-2 border-emerald-500" : "bg-blue-100 border-2 border-blue-500")
-                                    : (currentTheme === "cyber" ? "bg-gray-800/50 border border-gray-600" : currentTheme === "neon80s" ? "bg-gray-800/50 border border-gray-600" : "bg-gray-100 border border-gray-300")
-                                  )}
-                                >
-                                  <div className="flex justify-between items-start mb-1">
-                                    <h5 className={theme.text.primary + " font-semibold"}>
-                                      {year.year} {idx === 0 && <span className="text-xs text-blue-500">(current)</span>}
-                                    </h5>
-                                    <span className={theme.text.primary + " font-bold text-lg"}>
-                                      {year.nos_earned?.toFixed(2) || "0.00"} NOS
-                                    </span>
-                                  </div>
-                                  <p className={theme.text.secondary + " text-sm mt-1"}>
-                                    ${year.usd_earned?.toFixed(2) || "0.00"} USD | {year.job_count || 0} jobs
-                                  </p>
-                                </div>
-                              ))}
+                        {/* Overall Totals */}
+                        {liveEarningsData.statistics.overall && (
+                          <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00ff00]/20 border-2 border-[#00ff00]" : currentTheme === "neon80s" ? "bg-emerald-500/20 border-2 border-emerald-500" : "bg-green-100 border-2 border-green-500")}>
+                            <h4 className={theme.text.primary + " font-semibold mb-3"}>🎯 OVERALL (All-Time)</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className={theme.text.secondary + " text-xs"}>Total Jobs</p>
+                                <p className={theme.text.primary + " text-2xl font-bold"}>
+                                  {liveEarningsData.statistics.overall.total_jobs || 0}
+                                </p>
+                              </div>
+                              <div>
+                                <p className={theme.text.secondary + " text-xs"}>Total Earnings</p>
+                                <p className={theme.text.primary + " text-2xl font-bold"}>
+                                  ${liveEarningsData.statistics.overall.total_usd?.toFixed(2) || "0.00"}
+                                </p>
+                                <p className={theme.text.secondary + " text-sm"}>
+                                  {liveEarningsData.statistics.overall.total_nos?.toFixed(2) || "0.00"} NOS
+                                </p>
+                              </div>
                             </div>
                           </div>
                         )}
