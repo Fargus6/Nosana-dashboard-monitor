@@ -1043,15 +1043,15 @@ async def get_nos_token_price() -> Optional[float]:
     return None
 
 
-def scrape_nosana_job_history(node_address: str) -> List[Dict]:
+async def scrape_nosana_job_history(node_address: str) -> List[Dict]:
     """
-    Scrape actual job history data from Nosana dashboard
+    Scrape actual job history data from Nosana dashboard using Playwright
     
     Returns list of jobs with real payment data:
     [
         {
             "job_id": "...",
-            "started": datetime,
+            "started": str,
             "duration_seconds": int,
             "hourly_rate_usd": float,  # Actual rate from dashboard
             "gpu_type": str,
@@ -1060,72 +1060,82 @@ def scrape_nosana_job_history(node_address: str) -> List[Dict]:
     ]
     """
     try:
+        from playwright.async_api import async_playwright
+        
         url = f"https://dashboard.nosana.com/host/{node_address}"
         logger.info(f"🌐 Scraping Nosana dashboard for node: {node_address}")
         
-        response = requests.get(url, timeout=10)
-        if response.status_code != 200:
-            logger.warning(f"Failed to fetch Nosana dashboard: {response.status_code}")
-            return []
-        
-        soup = BeautifulSoup(response.text, 'html.parser')
-        jobs = []
-        
-        # Find the deployments table
-        table = soup.find('table')
-        if not table:
-            logger.warning("No jobs table found on dashboard")
-            return []
-        
-        rows = table.find_all('tr')[1:]  # Skip header row
-        
-        for row in rows:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch()
+            page = await browser.new_page()
+            
             try:
-                cols = row.find_all('td')
-                if len(cols) < 6:
-                    continue
+                # Navigate to page
+                await page.goto(url, wait_until='networkidle', timeout=15000)
                 
-                # Extract job data
-                job_link = cols[0].find('a')
-                job_id = job_link['href'].split('/')[-1] if job_link else None
+                # Wait for table to load
+                await page.wait_for_selector('table', timeout=10000)
                 
-                # Parse duration (e.g., "55m 9s" or "1h 23m")
-                duration_text = cols[3].get_text(strip=True)
-                duration_seconds = parse_duration_to_seconds(duration_text)
+                # Extract job data from table using JavaScript
+                jobs_data = await page.evaluate('''() => {
+                    const jobs = [];
+                    const table = document.querySelector('table');
+                    if (!table) return jobs;
+                    
+                    const rows = table.querySelectorAll('tr');
+                    
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const cells = row.querySelectorAll('td');
+                        
+                        if (cells.length >= 6) {
+                            const jobLink = cells[0].querySelector('a');
+                            const jobId = jobLink ? jobLink.getAttribute('href').split('/').pop() : null;
+                            
+                            jobs.push({
+                                job_id: jobId,
+                                started: cells[2].textContent.trim(),
+                                duration: cells[3].textContent.trim(),
+                                price: cells[4].textContent.trim(),
+                                gpu: cells[5].textContent.trim(),
+                                status: cells[6].textContent.trim().includes('RUNNING') ? 'RUNNING' : 'SUCCESS'
+                            });
+                        }
+                    }
+                    
+                    return jobs;
+                }''')
                 
-                # Parse price (e.g., "$0.176" or "$0.192/h")
-                price_text = cols[4].get_text(strip=True)
-                hourly_rate = parse_hourly_rate(price_text)
+                await browser.close()
                 
-                # GPU type
-                gpu_text = cols[5].get_text(strip=True)
+                # Parse the extracted data
+                jobs = []
+                for job_data in jobs_data:
+                    duration_seconds = parse_duration_to_seconds(job_data['duration'])
+                    hourly_rate = parse_hourly_rate(job_data['price'])
+                    started_time = parse_relative_time(job_data['started'])
+                    
+                    job = {
+                        "job_id": job_data['job_id'],
+                        "started": started_time,
+                        "started_text": job_data['started'],
+                        "duration_seconds": duration_seconds,
+                        "duration_text": job_data['duration'],
+                        "hourly_rate_usd": hourly_rate,
+                        "gpu_type": job_data['gpu'],
+                        "status": job_data['status']
+                    }
+                    
+                    jobs.append(job)
+                    logger.info(f"📊 Job {job_data['job_id'][:8] if job_data['job_id'] else 'N/A'}...: {job_data['duration']} @ ${hourly_rate}/h = ${(duration_seconds/3600.0)*hourly_rate:.4f}")
                 
-                # Status
-                status_img = cols[6].find('img')
-                status = "RUNNING" if "running" in str(status_img) else "SUCCESS"
-                
-                # Parse started time (e.g., "3 hours ago", "33 minutes ago")
-                started_text = cols[2].get_text(strip=True)
-                started_time = parse_relative_time(started_text)
-                
-                job_data = {
-                    "job_id": job_id,
-                    "started": started_time,
-                    "duration_seconds": duration_seconds,
-                    "hourly_rate_usd": hourly_rate,
-                    "gpu_type": gpu_text,
-                    "status": status
-                }
-                
-                jobs.append(job_data)
-                logger.info(f"📊 Job {job_id[:8]}...: {duration_text} @ ${hourly_rate}/h = ${(duration_seconds/3600.0)*hourly_rate:.4f}")
+                logger.info(f"✅ Scraped {len(jobs)} jobs from Nosana dashboard")
+                return jobs
                 
             except Exception as e:
-                logger.error(f"Error parsing job row: {str(e)}")
-                continue
-        
-        logger.info(f"✅ Scraped {len(jobs)} jobs from Nosana dashboard")
-        return jobs
+                await browser.close()
+                logger.error(f"Error during Playwright scraping: {str(e)}")
+                return []
         
     except Exception as e:
         logger.error(f"Error scraping Nosana dashboard: {str(e)}")
