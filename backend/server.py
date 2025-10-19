@@ -288,6 +288,8 @@ class Node(BaseModel):
     sol_balance: Optional[float] = None
     total_jobs: Optional[int] = None
     availability_score: Optional[float] = None
+    job_start_time: Optional[str] = None  # ISO timestamp when job started
+    job_count_completed: Optional[int] = 0  # Track completed jobs count
     last_updated: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
