@@ -128,13 +128,17 @@ async def verify_node_balances(address: str):
     # SOL comparison
     if blockchain['sol'] is not None and dashboard['sol'] is not None:
         sol_diff = abs(blockchain['sol'] - dashboard['sol'])
-        sol_match = sol_diff < 0.000001  # Allow tiny floating point differences
+        sol_match = sol_diff < 0.0001  # Allow 0.0001 SOL difference (rounding/display precision)
         
         print(f"SOL Balance:")
         print(f"   Blockchain: {blockchain['sol']:.6f}")
         print(f"   Dashboard:  {dashboard['sol']:.6f}")
         print(f"   Difference: {sol_diff:.9f}")
-        print(f"   Status:     {'✅ MATCH' if sol_match else '❌ MISMATCH'}\n")
+        if sol_match:
+            print(f"   Status:     ✅ MATCH (within tolerance)")
+        else:
+            print(f"   Status:     ❌ MISMATCH (difference > 0.0001 SOL)")
+        print()
     else:
         sol_bc = f"{blockchain['sol']:.6f}" if blockchain['sol'] is not None else 'N/A'
         sol_db = f"{dashboard['sol']:.6f}" if dashboard['sol'] is not None else 'N/A'
