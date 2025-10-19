@@ -1099,7 +1099,7 @@ def format_duration(seconds: int) -> str:
         return f"{hours}h {remaining_minutes}m"
 
 
-async def send_notification_to_user(user_id: str, title: str, body: str, node_address: str = None):
+async def send_notification_to_user(user_id: str, title: str, body: str, node_address: str = None, skip_telegram: bool = False):
     """Helper function to send push notification to user"""
     try:
         logger.info(f"=" * 70)
@@ -1107,6 +1107,7 @@ async def send_notification_to_user(user_id: str, title: str, body: str, node_ad
         logger.info(f"   Title: {title}")
         logger.info(f"   Body: {body}")
         logger.info(f"   Node: {node_address or 'N/A'}")
+        logger.info(f"   Skip Telegram: {skip_telegram}")
         
         # Get user's device tokens
         tokens = await db.device_tokens.find({"user_id": user_id}).to_list(100)
