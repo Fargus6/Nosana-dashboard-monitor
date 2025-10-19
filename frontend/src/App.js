@@ -1938,8 +1938,8 @@ function App() {
         </Card>
 
         
-        {/* Earnings Statistics Modal */}
-        {showStatsModal && selectedNodeStats && (
+        {/* Live Earnings Modal with Statistics */}
+        {showLiveEarningsModal && selectedNodeStats && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowStatsModal(false)}>
             <Card 
               className={theme.card + " w-full max-w-3xl max-h-[90vh] overflow-y-auto"} 
