@@ -351,4 +351,29 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 
 ---
 
+## 🚀 Quick Start
+
+### For Users
+1. Visit https://nosanamonitor.preview.emergentagent.com
+2. Sign up with email or Google
+3. Add your Nosana node addresses
+4. Enable notifications for alerts
+5. Install as PWA for mobile experience
+
+### For Production Deployment
+1. Review [Deployment Guide](DEPLOYMENT_GUIDE.md)
+2. Ensure you have 50 credits (Starter Tier - $10/month)
+3. Click "Deploy" button in Emergent interface
+4. Wait ~10 minutes for deployment
+5. Receive production URL with 24/7 uptime
+
+**Benefits of Production:**
+- ✅ No auto-restarts (stable 24/7)
+- ✅ No random logouts
+- ✅ Custom domain support
+- ✅ Professional hosting
+- ✅ SSL certificates included
+
+---
+
 *Monitor smarter, not harder. Keep your Nosana nodes running 24/7 with confidence!* 🚀
