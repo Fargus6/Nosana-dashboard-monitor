@@ -2544,6 +2544,72 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
         raise HTTPException(status_code=500, detail="Failed to get statistics")
 
 
+@api_router.get("/user/profile")
+async def get_user_profile(current_user: User = Depends(get_current_user)):
+    """Get current user's profile including timezone"""
+    try:
+        user_data = await db.users.find_one({"id": current_user.id})
+        if not user_data:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "id": user_data['id'],
+            "email": user_data['email'],
+            "timezone": user_data.get('timezone', 'UTC'),
+            "created_at": user_data.get('created_at')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting user profile: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get user profile")
+
+
+@api_router.put("/user/timezone")
+async def update_user_timezone(
+    timezone_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update user's timezone"""
+    try:
+        from zoneinfo import ZoneInfo, available_timezones
+        
+        new_timezone = timezone_data.get('timezone', 'UTC')
+        
+        # Validate timezone
+        if new_timezone not in available_timezones():
+            raise HTTPException(status_code=400, detail=f"Invalid timezone: {new_timezone}")
+        
+        # Test if timezone is valid
+        try:
+            ZoneInfo(new_timezone)
+        except Exception:
+            raise HTTPException(status_code=400, detail=f"Invalid timezone: {new_timezone}")
+        
+        # Update user's timezone
+        result = await db.users.update_one(
+            {"id": current_user.id},
+            {"$set": {"timezone": new_timezone}}
+        )
+        
+        if result.modified_count == 0:
+            logger.warning(f"No user found with id {current_user.id} to update timezone")
+        
+        logger.info(f"✅ Updated timezone for user {current_user.email} to {new_timezone}")
+        
+        return {
+            "success": True,
+            "message": f"Timezone updated to {new_timezone}",
+            "timezone": new_timezone
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating timezone: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to update timezone")
+
+
 @api_router.get("/earnings/node/{address}/yesterday-scraped")
 async def get_yesterday_earnings_scraped(address: str, current_user: User = Depends(get_current_user)):
     """Get yesterday's earnings from scraped data for node card display"""
