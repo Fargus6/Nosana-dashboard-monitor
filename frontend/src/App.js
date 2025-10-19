@@ -197,10 +197,7 @@ function App() {
   
   // Earnings statistics states
   const [yesterdayEarnings, setYesterdayEarnings] = useState({});
-  const [showStatsModal, setShowStatsModal] = useState(false);
   const [selectedNodeStats, setSelectedNodeStats] = useState(null);
-  const [statsLoading, setStatsLoading] = useState(false);
-  const [statsData, setStatsData] = useState(null);
   
   // Live earnings states
   const [showLiveEarningsModal, setShowLiveEarningsModal] = useState(false);
