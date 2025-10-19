@@ -755,12 +755,20 @@ function App() {
   // Addresses and balances are visible by default (user can hide them with eye icon)
   // No default hiding behavior
 
-  const verifyToken = async () => {
+  const verifyToken = async (retryCount = 0) => {
     try {
-      const response = await axios.get(`${API}/auth/me`);
+      const response = await axios.get(`${API}/auth/me`, { timeout: 10000 });
       setCurrentUser(response.data);
       setIsAuthenticated(true);
+      return true;
     } catch (error) {
+      // If server is waking up or network issue, retry
+      if (!error.response && retryCount < 3) {
+        console.log(`Token verification retry ${retryCount + 1}/3 (server waking up)`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return verifyToken(retryCount + 1);
+      }
+      
       // Only logout on actual auth errors, not network issues
       if (error.response?.status === 401) {
         // Token is invalid or expired
@@ -768,9 +776,16 @@ function App() {
         delete axios.defaults.headers.common['Authorization'];
         setIsAuthenticated(false);
         console.error("Token verification failed - invalid token");
+        return false;
       } else {
-        // Network error or server waking up - don't logout
+        // Network error or server waking up - don't logout, keep trying
         console.log("Token verification failed due to network issue:", error.message);
+        // Still mark as authenticated if we have a token - will retry later
+        if (secureStorage.get('token')) {
+          setIsAuthenticated(true);
+          return true;
+        }
+        return false;
       }
     }
   };
