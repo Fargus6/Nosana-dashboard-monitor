@@ -1099,6 +1099,113 @@ def format_duration(seconds: int) -> str:
         return f"{hours}h {remaining_minutes}m"
 
 
+async def save_job_earnings(user_id: str, node_address: str, node_name: str, duration_seconds: int, nos_earned: float, usd_value: float):
+    """Save job earnings to database for statistics tracking"""
+    try:
+        now = datetime.now(timezone.utc)
+        
+        # Check if this is the first earning for this node
+        tracking_meta = await db.node_tracking_metadata.find_one({
+            "node_id": node_address,
+            "user_id": user_id
+        })
+        
+        if not tracking_meta:
+            # First earnings record - initialize tracking metadata
+            tracking_meta = {
+                "node_id": node_address,
+                "user_id": user_id,
+                "tracking_started": now.isoformat(),
+                "current_year_start": now.isoformat(),
+                "archived_years": []
+            }
+            await db.node_tracking_metadata.insert_one(tracking_meta)
+            logger.info(f"📊 Started earnings tracking for {node_name}")
+        else:
+            # Check if year cycle is complete
+            tracking_start = datetime.fromisoformat(tracking_meta['current_year_start'].replace('Z', '+00:00'))
+            years_diff = (now - tracking_start).days / 365.25
+            
+            if years_diff >= 1.0:
+                # Year cycle complete - archive and reset
+                year_end = tracking_start + timedelta(days=365)
+                
+                # Calculate year total
+                year_earnings = await db.job_earnings.aggregate([
+                    {
+                        "$match": {
+                            "node_id": node_address,
+                            "user_id": user_id,
+                            "completed_at": {
+                                "$gte": tracking_start.isoformat(),
+                                "$lt": year_end.isoformat()
+                            }
+                        }
+                    },
+                    {
+                        "$group": {
+                            "_id": None,
+                            "total_nos": {"$sum": "$nos_earned"},
+                            "total_usd": {"$sum": "$usd_value"},
+                            "total_jobs": {"$sum": 1}
+                        }
+                    }
+                ]).to_list(1)
+                
+                if year_earnings:
+                    archive_entry = {
+                        "year_number": len(tracking_meta.get('archived_years', [])) + 1,
+                        "start_date": tracking_start.isoformat(),
+                        "end_date": year_end.isoformat(),
+                        "total_nos": year_earnings[0]['total_nos'],
+                        "total_usd": year_earnings[0]['total_usd'],
+                        "total_jobs": year_earnings[0]['total_jobs']
+                    }
+                    
+                    # Keep only last 3 years
+                    archived_years = tracking_meta.get('archived_years', [])
+                    archived_years.append(archive_entry)
+                    if len(archived_years) > 3:
+                        archived_years = archived_years[-3:]
+                    
+                    # Update metadata for new year
+                    await db.node_tracking_metadata.update_one(
+                        {"node_id": node_address, "user_id": user_id},
+                        {
+                            "$set": {
+                                "current_year_start": now.isoformat(),
+                                "archived_years": archived_years
+                            }
+                        }
+                    )
+                    
+                    logger.info(f"📊 Archived Year {archive_entry['year_number']} for {node_name}: {archive_entry['total_nos']:.2f} NOS")
+        
+        # Save earnings record
+        earnings_record = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "node_id": node_address,
+            "node_name": node_name,
+            "completed_at": now.isoformat(),
+            "duration_seconds": duration_seconds,
+            "nos_earned": nos_earned,
+            "usd_value": usd_value,
+            "date": now.strftime("%Y-%m-%d"),  # For daily queries
+            "month": now.strftime("%Y-%m"),     # For monthly queries
+            "year": now.strftime("%Y")          # For yearly queries
+        }
+        
+        await db.job_earnings.insert_one(earnings_record)
+        logger.info(f"💾 Saved earnings: {nos_earned:.2f} NOS for {node_name}")
+        
+        return True
+        
+    except Exception as e:
+        logger.error(f"Error saving job earnings: {str(e)}")
+        return False
+
+
 async def send_notification_to_user(user_id: str, title: str, body: str, node_address: str = None, skip_telegram: bool = False):
     """Helper function to send push notification to user"""
     try:
