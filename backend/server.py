@@ -1661,6 +1661,250 @@ async def get_dashboard_link(address: str):
     )
 
 
+
+# ===========================
+# Earnings Statistics Endpoints
+# ===========================
+
+@api_router.get("/earnings/node/{address}/yesterday")
+async def get_yesterday_earnings(address: str, current_user: User = Depends(get_current_user)):
+    """Get yesterday's earnings for a node"""
+    try:
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+        
+        result = await db.job_earnings.aggregate([
+            {
+                "$match": {
+                    "node_id": address,
+                    "user_id": current_user.id,
+                    "date": yesterday
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "total_nos": {"$sum": "$nos_earned"},
+                    "total_usd": {"$sum": "$usd_value"},
+                    "total_jobs": {"$sum": 1},
+                    "total_duration": {"$sum": "$duration_seconds"}
+                }
+            }
+        ]).to_list(1)
+        
+        if result:
+            return {
+                "date": yesterday,
+                "nos_earned": round(result[0]['total_nos'], 2),
+                "usd_value": round(result[0]['total_usd'], 2),
+                "job_count": result[0]['total_jobs'],
+                "duration_seconds": result[0]['total_duration']
+            }
+        else:
+            return {
+                "date": yesterday,
+                "nos_earned": 0,
+                "usd_value": 0,
+                "job_count": 0,
+                "duration_seconds": 0
+            }
+    
+    except Exception as e:
+        logger.error(f"Error getting yesterday earnings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get earnings")
+
+
+@api_router.get("/earnings/node/{address}/today")
+async def get_today_earnings(address: str, current_user: User = Depends(get_current_user)):
+    """Get today's earnings for a node (in progress)"""
+    try:
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        
+        result = await db.job_earnings.aggregate([
+            {
+                "$match": {
+                    "node_id": address,
+                    "user_id": current_user.id,
+                    "date": today
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "total_nos": {"$sum": "$nos_earned"},
+                    "total_usd": {"$sum": "$usd_value"},
+                    "total_jobs": {"$sum": 1},
+                    "total_duration": {"$sum": "$duration_seconds"}
+                }
+            }
+        ]).to_list(1)
+        
+        if result:
+            return {
+                "date": today,
+                "nos_earned": round(result[0]['total_nos'], 2),
+                "usd_value": round(result[0]['total_usd'], 2),
+                "job_count": result[0]['total_jobs'],
+                "duration_seconds": result[0]['total_duration']
+            }
+        else:
+            return {
+                "date": today,
+                "nos_earned": 0,
+                "usd_value": 0,
+                "job_count": 0,
+                "duration_seconds": 0
+            }
+    
+    except Exception as e:
+        logger.error(f"Error getting today earnings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get earnings")
+
+
+@api_router.get("/earnings/node/{address}/monthly")
+async def get_monthly_earnings(address: str, current_user: User = Depends(get_current_user)):
+    """Get monthly breakdown of earnings"""
+    try:
+        # Get tracking metadata
+        tracking_meta = await db.node_tracking_metadata.find_one({
+            "node_id": address,
+            "user_id": current_user.id
+        })
+        
+        if not tracking_meta:
+            return {
+                "tracking_started": None,
+                "months": []
+            }
+        
+        tracking_start = datetime.fromisoformat(tracking_meta['tracking_started'].replace('Z', '+00:00'))
+        current_year_start = datetime.fromisoformat(tracking_meta['current_year_start'].replace('Z', '+00:00'))
+        
+        # Get all months from tracking start to now
+        monthly_earnings = await db.job_earnings.aggregate([
+            {
+                "$match": {
+                    "node_id": address,
+                    "user_id": current_user.id,
+                    "completed_at": {"$gte": current_year_start.isoformat()}
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$month",
+                    "total_nos": {"$sum": "$nos_earned"},
+                    "total_usd": {"$sum": "$usd_value"},
+                    "total_jobs": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {"_id": -1}  # Sort by month descending
+            }
+        ]).to_list(100)
+        
+        months = []
+        for month_data in monthly_earnings:
+            year, month = month_data['_id'].split('-')
+            # Get first and last day of month
+            first_day = datetime(int(year), int(month), 1)
+            if int(month) == 12:
+                last_day = datetime(int(year) + 1, 1, 1) - timedelta(days=1)
+            else:
+                last_day = datetime(int(year), int(month) + 1, 1) - timedelta(days=1)
+            
+            # Check if this is the first month (partial)
+            is_first_month = (first_day.year == tracking_start.year and first_day.month == tracking_start.month)
+            
+            months.append({
+                "month": month_data['_id'],
+                "start_date": tracking_start.strftime("%Y-%m-%d") if is_first_month else first_day.strftime("%Y-%m-%d"),
+                "end_date": last_day.strftime("%Y-%m-%d"),
+                "nos_earned": round(month_data['total_nos'], 2),
+                "usd_value": round(month_data['total_usd'], 2),
+                "job_count": month_data['total_jobs'],
+                "is_current": month_data['_id'] == datetime.now(timezone.utc).strftime("%Y-%m"),
+                "is_partial": is_first_month
+            })
+        
+        return {
+            "tracking_started": tracking_start.strftime("%Y-%m-%d"),
+            "months": months
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting monthly earnings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get monthly earnings")
+
+
+@api_router.get("/earnings/node/{address}/yearly")
+async def get_yearly_earnings(address: str, current_user: User = Depends(get_current_user)):
+    """Get current year total and archived years"""
+    try:
+        # Get tracking metadata
+        tracking_meta = await db.node_tracking_metadata.find_one({
+            "node_id": address,
+            "user_id": current_user.id
+        })
+        
+        if not tracking_meta:
+            return {
+                "current_year": None,
+                "archived_years": []
+            }
+        
+        tracking_start = datetime.fromisoformat(tracking_meta['tracking_started'].replace('Z', '+00:00'))
+        current_year_start = datetime.fromisoformat(tracking_meta['current_year_start'].replace('Z', '+00:00'))
+        
+        # Calculate current year total
+        year_end = current_year_start + timedelta(days=365)
+        current_year_earnings = await db.job_earnings.aggregate([
+            {
+                "$match": {
+                    "node_id": address,
+                    "user_id": current_user.id,
+                    "completed_at": {
+                        "$gte": current_year_start.isoformat(),
+                        "$lt": year_end.isoformat()
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "total_nos": {"$sum": "$nos_earned"},
+                    "total_usd": {"$sum": "$usd_value"},
+                    "total_jobs": {"$sum": 1}
+                }
+            }
+        ]).to_list(1)
+        
+        # Calculate months completed and remaining
+        now = datetime.now(timezone.utc)
+        months_elapsed = (now.year - current_year_start.year) * 12 + now.month - current_year_start.month
+        if now.day < current_year_start.day:
+            months_elapsed -= 1
+        months_remaining = max(0, 12 - months_elapsed)
+        
+        current_year = {
+            "year_number": len(tracking_meta.get('archived_years', [])) + 1,
+            "start_date": current_year_start.strftime("%Y-%m-%d"),
+            "end_date": year_end.strftime("%Y-%m-%d"),
+            "nos_earned": round(current_year_earnings[0]['total_nos'], 2) if current_year_earnings else 0,
+            "usd_value": round(current_year_earnings[0]['total_usd'], 2) if current_year_earnings else 0,
+            "job_count": current_year_earnings[0]['total_jobs'] if current_year_earnings else 0,
+            "months_completed": months_elapsed + 1,
+            "months_remaining": months_remaining
+        }
+        
+        return {
+            "current_year": current_year,
+            "archived_years": tracking_meta.get('archived_years', [])
+        }
+    
+    except Exception as e:
+        logger.error(f"Error getting yearly earnings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get yearly earnings")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
