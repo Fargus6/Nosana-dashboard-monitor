@@ -15,7 +15,7 @@ async def scrape_and_show_earnings(node_address):
         page = await browser.new_page()
         
         # Navigate to node's job history
-        url = f"https://explorer.nosana.io/nodes/{node_address}/jobs"
+        url = f"https://nosana.io/nodes/{node_address}"
         print(f"Fetching data from: {url}\n")
         
         try:
