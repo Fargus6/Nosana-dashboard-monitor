@@ -2064,6 +2064,84 @@ async def get_yearly_earnings(address: str, current_user: User = Depends(get_cur
         raise HTTPException(status_code=500, detail="Failed to get yearly earnings")
 
 
+@api_router.get("/earnings/node/{address}/live")
+async def get_live_earnings_from_dashboard(address: str, current_user: User = Depends(get_current_user)):
+    """
+    Get real-time earnings by scraping Nosana dashboard
+    Returns actual job payment data from the live dashboard
+    """
+    try:
+        # Verify node belongs to user
+        node = await db.nodes.find_one({
+            "address": address,
+            "user_id": current_user.id
+        })
+        
+        if not node:
+            raise HTTPException(status_code=404, detail="Node not found")
+        
+        # Scrape live data from Nosana dashboard
+        jobs = scrape_nosana_job_history(address)
+        
+        if not jobs:
+            return {
+                "node_address": address,
+                "jobs": [],
+                "summary": {
+                    "total_jobs": 0,
+                    "total_usd": 0,
+                    "total_nos": 0,
+                    "completed_jobs": 0,
+                    "running_jobs": 0
+                }
+            }
+        
+        # Get current NOS price
+        nos_price = fetch_nos_price_coingecko()
+        if not nos_price:
+            nos_price = 0.1  # Fallback price
+        
+        # Calculate earnings for each job
+        total_usd = 0
+        completed_jobs = 0
+        running_jobs = 0
+        
+        for job in jobs:
+            # Calculate USD earned for this job
+            duration_hours = job['duration_seconds'] / 3600.0
+            usd_earned = duration_hours * job['hourly_rate_usd']
+            job['usd_earned'] = round(usd_earned, 4)
+            job['nos_earned'] = round(usd_earned / nos_price, 2) if nos_price > 0 else 0
+            
+            # Add to totals (only count completed jobs in total)
+            if job['status'] == 'SUCCESS':
+                total_usd += usd_earned
+                completed_jobs += 1
+            else:
+                running_jobs += 1
+        
+        total_nos = round(total_usd / nos_price, 2) if nos_price > 0 else 0
+        
+        return {
+            "node_address": address,
+            "nos_price": nos_price,
+            "jobs": jobs,
+            "summary": {
+                "total_jobs": len(jobs),
+                "total_usd": round(total_usd, 2),
+                "total_nos": total_nos,
+                "completed_jobs": completed_jobs,
+                "running_jobs": running_jobs
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting live earnings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get live earnings from dashboard")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
