@@ -1043,6 +1043,156 @@ async def get_nos_token_price() -> Optional[float]:
     return None
 
 
+def scrape_nosana_job_history(node_address: str) -> List[Dict]:
+    """
+    Scrape actual job history data from Nosana dashboard
+    
+    Returns list of jobs with real payment data:
+    [
+        {
+            "job_id": "...",
+            "started": datetime,
+            "duration_seconds": int,
+            "hourly_rate_usd": float,  # Actual rate from dashboard
+            "gpu_type": str,
+            "status": str
+        }
+    ]
+    """
+    try:
+        url = f"https://dashboard.nosana.com/host/{node_address}"
+        logger.info(f"🌐 Scraping Nosana dashboard for node: {node_address}")
+        
+        response = requests.get(url, timeout=10)
+        if response.status_code != 200:
+            logger.warning(f"Failed to fetch Nosana dashboard: {response.status_code}")
+            return []
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        jobs = []
+        
+        # Find the deployments table
+        table = soup.find('table')
+        if not table:
+            logger.warning("No jobs table found on dashboard")
+            return []
+        
+        rows = table.find_all('tr')[1:]  # Skip header row
+        
+        for row in rows:
+            try:
+                cols = row.find_all('td')
+                if len(cols) < 6:
+                    continue
+                
+                # Extract job data
+                job_link = cols[0].find('a')
+                job_id = job_link['href'].split('/')[-1] if job_link else None
+                
+                # Parse duration (e.g., "55m 9s" or "1h 23m")
+                duration_text = cols[3].get_text(strip=True)
+                duration_seconds = parse_duration_to_seconds(duration_text)
+                
+                # Parse price (e.g., "$0.176" or "$0.192/h")
+                price_text = cols[4].get_text(strip=True)
+                hourly_rate = parse_hourly_rate(price_text)
+                
+                # GPU type
+                gpu_text = cols[5].get_text(strip=True)
+                
+                # Status
+                status_img = cols[6].find('img')
+                status = "RUNNING" if "running" in str(status_img) else "SUCCESS"
+                
+                # Parse started time (e.g., "3 hours ago", "33 minutes ago")
+                started_text = cols[2].get_text(strip=True)
+                started_time = parse_relative_time(started_text)
+                
+                job_data = {
+                    "job_id": job_id,
+                    "started": started_time,
+                    "duration_seconds": duration_seconds,
+                    "hourly_rate_usd": hourly_rate,
+                    "gpu_type": gpu_text,
+                    "status": status
+                }
+                
+                jobs.append(job_data)
+                logger.info(f"📊 Job {job_id[:8]}...: {duration_text} @ ${hourly_rate}/h = ${(duration_seconds/3600.0)*hourly_rate:.4f}")
+                
+            except Exception as e:
+                logger.error(f"Error parsing job row: {str(e)}")
+                continue
+        
+        logger.info(f"✅ Scraped {len(jobs)} jobs from Nosana dashboard")
+        return jobs
+        
+    except Exception as e:
+        logger.error(f"Error scraping Nosana dashboard: {str(e)}")
+        return []
+
+
+def parse_duration_to_seconds(duration_text: str) -> int:
+    """Convert duration text like '55m 9s' or '1h 23m' to seconds"""
+    try:
+        seconds = 0
+        # Match hours
+        hours_match = re.search(r'(\d+)h', duration_text)
+        if hours_match:
+            seconds += int(hours_match.group(1)) * 3600
+        
+        # Match minutes
+        minutes_match = re.search(r'(\d+)m', duration_text)
+        if minutes_match:
+            seconds += int(minutes_match.group(1)) * 60
+        
+        # Match seconds
+        seconds_match = re.search(r'(\d+)s', duration_text)
+        if seconds_match:
+            seconds += int(seconds_match.group(1))
+        
+        return seconds
+    except Exception as e:
+        logger.error(f"Error parsing duration '{duration_text}': {str(e)}")
+        return 0
+
+
+def parse_hourly_rate(price_text: str) -> float:
+    """Extract hourly rate from price text like '$0.176' or '$0.192/h'"""
+    try:
+        # Remove '/h' suffix and '$' prefix
+        rate_str = price_text.replace('/h', '').replace('$', '').strip()
+        return float(rate_str)
+    except Exception as e:
+        logger.error(f"Error parsing hourly rate '{price_text}': {str(e)}")
+        return 0.0
+
+
+def parse_relative_time(time_text: str) -> datetime:
+    """Convert relative time like '3 hours ago' to datetime"""
+    try:
+        now = datetime.now(timezone.utc)
+        
+        # Match patterns like "3 hours ago", "33 minutes ago", "2 days ago"
+        hours_match = re.search(r'(\d+)\s+hours?\s+ago', time_text)
+        if hours_match:
+            return now - timedelta(hours=int(hours_match.group(1)))
+        
+        minutes_match = re.search(r'(\d+)\s+minutes?\s+ago', time_text)
+        if minutes_match:
+            return now - timedelta(minutes=int(minutes_match.group(1)))
+        
+        days_match = re.search(r'(\d+)\s+days?\s+ago', time_text)
+        if days_match:
+            return now - timedelta(days=int(days_match.group(1)))
+        
+        # Default to now if can't parse
+        return now
+    except Exception as e:
+        logger.error(f"Error parsing relative time '{time_text}': {str(e)}")
+        return datetime.now(timezone.utc)
+
+
 def calculate_job_payment(duration_seconds: int, nos_price_usd: Optional[float], gpu_type: str = "A100") -> Optional[float]:
     """
     Calculate NOS payment for a job based on Nosana's payment structure
