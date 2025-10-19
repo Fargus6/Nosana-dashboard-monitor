@@ -1041,59 +1041,6 @@ function App() {
   // Note: Old statistics modal functions removed - now using live earnings modal
   
   // Fetch live earnings from Nosana dashboard AND scraped statistics
-  const fetchLiveEarnings = async (nodeAddress) => {
-    try {
-      setLiveEarningsLoading(true);
-      
-      // Fetch live dashboard data (also stores it)
-      const liveResponse = await axios.get(`${API}/earnings/node/${nodeAddress}/live`);
-      
-      // Fetch scraped statistics (yesterday, monthly, yearly)
-      const statsResponse = await axios.get(`${API}/earnings/node/${nodeAddress}/scraped-stats`);
-      
-      setLiveEarningsData({
-        ...liveResponse.data,
-        statistics: statsResponse.data
-      });
-    } catch (error) {
-      console.error("Error fetching live earnings:", error);
-      toast.error("Failed to fetch live earnings data");
-      setLiveEarningsData(null);
-    } finally {
-      setLiveEarningsLoading(false);
-    }
-  };
-  
-  const openLiveEarningsModal = async (node) => {
-    setSelectedNodeStats(node);
-    setShowLiveEarningsModal(true);
-    await fetchLiveEarnings(node.address);
-  };
-  
-  // Scrape full history for one node
-  const scrapeFullHistory = async (nodeAddress) => {
-    try {
-      toast.info("Scraping complete history... This may take 2-3 minutes", { duration: 5000 });
-      
-      const response = await axios.post(`${API}/earnings/node/${nodeAddress}/scrape-all-history`);
-      
-      if (response.data.success) {
-        toast.success(`✅ Scraped ${response.data.jobs_scraped} jobs! ${response.data.jobs_stored} new jobs stored.`, {
-          duration: 5000
-        });
-        
-        // Refresh the live earnings modal if open
-        if (showLiveEarningsModal && selectedNodeStats?.address === nodeAddress) {
-          await fetchLiveEarnings(nodeAddress);
-        }
-      } else {
-        toast.error("Failed to scrape history");
-      }
-    } catch (error) {
-      console.error("Error scraping full history:", error);
-      toast.error("Failed to scrape complete history");
-    }
-  };
   
   // Format duration from seconds
   const formatDuration = (seconds) => {
