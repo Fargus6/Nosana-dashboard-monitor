@@ -297,7 +297,7 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
 9. **Get Alerts**: 
    - Lock screen notifications on mobile
-   - Enhanced Telegram alerts with job duration and payment tracking
+   - Enhanced Telegram alerts with job duration tracking
 
 ## 🙏 Acknowledgments
 
