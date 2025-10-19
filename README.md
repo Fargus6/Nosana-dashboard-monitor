@@ -289,7 +289,7 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 2. **Create an Account**: Register with email/password or use Google Sign-In
 3. **Enable Notifications**: 
    - **Firebase Push**: Grant push notification permissions for mobile alerts
-   - **Telegram Bot** (Recommended): Link with @NosNode_bot for enhanced job notifications
+   - **Telegram Bot** (Recommended): Link with @NosNode_bot for enhanced job notifications with duration tracking
 4. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
 5. **Choose Refresh Interval**: Select 1, 2, 3, or 10-minute auto-refresh
 6. **Customize Alerts**: Choose which events trigger notifications
