@@ -9,7 +9,7 @@ sys.path.append('/app/backend')
 from datetime import datetime, timezone, timedelta
 import os
 os.environ['PLAYWRIGHT_BROWSERS_PATH'] = '/pw-browsers'
-os.environ['MONGO_URL'] = 'mongodb://mongo:27017'
+os.environ['MONGO_URL'] = 'mongodb://localhost:27017'
 
 from playwright.async_api import async_playwright
 from motor.motor_asyncio import AsyncIOMotorClient
