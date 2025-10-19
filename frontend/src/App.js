@@ -1045,7 +1045,7 @@ function App() {
   const fetchNodeStatistics = async (nodeAddress) => {
     try {
       setStatsLoading(true);
-      const token = secureStorage.getItem('token');
+      const token = secureStorage.get('token');
       
       console.log("📊 Fetching statistics for node:", nodeAddress);
       console.log("🔑 Token available:", !!token);
