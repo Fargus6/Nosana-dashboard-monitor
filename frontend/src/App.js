@@ -1872,6 +1872,190 @@ function App() {
           </CardContent>
         </Card>
 
+        
+        {/* Earnings Statistics Modal */}
+        {showStatsModal && selectedNodeStats && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowStatsModal(false)}>
+            <Card 
+              className={theme.card + " w-full max-w-3xl max-h-[90vh] overflow-y-auto"} 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className={theme.text.primary + " flex items-center gap-2"}>
+                      <TrendingUp className="w-5 h-5" />
+                      Earnings Statistics
+                    </CardTitle>
+                    <p className={theme.text.secondary + " text-sm mt-1"}>
+                      {selectedNodeStats.name || "Unnamed Node"}
+                    </p>
+                    <p className={"text-xs font-mono mt-1 " + theme.text.muted}>
+                      {selectedNodeStats.address}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowStatsModal(false)}
+                    className="h-8 w-8"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {statsLoading ? (
+                  <div className="text-center py-8">
+                    <RefreshCw className="w-8 h-8 animate-spin mx-auto text-blue-600 mb-2" />
+                    <p className={theme.text.secondary}>Loading statistics...</p>
+                  </div>
+                ) : statsData ? (
+                  <>
+                    {/* Yesterday Section */}
+                    <div className="space-y-2">
+                      <h3 className={theme.text.primary + " text-lg font-semibold"}>YESTERDAY</h3>
+                      <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00ff00]/10 border border-[#00ff00]/30" : currentTheme === "neon80s" ? "bg-emerald-500/10 border border-emerald-500/30" : "bg-blue-50 border border-blue-200")}>
+                        <p className={theme.text.secondary + " text-sm mb-2"}>{statsData.yesterday.date}</p>
+                        <p className={theme.text.primary + " text-2xl font-bold"}>
+                          {statsData.yesterday.nos_earned.toFixed(2)} NOS 
+                          <span className={theme.text.secondary + " text-base ml-2"}>
+                            (${statsData.yesterday.usd_value.toFixed(2)})
+                          </span>
+                        </p>
+                        <p className={theme.text.secondary + " text-sm mt-2"}>
+                          {statsData.yesterday.job_count} jobs | {formatDuration(statsData.yesterday.duration_seconds)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Today Section */}
+                    <div className="space-y-2">
+                      <h3 className={theme.text.primary + " text-lg font-semibold"}>TODAY (In Progress)</h3>
+                      <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00f0ff]/10 border border-[#00f0ff]/30" : currentTheme === "neon80s" ? "bg-teal-500/10 border border-teal-500/30" : "bg-green-50 border border-green-200")}>
+                        <p className={theme.text.secondary + " text-sm mb-2"}>{statsData.today.date}</p>
+                        <p className={theme.text.primary + " text-2xl font-bold"}>
+                          {statsData.today.nos_earned.toFixed(2)} NOS 
+                          <span className={theme.text.secondary + " text-base ml-2"}>
+                            (${statsData.today.usd_value.toFixed(2)})
+                          </span>
+                          <span className={theme.text.muted + " text-sm ml-2"}>so far</span>
+                        </p>
+                        <p className={theme.text.secondary + " text-sm mt-2"}>
+                          {statsData.today.job_count} jobs | {formatDuration(statsData.today.duration_seconds)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Monthly Breakdown */}
+                    {statsData.monthly.months && statsData.monthly.months.length > 0 && (
+                      <div className="space-y-3">
+                        <h3 className={theme.text.primary + " text-lg font-semibold border-b pb-2"}>
+                          MONTHLY BREAKDOWN
+                        </h3>
+                        {statsData.monthly.tracking_started && (
+                          <p className={theme.text.muted + " text-xs"}>
+                            Tracking started: {statsData.monthly.tracking_started}
+                          </p>
+                        )}
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {statsData.monthly.months.map((month, idx) => (
+                            <div 
+                              key={month.month} 
+                              className={"p-3 rounded-lg " + (currentTheme === "cyber" ? "bg-[#0a0e27]/50 border border-[#00ff00]/20" : currentTheme === "neon80s" ? "bg-emerald-900/20 border border-emerald-500/20" : "bg-gray-50 border border-gray-200")}
+                            >
+                              <div className="flex justify-between items-start mb-1">
+                                <h4 className={theme.text.primary + " font-semibold text-sm"}>
+                                  {formatMonthName(month.month)}
+                                  {month.is_current && <span className="ml-2 text-xs text-blue-500">(current)</span>}
+                                  {month.is_partial && <span className="ml-2 text-xs text-yellow-500">(partial)</span>}
+                                </h4>
+                                <span className={theme.text.primary + " font-bold"}>
+                                  {month.nos_earned.toFixed(2)} NOS
+                                </span>
+                              </div>
+                              <p className={theme.text.secondary + " text-xs"}>
+                                {month.start_date} to {month.end_date}
+                              </p>
+                              <p className={theme.text.secondary + " text-xs mt-1"}>
+                                ${month.usd_value.toFixed(2)} USD | {month.job_count} jobs
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Yearly Total */}
+                    {statsData.yearly.current_year && (
+                      <div className="space-y-2">
+                        <h3 className={theme.text.primary + " text-lg font-semibold border-b pb-2"}>
+                          YEAR {statsData.yearly.current_year.year_number} TOTAL
+                        </h3>
+                        <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00ff00]/20 border-2 border-[#00ff00]" : currentTheme === "neon80s" ? "bg-emerald-500/20 border-2 border-emerald-500" : "bg-blue-100 border-2 border-blue-500")}>
+                          <p className={theme.text.secondary + " text-sm mb-2"}>
+                            {statsData.yearly.current_year.start_date} - {statsData.yearly.current_year.end_date}
+                          </p>
+                          <p className={theme.text.primary + " text-3xl font-bold"}>
+                            {statsData.yearly.current_year.nos_earned.toFixed(2)} NOS
+                          </p>
+                          <p className={theme.text.secondary + " text-lg mt-1"}>
+                            ${statsData.yearly.current_year.usd_value.toFixed(2)} USD
+                          </p>
+                          <p className={theme.text.secondary + " text-sm mt-2"}>
+                            {statsData.yearly.current_year.job_count} jobs
+                          </p>
+                          <p className={theme.text.muted + " text-xs mt-2"}>
+                            [{statsData.yearly.current_year.months_completed} months completed, {statsData.yearly.current_year.months_remaining} remaining]
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Archived Years */}
+                    {statsData.yearly.archived_years && statsData.yearly.archived_years.length > 0 && (
+                      <div className="space-y-3">
+                        <h3 className={theme.text.primary + " text-lg font-semibold border-b pb-2"}>
+                          ARCHIVED YEARS (Last 3)
+                        </h3>
+                        <div className="space-y-2">
+                          {statsData.yearly.archived_years.map((year) => (
+                            <div 
+                              key={year.year_number}
+                              className={"p-3 rounded-lg " + (currentTheme === "cyber" ? "bg-gray-800/50 border border-gray-600" : currentTheme === "neon80s" ? "bg-gray-800/50 border border-gray-600" : "bg-gray-100 border border-gray-300")}
+                            >
+                              <div className="flex justify-between items-start mb-1">
+                                <h4 className={theme.text.primary + " font-semibold"}>Year {year.year_number}</h4>
+                                <span className={theme.text.primary + " font-bold"}>
+                                  {year.total_nos.toFixed(2)} NOS
+                                </span>
+                              </div>
+                              <p className={theme.text.secondary + " text-xs"}>
+                                {year.start_date} - {year.end_date}
+                              </p>
+                              <p className={theme.text.secondary + " text-xs mt-1"}>
+                                ${year.total_usd.toFixed(2)} USD | {year.total_jobs} jobs
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className={theme.text.secondary}>No statistics available yet</p>
+                    <p className={theme.text.muted + " text-sm mt-2"}>
+                      Complete some jobs to start tracking earnings
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
           <div>
             <h2 className={"text-lg sm:text-xl font-semibold " + theme.text.primary}>
