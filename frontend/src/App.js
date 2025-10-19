@@ -1109,12 +1109,21 @@ function App() {
     await fetchNodeStatistics(node.address);
   };
   
-  // Fetch live earnings from Nosana dashboard
+  // Fetch live earnings from Nosana dashboard AND scraped statistics
   const fetchLiveEarnings = async (nodeAddress) => {
     try {
       setLiveEarningsLoading(true);
-      const response = await axios.get(`${API}/earnings/node/${nodeAddress}/live`);
-      setLiveEarningsData(response.data);
+      
+      // Fetch live dashboard data (also stores it)
+      const liveResponse = await axios.get(`${API}/earnings/node/${nodeAddress}/live`);
+      
+      // Fetch scraped statistics (yesterday, monthly, yearly)
+      const statsResponse = await axios.get(`${API}/earnings/node/${nodeAddress}/scraped-stats`);
+      
+      setLiveEarningsData({
+        ...liveResponse.data,
+        statistics: statsResponse.data
+      });
     } catch (error) {
       console.error("Error fetching live earnings:", error);
       toast.error("Failed to fetch live earnings data");
