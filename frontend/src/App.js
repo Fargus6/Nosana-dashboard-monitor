@@ -2048,17 +2048,6 @@ function App() {
 
                         {/* Stats Section */}
                         <div className="pt-2 border-t space-y-2">
-                          {/* Yesterday Earnings */}
-                          {yesterdayEarnings[node.address] && yesterdayEarnings[node.address].nos_earned > 0 && (
-                            <div className="flex justify-between items-center">
-                              <span className={"text-xs font-medium " + theme.text.secondary}>
-                                💰 Yesterday:
-                              </span>
-                              <span className={"text-xs font-semibold " + theme.text.primary}>
-                                {yesterdayEarnings[node.address].nos_earned.toFixed(2)} NOS (${yesterdayEarnings[node.address].usd_value.toFixed(2)})
-                              </span>
-                            </div>
-                          )}
                           
                           {node.total_jobs !== null && node.total_jobs !== undefined && (
                             <div className="flex justify-between items-center">
