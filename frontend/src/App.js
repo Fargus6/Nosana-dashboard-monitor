@@ -1109,6 +1109,27 @@ function App() {
     await fetchNodeStatistics(node.address);
   };
   
+  // Fetch live earnings from Nosana dashboard
+  const fetchLiveEarnings = async (nodeAddress) => {
+    try {
+      setLiveEarningsLoading(true);
+      const response = await axios.get(`${API}/earnings/node/${nodeAddress}/live`);
+      setLiveEarningsData(response.data);
+    } catch (error) {
+      console.error("Error fetching live earnings:", error);
+      toast.error("Failed to fetch live earnings data");
+      setLiveEarningsData(null);
+    } finally {
+      setLiveEarningsLoading(false);
+    }
+  };
+  
+  const openLiveEarningsModal = async (node) => {
+    setSelectedNodeStats(node);
+    setShowLiveEarningsModal(true);
+    await fetchLiveEarnings(node.address);
+  };
+  
   // Format duration from seconds
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "0s";
