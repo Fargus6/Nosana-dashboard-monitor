@@ -2455,8 +2455,11 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
     """
     Get comprehensive statistics from scraped Nosana dashboard data
     Includes today, yesterday, monthly, and overall totals
+    Uses user's timezone for accurate day boundaries
     """
     try:
+        from zoneinfo import ZoneInfo
+        
         # Verify node belongs to user
         node = await db.nodes.find_one({
             "address": address,
@@ -2466,9 +2469,22 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
         if not node:
             raise HTTPException(status_code=404, detail="Node not found")
         
-        # Get today's earnings (last 24 hours)
-        now = datetime.now(timezone.utc)
-        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        # Get user from database to get timezone
+        user_data = await db.users.find_one({"id": current_user.id})
+        user_timezone = user_data.get('timezone', 'UTC') if user_data else 'UTC'
+        
+        logger.info(f"📅 Using timezone: {user_timezone} for user {current_user.email}")
+        
+        # Get current time in user's timezone
+        user_tz = ZoneInfo(user_timezone)
+        now_user_tz = datetime.now(user_tz)
+        
+        # Calculate today's boundaries in user's timezone
+        today_start_user_tz = now_user_tz.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # Convert to UTC for database query
+        today_start_utc = today_start_user_tz.astimezone(timezone.utc)
+        now_utc = now_user_tz.astimezone(timezone.utc)
         
         today_pipeline = [
             {
@@ -2477,8 +2493,8 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
                     "node_address": address,
                     "status": "SUCCESS",
                     "completed": {
-                        "$gte": today_start.isoformat(),
-                        "$lt": now.isoformat()
+                        "$gte": today_start_utc.isoformat(),
+                        "$lt": now_utc.isoformat()
                     }
                 }
             },
@@ -2495,15 +2511,15 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
         
         today_result = await db.scraped_jobs.aggregate(today_pipeline).to_list(1)
         today = {
-            "date": today_start.strftime("%Y-%m-%d"),
+            "date": today_start_user_tz.strftime("%Y-%m-%d"),
             "usd_earned": round(today_result[0]['total_usd'], 2) if today_result else 0,
             "nos_earned": round(today_result[0]['total_nos'], 2) if today_result else 0,
             "job_count": today_result[0]['total_jobs'] if today_result else 0,
             "duration_seconds": today_result[0]['total_duration'] if today_result else 0
         }
         
-        # Get yesterday's earnings
-        yesterday = await get_yesterday_scraped_earnings(current_user.id, address)
+        # Get yesterday's earnings with user timezone
+        yesterday = await get_yesterday_scraped_earnings(current_user.id, address, user_timezone)
         
         # Get monthly breakdown
         monthly = await get_monthly_scraped_earnings(current_user.id, address)
@@ -2514,6 +2530,7 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
         return {
             "node_address": address,
             "node_name": node.get('name', 'Unnamed Node'),
+            "user_timezone": user_timezone,
             "today": today,
             "yesterday": yesterday,
             "monthly": monthly,
