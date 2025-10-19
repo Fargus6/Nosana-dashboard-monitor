@@ -995,42 +995,6 @@ function App() {
   };
 
 
-  // Fetch yesterday's earnings for all nodes
-  const fetchYesterdayEarnings = async (nodesList = nodes) => {
-    try {
-      console.log("📊 Fetching yesterday earnings for", nodesList.length, "nodes");
-      const token = secureStorage.get('token');
-      if (!token || nodesList.length === 0) {
-        console.log("⚠️ No token or no nodes, skipping earnings fetch");
-        return;
-      }
-      
-      console.log("🔑 Token available, fetching earnings...");
-      const earningsPromises = nodesList.map(node => 
-        axios.get(`${API}/earnings/node/${node.address}/yesterday`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).then(response => {
-          console.log(`✅ Earnings for ${node.name || node.address.slice(0, 8)}:`, response.data);
-          return response;
-        }).catch(err => {
-          console.error(`❌ Error fetching earnings for ${node.address}:`, err.response?.status, err.response?.data);
-          return { data: { nos_earned: 0, usd_value: 0, job_count: 0 } };
-        })
-      );
-      
-      const results = await Promise.all(earningsPromises);
-      const earningsMap = {};
-      
-      nodesList.forEach((node, index) => {
-        earningsMap[node.address] = results[index].data;
-      });
-      
-      console.log("💰 Yesterday earnings map:", earningsMap);
-      setYesterdayEarnings(earningsMap);
-    } catch (error) {
-      console.error("Error fetching yesterday earnings:", error);
-    }
-  };
   
   // Format duration from seconds
   const formatDuration = (seconds) => {
