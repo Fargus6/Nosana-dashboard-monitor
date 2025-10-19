@@ -1008,7 +1008,7 @@ function App() {
   const fetchYesterdayEarnings = async (nodesList = nodes) => {
     try {
       console.log("📊 Fetching yesterday earnings for", nodesList.length, "nodes");
-      const token = secureStorage.getItem('token');
+      const token = secureStorage.get('token');
       if (!token || nodesList.length === 0) {
         console.log("⚠️ No token or no nodes, skipping earnings fetch");
         return;
