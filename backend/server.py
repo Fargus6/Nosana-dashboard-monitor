@@ -1554,6 +1554,16 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                                 usd_value = nos_payment * nos_price
                                 payment_str = f"\n💰 Payment: {nos_payment:.2f} NOS (~${usd_value:.2f} USD)"
                                 logger.info(f"💰 Estimated payment for {node_name}: {nos_payment:.2f} NOS (~${usd_value:.2f})")
+                                
+                                # Save earnings to statistics
+                                await save_job_earnings(
+                                    user_id=current_user.id,
+                                    node_address=address,
+                                    node_name=node_name,
+                                    duration_seconds=duration_seconds,
+                                    nos_earned=nos_payment,
+                                    usd_value=usd_value
+                                )
                         
                         # Increment completed jobs counter
                         job_count_completed = node.get('job_count_completed', 0) + 1
