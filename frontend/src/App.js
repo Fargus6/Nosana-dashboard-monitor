@@ -1038,10 +1038,6 @@ function App() {
     }
   };
   
-  // Note: Old statistics modal functions removed - now using live earnings modal
-  
-  // Fetch live earnings from Nosana dashboard AND scraped statistics
-  
   // Format duration from seconds
   const formatDuration = (seconds) => {
     if (!seconds || seconds === 0) return "0s";
