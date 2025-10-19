@@ -2003,12 +2003,13 @@ function App() {
                         </div>
                       )}
                     </div>
+                    {/* End of Live Dashboard Data */}
 
                     {/* Historical Statistics */}
                     {liveEarningsData.statistics && (
                       <div className="space-y-4">
                         <h3 className={theme.text.primary + " text-lg font-semibold border-b pb-2"}>
-                          HISTORICAL STATISTICS
+                          HISTORICAL STATISTICS (from scraped data)
                         </h3>
                         
                         {/* Yesterday */}
