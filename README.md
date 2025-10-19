@@ -317,4 +317,38 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 
 ---
 
+## 📚 Documentation
+
+### User Guides
+- **[Installation Guide](README.md#-install-as-mobile-app)** - PWA setup for Android & iOS
+- **[iOS Setup Guide](IOS_QUICK_SETUP.md)** - Quick iOS installation instructions
+- **[Telegram Bot Setup](HOW_TO_FIND_SETTINGS.md)** - Connect Telegram notifications
+- **[Testing Guide](TEST_YOUR_NODE.md)** - How to test your nodes
+
+### Technical Documentation
+- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Deploy to production (24/7 hosting)
+- **[Release Notes v1.2.0](RELEASE_v1.2.0.md)** - Latest features and fixes
+- **[GitHub Release Notes](GITHUB_RELEASE_v1.2.0.md)** - Summary for GitHub
+- **[Balance Verification](BALANCE_VERIFICATION.md)** - NOS/SOL accuracy report
+- **[Payment Notifications Fix](PAYMENT_NOTIFICATION_FIX.md)** - Accurate payment system
+- **[Production Mode Fix](PRODUCTION_MODE_FIX.md)** - Auto-logout resolution
+- **[Server Restart Handling](SERVER_RESTART_HANDLING.md)** - Platform behavior explained
+- **[Health Check Report](HEALTH_CHECK_REPORT.md)** - System health status
+- **[Deployment Readiness](DEPLOYMENT_READINESS_FINAL.md)** - Pre-deployment verification
+- **[App Statistics](APP_STATISTICS_REPORT.md)** - Usage and metrics
+
+### Feature Documentation
+- **[Telegram Bot Integration](TELEGRAM_BOT_INTEGRATION.md)** - Bot setup and usage
+- **[Lock Screen Notifications](LOCK_SCREEN_NOTIFICATIONS.md)** - Push notification setup
+- **[PWA Auto-Update](PWA_UPDATE_SYSTEM.md)** - Service worker updates
+- **[Job Payment Notifications](JOB_PAYMENT_NOTIFICATIONS.md)** - Accurate earnings alerts
+
+### Troubleshooting
+- **[Notification Troubleshooting](NOTIFICATION_TROUBLESHOOTING.md)** - Fix notification issues
+- **[iOS Notification Guide](IOS_NOTIFICATION_GUIDE.md)** - iOS-specific setup
+- **[Auto-Logout Fix](AUTO_LOGOUT_FIX.md)** - Session persistence
+- **[Server Sleep Prevention](SERVER_SLEEP_PREVENTION.md)** - Keep-alive system
+
+---
+
 *Monitor smarter, not harder. Keep your Nosana nodes running 24/7 with confidence!* 🚀
