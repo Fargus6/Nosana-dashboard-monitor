@@ -1047,20 +1047,41 @@ function App() {
       setStatsLoading(true);
       const token = secureStorage.getItem('token');
       
+      console.log("📊 Fetching statistics for node:", nodeAddress);
+      console.log("🔑 Token available:", !!token);
+      
       const [yesterday, today, monthly, yearly] = await Promise.all([
         axios.get(`${API}/earnings/node/${nodeAddress}/yesterday`, {
           headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => {
+          console.error("❌ Yesterday API failed:", err.response?.status, err.response?.data);
+          throw err;
         }),
         axios.get(`${API}/earnings/node/${nodeAddress}/today`, {
           headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => {
+          console.error("❌ Today API failed:", err.response?.status, err.response?.data);
+          throw err;
         }),
         axios.get(`${API}/earnings/node/${nodeAddress}/monthly`, {
           headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => {
+          console.error("❌ Monthly API failed:", err.response?.status, err.response?.data);
+          throw err;
         }),
         axios.get(`${API}/earnings/node/${nodeAddress}/yearly`, {
           headers: { Authorization: `Bearer ${token}` }
+        }).catch(err => {
+          console.error("❌ Yearly API failed:", err.response?.status, err.response?.data);
+          throw err;
         })
       ]);
+      
+      console.log("✅ All earnings APIs succeeded");
+      console.log("Yesterday:", yesterday.data);
+      console.log("Today:", today.data);
+      console.log("Monthly:", monthly.data);
+      console.log("Yearly:", yearly.data);
       
       setStatsData({
         yesterday: yesterday.data,
@@ -1069,8 +1090,8 @@ function App() {
         yearly: yearly.data
       });
     } catch (error) {
-      console.error("Error fetching node statistics:", error);
-      toast.error("Failed to load statistics");
+      console.error("❌ Error fetching node statistics:", error);
+      toast.error("Failed to load statistics: " + (error.response?.data?.detail || error.message));
     } finally {
       setStatsLoading(false);
     }
