@@ -126,7 +126,7 @@ async def verify_node_balances(address: str):
     print(f"{'='*100}")
     
     # SOL comparison
-    if blockchain['sol'] and dashboard['sol']:
+    if blockchain['sol'] is not None and dashboard['sol'] is not None:
         sol_diff = abs(blockchain['sol'] - dashboard['sol'])
         sol_match = sol_diff < 0.000001  # Allow tiny floating point differences
         
@@ -136,13 +136,15 @@ async def verify_node_balances(address: str):
         print(f"   Difference: {sol_diff:.9f}")
         print(f"   Status:     {'✅ MATCH' if sol_match else '❌ MISMATCH'}\n")
     else:
+        sol_bc = f"{blockchain['sol']:.6f}" if blockchain['sol'] is not None else 'N/A'
+        sol_db = f"{dashboard['sol']:.6f}" if dashboard['sol'] is not None else 'N/A'
         print(f"SOL Balance:")
-        print(f"   Blockchain: {blockchain['sol']:.6f if blockchain['sol'] else 'N/A'}")
-        print(f"   Dashboard:  {dashboard['sol']:.6f if dashboard['sol'] else 'N/A'}")
+        print(f"   Blockchain: {sol_bc}")
+        print(f"   Dashboard:  {sol_db}")
         print(f"   Status:     ⚠️  Missing data\n")
     
     # NOS comparison
-    if blockchain['nos'] and dashboard['nos']:
+    if blockchain['nos'] is not None and dashboard['nos'] is not None:
         nos_diff = abs(blockchain['nos'] - dashboard['nos'])
         nos_match = nos_diff < 0.01  # Allow small rounding differences
         
@@ -152,9 +154,11 @@ async def verify_node_balances(address: str):
         print(f"   Difference: {nos_diff:.4f}")
         print(f"   Status:     {'✅ MATCH' if nos_match else '❌ MISMATCH'}\n")
     else:
+        nos_bc = f"{blockchain['nos']:.2f}" if blockchain['nos'] is not None else 'N/A'
+        nos_db = f"{dashboard['nos']:.2f}" if dashboard['nos'] is not None else 'N/A'
         print(f"NOS Balance:")
-        print(f"   Blockchain: {blockchain['nos']:.2f if blockchain['nos'] else 'N/A'}")
-        print(f"   Dashboard:  {dashboard['nos']:.2f if dashboard['nos'] else 'N/A'}")
+        print(f"   Blockchain: {nos_bc}")
+        print(f"   Dashboard:  {nos_db}")
         print(f"   Status:     ⚠️  Missing data\n")
     
     return {
