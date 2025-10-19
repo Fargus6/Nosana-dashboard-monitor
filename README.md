@@ -296,6 +296,11 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 - `PUT /api/notifications/preferences` - Update notification preferences
 - `POST /api/notifications/test` - Send test notification
 
+### Telegram Integration (Protected):
+- `POST /api/telegram/link` - Link Telegram account with linking code
+- `DELETE /api/telegram/unlink` - Unlink Telegram account
+- `GET /api/telegram/status` - Check Telegram link status
+
 ### System:
 - `GET /api/health` - Health check endpoint
 
