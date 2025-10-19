@@ -4,7 +4,7 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 
 ## 🌐 Access the App
 
-**🖥️ Preview Environment:** https://nosanamonitor.preview.emergentagent.com  
+**🖥️ Preview Environment:** https://nosana-monitor-1.preview.emergentagent.com/
 *Note: Preview environment may auto-restart after inactivity*
 
 
@@ -50,13 +50,13 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 ## 📱 Install as Mobile App
 
 ### On Android (Chrome/Edge):
-1. Open **https://nosanamonitor.preview.emergentagent.com** in Chrome
+1. Open **https://nosana-monitor-1.preview.emergentagent.com/** in Chrome
 2. Tap the **3-dot menu** → "Add to Home screen"
 3. Tap "Install" or "Add"
 4. App appears on your home screen like a native app!
 
 ### On iOS (Safari):
-1. Open **https://nosanamonitor.preview.emergentagent.com** in Safari
+1. Open **https://nosana-monitor-1.preview.emergentagent.com/** in Safari
 2. Tap the **Share button** (square with arrow)
 3. Scroll down and tap "Add to Home Screen"
 4. Tap "Add"
@@ -307,43 +307,11 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 
 Built with ❤️ for the Nosana community by a passionate node operator.
 
----
-
-**Current Version**: v1.2.0  
-**Last Updated**: October 19, 2025  
-**Status**: ✅ Production Ready & Actively Maintained
-
-**Deployment Options:**
-- 🔧 Preview: Free (auto-restarts after inactivity)
-- 🚀 Production: $10/month (stable 24/7 hosting)
-- 🌐 Custom Domain: Supported (no extra cost)
-
-**Key Features:**
-- ✅ Accurate payment notifications (from Nosana dashboard)
-- ✅ No auto-logout (persistent sessions)
-- ✅ Real-time balance tracking (NOS/SOL)
-- ✅ Telegram bot integration
-- ✅ Lock screen notifications
-- ✅ PWA installable
-
-**Documentation:** [Full list below](#-documentation)
-
----
-
-## 📚 Documentation
-
-### User Guides
-- **[Installation Guide](README.md#-install-as-mobile-app)** - PWA setup for Android & iOS
-- **[iOS Setup Guide](IOS_QUICK_SETUP.md)** - Quick iOS installation instructions
-- **[Telegram Bot Setup](HOW_TO_FIND_SETTINGS.md)** - Connect Telegram notifications
-- **[Testing Guide](TEST_YOUR_NODE.md)** - How to test your nodes
-
----
 
 ## 🚀 Quick Start
 
 ### For Users
-1. Visit https://nosanamonitor.preview.emergentagent.com
+1. Visit https://nosana-monitor-1.preview.emergentagent.com/
 2. Sign up with email or Google
 3. Add your Nosana node addresses
 4. Enable notifications for alerts
