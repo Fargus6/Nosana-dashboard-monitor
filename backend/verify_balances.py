@@ -108,14 +108,18 @@ async def verify_node_balances(address: str):
     # Get balances from blockchain
     print("📡 Fetching from Solana blockchain...")
     blockchain = await get_blockchain_balances(address)
-    print(f"   SOL: {blockchain['sol']:.6f if blockchain['sol'] else 'N/A'}")
-    print(f"   NOS: {blockchain['nos']:.2f if blockchain['nos'] else 'N/A'}\n")
+    sol_str = f"{blockchain['sol']:.6f}" if blockchain['sol'] is not None else 'N/A'
+    nos_str = f"{blockchain['nos']:.2f}" if blockchain['nos'] is not None else 'N/A'
+    print(f"   SOL: {sol_str}")
+    print(f"   NOS: {nos_str}\n")
     
     # Get balances from dashboard
     print("🌐 Scraping from Nosana dashboard...")
     dashboard = await get_dashboard_balances(address)
-    print(f"   SOL: {dashboard['sol']:.6f if dashboard['sol'] else 'N/A'}")
-    print(f"   NOS: {dashboard['nos']:.2f if dashboard['nos'] else 'N/A'}\n")
+    dash_sol_str = f"{dashboard['sol']:.6f}" if dashboard['sol'] is not None else 'N/A'
+    dash_nos_str = f"{dashboard['nos']:.2f}" if dashboard['nos'] is not None else 'N/A'
+    print(f"   SOL: {dash_sol_str}")
+    print(f"   NOS: {dash_nos_str}\n")
     
     # Compare results
     print("🔍 COMPARISON:")
