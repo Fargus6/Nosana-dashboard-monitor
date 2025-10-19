@@ -1203,6 +1203,227 @@ def parse_relative_time(time_text: str) -> datetime:
         return datetime.now(timezone.utc)
 
 
+async def store_scraped_jobs(user_id: str, node_address: str, jobs: List[Dict]):
+    """
+    Store scraped jobs from Nosana dashboard in MongoDB
+    Prevents duplicates by job_id
+    """
+    try:
+        if not jobs:
+            return 0
+        
+        nos_price = fetch_nos_price_coingecko() or 0.1
+        stored_count = 0
+        
+        for job in jobs:
+            # Skip if job already exists
+            existing = await db.scraped_jobs.find_one({
+                "job_id": job['job_id'],
+                "node_address": node_address
+            })
+            
+            if existing:
+                continue
+            
+            # Calculate earnings
+            duration_hours = job['duration_seconds'] / 3600.0
+            usd_earned = duration_hours * job['hourly_rate_usd']
+            nos_earned = usd_earned / nos_price if nos_price > 0 else 0
+            
+            # Store job
+            job_doc = {
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "node_address": node_address,
+                "job_id": job['job_id'],
+                "started": job['started'].isoformat() if isinstance(job['started'], datetime) else job['started'],
+                "started_text": job.get('started_text', ''),
+                "completed": job['started'].isoformat() if job['status'] == 'SUCCESS' else None,
+                "duration_seconds": job['duration_seconds'],
+                "duration_text": job.get('duration_text', ''),
+                "hourly_rate_usd": job['hourly_rate_usd'],
+                "usd_earned": round(usd_earned, 4),
+                "nos_earned": round(nos_earned, 2),
+                "nos_price_at_time": nos_price,
+                "gpu_type": job['gpu_type'],
+                "status": job['status'],
+                "scraped_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.scraped_jobs.insert_one(job_doc)
+            stored_count += 1
+        
+        logger.info(f"✅ Stored {stored_count} new jobs for node {node_address[:8]}...")
+        return stored_count
+        
+    except Exception as e:
+        logger.error(f"Error storing scraped jobs: {str(e)}")
+        return 0
+
+
+async def get_yesterday_scraped_earnings(user_id: str, node_address: str) -> Dict:
+    """Get yesterday's earnings from scraped data"""
+    try:
+        yesterday_start = (datetime.now(timezone.utc) - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday_end = yesterday_start + timedelta(days=1)
+        
+        pipeline = [
+            {
+                "$match": {
+                    "user_id": user_id,
+                    "node_address": node_address,
+                    "status": "SUCCESS",
+                    "completed": {
+                        "$gte": yesterday_start.isoformat(),
+                        "$lt": yesterday_end.isoformat()
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "total_usd": {"$sum": "$usd_earned"},
+                    "total_nos": {"$sum": "$nos_earned"},
+                    "total_jobs": {"$sum": 1},
+                    "total_duration": {"$sum": "$duration_seconds"}
+                }
+            }
+        ]
+        
+        result = await db.scraped_jobs.aggregate(pipeline).to_list(1)
+        
+        if result:
+            return {
+                "date": yesterday_start.strftime("%Y-%m-%d"),
+                "usd_earned": round(result[0]['total_usd'], 2),
+                "nos_earned": round(result[0]['total_nos'], 2),
+                "job_count": result[0]['total_jobs'],
+                "duration_seconds": result[0]['total_duration']
+            }
+        
+        return {
+            "date": yesterday_start.strftime("%Y-%m-%d"),
+            "usd_earned": 0,
+            "nos_earned": 0,
+            "job_count": 0,
+            "duration_seconds": 0
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting yesterday scraped earnings: {str(e)}")
+        return {"date": "", "usd_earned": 0, "nos_earned": 0, "job_count": 0, "duration_seconds": 0}
+
+
+async def get_monthly_scraped_earnings(user_id: str, node_address: str) -> Dict:
+    """Get monthly breakdown from scraped data"""
+    try:
+        # Get all completed jobs
+        jobs = await db.scraped_jobs.find({
+            "user_id": user_id,
+            "node_address": node_address,
+            "status": "SUCCESS",
+            "completed": {"$ne": None}
+        }).to_list(None)
+        
+        if not jobs:
+            return {"months": []}
+        
+        # Group by month
+        monthly_data = {}
+        for job in jobs:
+            completed_date = datetime.fromisoformat(job['completed'].replace('Z', '+00:00'))
+            month_key = completed_date.strftime("%Y-%m")
+            
+            if month_key not in monthly_data:
+                monthly_data[month_key] = {
+                    "month": month_key,
+                    "usd_earned": 0,
+                    "nos_earned": 0,
+                    "job_count": 0,
+                    "duration_seconds": 0
+                }
+            
+            monthly_data[month_key]["usd_earned"] += job.get('usd_earned', 0)
+            monthly_data[month_key]["nos_earned"] += job.get('nos_earned', 0)
+            monthly_data[month_key]["job_count"] += 1
+            monthly_data[month_key]["duration_seconds"] += job.get('duration_seconds', 0)
+        
+        # Convert to sorted list
+        months = []
+        for month_key in sorted(monthly_data.keys(), reverse=True):
+            data = monthly_data[month_key]
+            year, month = month_key.split('-')
+            month_name = datetime(int(year), int(month), 1).strftime("%B %Y")
+            
+            months.append({
+                "month": month_key,
+                "month_name": month_name,
+                "usd_earned": round(data["usd_earned"], 2),
+                "nos_earned": round(data["nos_earned"], 2),
+                "job_count": data["job_count"],
+                "duration_seconds": data["duration_seconds"]
+            })
+        
+        return {"months": months[:12]}  # Last 12 months
+        
+    except Exception as e:
+        logger.error(f"Error getting monthly scraped earnings: {str(e)}")
+        return {"months": []}
+
+
+async def get_yearly_scraped_earnings(user_id: str, node_address: str) -> Dict:
+    """Get yearly totals from scraped data"""
+    try:
+        # Get all completed jobs
+        jobs = await db.scraped_jobs.find({
+            "user_id": user_id,
+            "node_address": node_address,
+            "status": "SUCCESS",
+            "completed": {"$ne": None}
+        }).to_list(None)
+        
+        if not jobs:
+            return {"years": []}
+        
+        # Group by year
+        yearly_data = {}
+        for job in jobs:
+            completed_date = datetime.fromisoformat(job['completed'].replace('Z', '+00:00'))
+            year_key = completed_date.strftime("%Y")
+            
+            if year_key not in yearly_data:
+                yearly_data[year_key] = {
+                    "year": year_key,
+                    "usd_earned": 0,
+                    "nos_earned": 0,
+                    "job_count": 0,
+                    "duration_seconds": 0
+                }
+            
+            yearly_data[year_key]["usd_earned"] += job.get('usd_earned', 0)
+            yearly_data[year_key]["nos_earned"] += job.get('nos_earned', 0)
+            yearly_data[year_key]["job_count"] += 1
+            yearly_data[year_key]["duration_seconds"] += job.get('duration_seconds', 0)
+        
+        # Convert to sorted list
+        years = []
+        for year_key in sorted(yearly_data.keys(), reverse=True):
+            data = yearly_data[year_key]
+            years.append({
+                "year": year_key,
+                "usd_earned": round(data["usd_earned"], 2),
+                "nos_earned": round(data["nos_earned"], 2),
+                "job_count": data["job_count"],
+                "duration_seconds": data["duration_seconds"]
+            })
+        
+        return {"years": years}
+        
+    except Exception as e:
+        logger.error(f"Error getting yearly scraped earnings: {str(e)}")
+        return {"years": []}
+
+
 def calculate_job_payment(duration_seconds: int, nos_price_usd: Optional[float], gpu_type: str = "A100") -> Optional[float]:
     """
     Calculate NOS payment for a job based on Nosana's payment structure
