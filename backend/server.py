@@ -1393,9 +1393,18 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                     address
                 )
             
-            # Notify on job started
+            # Notify on job started - STORE START TIME
             if previous_job_status in ['idle', 'unknown', 'queue'] and current_job_status == 'running' and prefs.get('notify_job_started', True):
                 logger.info(f"Sending job started notification for {node_name}")
+                
+                # Store job start time for duration calculation later
+                job_start_time = datetime.now(timezone.utc).isoformat()
+                await db.nodes.update_one(
+                    {"address": address, "user_id": current_user.id},
+                    {"$set": {"job_start_time": job_start_time}}
+                )
+                logger.info(f"📝 Stored job start time for {node_name}: {job_start_time}")
+                
                 await send_notification_to_user(
                     current_user.id,
                     "🚀 Job Started",
@@ -1403,15 +1412,72 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                     address
                 )
             
-            # Notify on job completed
+            # Notify on job completed - WITH DURATION AND PAYMENT INFO
             elif previous_job_status == 'running' and current_job_status in ['idle', 'queue'] and prefs.get('notify_job_completed', True):
                 logger.info(f"Sending job completed notification for {node_name}")
+                
+                # Calculate job duration and payment
+                job_start_time = node.get('job_start_time')
+                duration_str = "Unknown"
+                payment_str = ""
+                
+                if job_start_time:
+                    try:
+                        # Parse start time
+                        if isinstance(job_start_time, str):
+                            start_dt = datetime.fromisoformat(job_start_time.replace('Z', '+00:00'))
+                        else:
+                            start_dt = job_start_time
+                        
+                        # Calculate duration
+                        end_dt = datetime.now(timezone.utc)
+                        duration_seconds = int((end_dt - start_dt).total_seconds())
+                        duration_str = format_duration(duration_seconds)
+                        
+                        logger.info(f"⏱️ Job duration for {node_name}: {duration_str} ({duration_seconds}s)")
+                        
+                        # Get NOS price and calculate payment
+                        nos_price = await get_nos_token_price()
+                        if nos_price:
+                            # Calculate payment (default GPU type is A100)
+                            nos_payment = calculate_job_payment(duration_seconds, nos_price, gpu_type="A100")
+                            if nos_payment:
+                                usd_value = nos_payment * nos_price
+                                payment_str = f"\n💰 Payment: {nos_payment:.2f} NOS (~${usd_value:.2f} USD)"
+                                logger.info(f"💰 Estimated payment for {node_name}: {nos_payment:.2f} NOS (~${usd_value:.2f})")
+                        
+                        # Increment completed jobs counter
+                        job_count_completed = node.get('job_count_completed', 0) + 1
+                        await db.nodes.update_one(
+                            {"address": address, "user_id": current_user.id},
+                            {"$set": {
+                                "job_start_time": None,  # Clear start time
+                                "job_count_completed": job_count_completed
+                            }}
+                        )
+                        
+                    except Exception as calc_error:
+                        logger.error(f"Error calculating job stats: {str(calc_error)}")
+                
+                # Send notification via Firebase push (basic)
                 await send_notification_to_user(
                     current_user.id,
                     "✅ Job Completed",
                     f"{node_name} completed a job",
                     address
                 )
+                
+                # Send ENHANCED notification via Telegram ONLY (with duration & payment)
+                telegram_message = f"🎉 **Job Completed - {node_name}**\n\n"
+                telegram_message += f"⏱️ Duration: {duration_str}"
+                telegram_message += payment_str
+                telegram_message += f"\n\n[View Dashboard](https://dashboard.nosana.com/host/{address})"
+                
+                try:
+                    await send_telegram_notification(current_user.id, telegram_message)
+                    logger.info(f"✅ Enhanced Telegram notification sent for {node_name}")
+                except Exception as tg_error:
+                    logger.error(f"Failed to send enhanced Telegram notification: {str(tg_error)}")
             
             # Check for LOW SOL BALANCE (critical for node operation)
             sol_balance = status_data.get('sol_balance')
