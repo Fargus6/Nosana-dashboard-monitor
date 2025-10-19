@@ -1919,6 +1919,14 @@ function App() {
                     <p className={"text-xs font-mono mt-1 " + theme.text.muted}>
                       {selectedNodeStats.address}
                     </p>
+                    <Button
+                      onClick={() => scrapeFullHistory(selectedNodeStats.address)}
+                      className="mt-2 text-xs bg-purple-600 hover:bg-purple-700 text-white"
+                      size="sm"
+                    >
+                      <Download className="w-3 h-3 mr-1" />
+                      Scrape Full History
+                    </Button>
                   </div>
                   <Button
                     variant="ghost"
