@@ -1925,7 +1925,7 @@ function App() {
                       size="sm"
                     >
                       <Download className="w-3 h-3 mr-1" />
-                      Scrape Full History
+                      Scrape Recent Jobs
                     </Button>
                   </div>
                   <Button
