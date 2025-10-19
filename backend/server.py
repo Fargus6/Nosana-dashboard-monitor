@@ -2120,11 +2120,16 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                     except Exception as calc_error:
                         logger.error(f"Error calculating job stats: {str(calc_error)}")
                 
-                # Send notification via Firebase push (basic) - skip Telegram as we send enhanced version below
+                # Send notification via Firebase push WITH payment details
+                firebase_body = f"{node_name} - {duration_str}"
+                if payment_str:
+                    # Extract just the payment amount for Firebase notification
+                    firebase_body += payment_str.replace("\n💰 Payment:", " •")
+                
                 await send_notification_to_user(
                     current_user.id,
                     "✅ Job Completed",
-                    f"{node_name} completed a job",
+                    firebase_body,
                     address,
                     skip_telegram=True  # Skip Telegram, send enhanced version below
                 )
