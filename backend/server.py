@@ -2381,6 +2381,156 @@ async def get_live_earnings_from_dashboard(address: str, current_user: User = De
         raise HTTPException(status_code=500, detail="Failed to get live earnings from dashboard")
 
 
+@api_router.get("/earnings/node/{address}/scraped-stats")
+async def get_scraped_statistics(address: str, current_user: User = Depends(get_current_user)):
+    """
+    Get comprehensive statistics from scraped Nosana dashboard data
+    Includes yesterday, monthly, and yearly breakdowns
+    """
+    try:
+        # Verify node belongs to user
+        node = await db.nodes.find_one({
+            "address": address,
+            "user_id": current_user.id
+        })
+        
+        if not node:
+            raise HTTPException(status_code=404, detail="Node not found")
+        
+        # Get yesterday's earnings
+        yesterday = await get_yesterday_scraped_earnings(current_user.id, address)
+        
+        # Get monthly breakdown
+        monthly = await get_monthly_scraped_earnings(current_user.id, address)
+        
+        # Get yearly totals
+        yearly = await get_yearly_scraped_earnings(current_user.id, address)
+        
+        return {
+            "node_address": address,
+            "node_name": node.get('name', 'Unnamed Node'),
+            "yesterday": yesterday,
+            "monthly": monthly,
+            "yearly": yearly
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting scraped statistics: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get statistics")
+
+
+@api_router.post("/earnings/scrape-all-nodes")
+async def scrape_all_user_nodes(current_user: User = Depends(get_current_user)):
+    """
+    Scrape earnings data for ALL nodes of the current user
+    Stores data in database for statistics
+    """
+    try:
+        # Get all user's nodes
+        nodes = await db.nodes.find({"user_id": current_user.id}).to_list(None)
+        
+        if not nodes:
+            return {
+                "success": True,
+                "message": "No nodes to scrape",
+                "nodes_scraped": 0,
+                "jobs_stored": 0
+            }
+        
+        total_jobs_stored = 0
+        nodes_scraped = 0
+        errors = []
+        
+        for node in nodes:
+            try:
+                logger.info(f"🔄 Scraping node: {node['address'][:8]}...")
+                
+                # Scrape jobs from dashboard
+                jobs = await scrape_nosana_job_history(node['address'])
+                
+                if jobs:
+                    # Store scraped jobs
+                    stored = await store_scraped_jobs(current_user.id, node['address'], jobs)
+                    total_jobs_stored += stored
+                    nodes_scraped += 1
+                    logger.info(f"✅ Node {node['address'][:8]}: {stored} new jobs stored")
+                else:
+                    logger.warning(f"⚠️ No jobs found for node {node['address'][:8]}")
+                
+            except Exception as e:
+                error_msg = f"Error scraping node {node['address'][:8]}: {str(e)}"
+                logger.error(error_msg)
+                errors.append(error_msg)
+        
+        return {
+            "success": True,
+            "message": f"Scraped {nodes_scraped}/{len(nodes)} nodes",
+            "nodes_scraped": nodes_scraped,
+            "total_nodes": len(nodes),
+            "jobs_stored": total_jobs_stored,
+            "errors": errors if errors else None
+        }
+    
+    except Exception as e:
+        logger.error(f"Error scraping all nodes: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to scrape nodes")
+
+
+@api_router.post("/admin/scrape-all-users-nodes")
+async def scrape_all_users_nodes(current_user: User = Depends(get_current_user)):
+    """
+    Admin endpoint: Scrape ALL nodes for ALL users
+    Use carefully - can take a long time!
+    """
+    try:
+        # Get all nodes from all users
+        all_nodes = await db.nodes.find({}).to_list(None)
+        
+        if not all_nodes:
+            return {
+                "success": True,
+                "message": "No nodes found in database",
+                "total_jobs_stored": 0
+            }
+        
+        total_jobs_stored = 0
+        nodes_scraped = 0
+        errors = []
+        
+        for node in all_nodes:
+            try:
+                logger.info(f"🔄 Scraping node: {node['address'][:8]} (user: {node['user_id'][:8]})")
+                
+                # Scrape jobs from dashboard
+                jobs = await scrape_nosana_job_history(node['address'])
+                
+                if jobs:
+                    # Store scraped jobs
+                    stored = await store_scraped_jobs(node['user_id'], node['address'], jobs)
+                    total_jobs_stored += stored
+                    nodes_scraped += 1
+                
+            except Exception as e:
+                error_msg = f"Error scraping node {node['address'][:8]}: {str(e)}"
+                logger.error(error_msg)
+                errors.append(error_msg)
+        
+        return {
+            "success": True,
+            "message": f"Scraped {nodes_scraped}/{len(all_nodes)} nodes",
+            "nodes_scraped": nodes_scraped,
+            "total_nodes": len(all_nodes),
+            "total_jobs_stored": total_jobs_stored,
+            "errors": errors[:10] if errors else None  # Limit error output
+        }
+    
+    except Exception as e:
+        logger.error(f"Error scraping all users' nodes: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to scrape nodes")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
