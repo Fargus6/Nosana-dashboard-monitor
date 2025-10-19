@@ -1,7 +1,7 @@
 # 📊 Nosana Node Monitor - Application Statistics
 
 **Date Generated**: October 18, 2024  
-**App URL**: https://alert-hub-11.preview.emergentagent.com  
+**App URL**: https://node-pulse.preview.emergentagent.com  
 **Status**: Production Ready ✅
 
 ---
@@ -331,7 +331,7 @@
 ## 🚀 Deployment Information
 
 ### Current Deployment
-- **URL**: https://alert-hub-11.preview.emergentagent.com
+- **URL**: https://node-pulse.preview.emergentagent.com
 - **Status**: Live & Production-Ready ✅
 - **Environment**: Kubernetes cluster
 - **Services Running**:

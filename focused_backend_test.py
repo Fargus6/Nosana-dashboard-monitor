@@ -16,7 +16,7 @@ import concurrent.futures
 from queue import Queue
 
 # Configuration
-BASE_URL = "https://alert-hub-11.preview.emergentagent.com/api"
+BASE_URL = "https://node-pulse.preview.emergentagent.com/api"
 TEST_EMAIL = "test@prod.com"
 TEST_PASSWORD = "TestProd123"
 

@@ -4,7 +4,7 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 
 ## 🌐 Access the App
 
-**🖥️ Web App (Desktop & Mobile):** https://alert-hub-11.preview.emergentagent.com
+**🖥️ Web App (Desktop & Mobile):** https://node-pulse.preview.emergentagent.com
 
 **📱 Mobile App:** Install as PWA for best experience (see instructions below)
 
@@ -47,13 +47,13 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 ## 📱 Install as Mobile App
 
 ### On Android (Chrome/Edge):
-1. Open **https://alert-hub-11.preview.emergentagent.com** in Chrome
+1. Open **https://node-pulse.preview.emergentagent.com** in Chrome
 2. Tap the **3-dot menu** → "Add to Home screen"
 3. Tap "Install" or "Add"
 4. App appears on your home screen like a native app!
 
 ### On iOS (Safari):
-1. Open **https://alert-hub-11.preview.emergentagent.com** in Safari
+1. Open **https://node-pulse.preview.emergentagent.com** in Safari
 2. Tap the **Share button** (square with arrow)
 3. Scroll down and tap "Add to Home Screen"
 4. Tap "Add"
@@ -214,7 +214,7 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 ## 🎯 Getting Started
 
 1. **Access the App**: 
-   - **Web**: Visit https://alert-hub-11.preview.emergentagent.com
+   - **Web**: Visit https://node-pulse.preview.emergentagent.com
    - **Mobile**: Install as PWA for best experience
 2. **Create an Account**: Register with email/password or use Google Sign-In
 3. **Enable Notifications**: Grant push notification permissions for real-time alerts

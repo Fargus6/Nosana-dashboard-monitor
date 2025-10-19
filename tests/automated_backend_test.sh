@@ -5,7 +5,7 @@
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 LOG_DIR="/app/tests/results"
 LOG_FILE="$LOG_DIR/backend_test_$TIMESTAMP.log"
-API_URL="https://alert-hub-11.preview.emergentagent.com/api"
+API_URL="https://node-pulse.preview.emergentagent.com/api"
 
 mkdir -p "$LOG_DIR"
 

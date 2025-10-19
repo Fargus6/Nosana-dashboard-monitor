@@ -318,7 +318,7 @@ db.device_tokens.aggregate([
 ### Next Steps to See Statistics:
 
 1. **Register Users**
-   - Go to: https://alert-hub-11.preview.emergentagent.com
+   - Go to: https://node-pulse.preview.emergentagent.com
    - Create accounts (email or Google)
 
 2. **Add Nodes**
@@ -406,4 +406,4 @@ Once users start registering and using the app, comprehensive statistics will be
 
 **Last Updated**: October 18, 2024  
 **Database**: MongoDB (nosana_monitor)  
-**App URL**: https://alert-hub-11.preview.emergentagent.com
+**App URL**: https://node-pulse.preview.emergentagent.com

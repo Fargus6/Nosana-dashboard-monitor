@@ -21,14 +21,14 @@ The notifications aren't working because no device token has been registered yet
 
 **Requirements:**
 - ✅ Must use **Chrome** on Android or **Safari** on iOS
-- ✅ Must access app via **HTTPS** (https://alert-hub-11.preview.emergentagent.com)
+- ✅ Must access app via **HTTPS** (https://node-pulse.preview.emergentagent.com)
 - ✅ Device must support service workers and notifications
 - ✅ Must be **logged in** to the app
 
 ### 2️⃣ **Enable Notifications (Critical Step)**
 
 1. **Login to your account**
-   - Go to: https://alert-hub-11.preview.emergentagent.com
+   - Go to: https://node-pulse.preview.emergentagent.com
    - Login with your credentials
 
 2. **Open Settings**
@@ -301,5 +301,5 @@ You'll know notifications are working when:
 ---
 
 **Last Updated:** October 18, 2024
-**App URL:** https://alert-hub-11.preview.emergentagent.com
+**App URL:** https://node-pulse.preview.emergentagent.com
 **Support:** Check DevTools console for detailed error messages

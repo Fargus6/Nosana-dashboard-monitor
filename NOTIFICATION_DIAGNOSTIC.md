@@ -34,7 +34,7 @@ This means notifications haven't been enabled in the app yet.
 ### For You to Do:
 
 1. **Access the app on mobile:**
-   - URL: https://alert-hub-11.preview.emergentagent.com
+   - URL: https://node-pulse.preview.emergentagent.com
    - Use Chrome (Android) or Safari (iOS)
 
 2. **Login to your account:**
