@@ -7,7 +7,7 @@ You've successfully tested the enhanced job notifications! Now let's set up your
 ## Setup Steps
 
 ### Step 1: Create Your Account
-1. Go to: https://nosana-monitor.preview.emergentagent.com
+1. Go to: https://nosanamonitor.preview.emergentagent.com
 2. Click **Register** (top right)
 3. Enter your email and create a strong password
 4. Click **Register**

@@ -62,7 +62,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 To link your account:
 
-1️⃣ Open the web app: https://nosana-monitor.preview.emergentagent.com
+1️⃣ Open the web app: https://nosanamonitor.preview.emergentagent.com
 2️⃣ Go to Settings ⚙️
 3️⃣ Find "Telegram Notifications" section
 4️⃣ Enter this code: `{link_code}`
@@ -256,7 +256,7 @@ You'll receive instant notifications for:
 • ✅ Node back online
 
 **Web App:**
-https://nosana-monitor.preview.emergentagent.com
+https://nosanamonitor.preview.emergentagent.com
 
 Need help? Check the web app settings!
 """

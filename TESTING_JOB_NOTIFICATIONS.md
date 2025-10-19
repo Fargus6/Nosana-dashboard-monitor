@@ -67,7 +67,7 @@ If you don't know your bot's username:
 
 To test with actual job completions:
 
-1. **Create an account** on the app (https://nosana-monitor.preview.emergentagent.com)
+1. **Create an account** on the app (https://nosanamonitor.preview.emergentagent.com)
 2. **Add your nodes** to monitor
 3. **Link Telegram account**:
    - Click Settings (Bell icon) in the app

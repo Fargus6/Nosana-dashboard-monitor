@@ -13,7 +13,7 @@ Regular Safari browsing **DOES NOT** support push notifications on iOS!
 ### Step 1: Install App to Home Screen (Required!)
 
 1. **Open Safari** on your iPhone
-   - Go to: https://nosana-monitor.preview.emergentagent.com
+   - Go to: https://nosanamonitor.preview.emergentagent.com
    - ⚠️ Must use **Safari**, not Chrome or other browsers
 
 2. **Tap the Share button**
@@ -221,7 +221,7 @@ Regular Safari browsing **DOES NOT** support push notifications on iOS!
 ✅ Permission: "granted" (or "default" if not enabled yet)
 ✅ In standalone: true (means opened as PWA)
 ✅ Service workers: 1
-✅ SW: https://nosana-monitor.preview.emergentagent.com/firebase-messaging-sw.js
+✅ SW: https://nosanamonitor.preview.emergentagent.com/firebase-messaging-sw.js
 ```
 
 ---
@@ -347,5 +347,5 @@ You'll know it's working when:
 
 **Last Updated:** October 18, 2024
 **Your iOS Version:** 18.7.1 ✅
-**App URL:** https://nosana-monitor.preview.emergentagent.com
+**App URL:** https://nosanamonitor.preview.emergentagent.com
 **Key Requirement:** App MUST be installed to home screen!

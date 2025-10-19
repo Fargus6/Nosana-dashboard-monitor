@@ -1,7 +1,7 @@
 # 📊 Nosana Node Monitor - Application Statistics
 
 **Date Generated**: October 18, 2024  
-**App URL**: https://nosana-monitor.preview.emergentagent.com  
+**App URL**: https://nosanamonitor.preview.emergentagent.com  
 **Status**: Production Ready ✅
 
 ---
@@ -331,7 +331,7 @@
 ## 🚀 Deployment Information
 
 ### Current Deployment
-- **URL**: https://nosana-monitor.preview.emergentagent.com
+- **URL**: https://nosanamonitor.preview.emergentagent.com
 - **Status**: Live & Production-Ready ✅
 - **Environment**: Kubernetes cluster
 - **Services Running**:

@@ -37,7 +37,7 @@ Status: ✅ Ready to use
 
 To link your account:
 
-1️⃣ Open the web app: https://nosana-monitor.preview.emergentagent.com
+1️⃣ Open the web app: https://nosanamonitor.preview.emergentagent.com
 2️⃣ Go to Settings ⚙️
 3️⃣ Find "Telegram Notifications" section
 4️⃣ Enter this code: 51CE4E95
@@ -60,7 +60,7 @@ Commands:
 **To complete this test:**
 
 1. **Login to web app:**
-   - Go to: https://nosana-monitor.preview.emergentagent.com
+   - Go to: https://nosanamonitor.preview.emergentagent.com
    - Login with your credentials
 
 2. **Go to Settings:**
@@ -237,7 +237,7 @@ You'll receive instant notifications for:
 • ✅ Node back online
 
 Web App:
-https://nosana-monitor.preview.emergentagent.com
+https://nosanamonitor.preview.emergentagent.com
 
 Need help? Check the web app settings!
 ```

@@ -11,7 +11,7 @@ Your specific node will show 4 statistics ONLY:
 ## 📝 Step-by-Step Test Instructions
 
 ### Step 1: Login and Navigate
-1. Login to the app: https://nosana-monitor.preview.emergentagent.com
+1. Login to the app: https://nosanamonitor.preview.emergentagent.com
 2. Find your node: `9hsWPkJUBiDQnc2p7dKi2gMKHp6LwscA6Z5qAF8NGsyV`
 3. Click **"View Earnings & Statistics"** button
 
