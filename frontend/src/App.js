@@ -2172,8 +2172,7 @@ function App() {
         )}
 
 
-        {/* Live Earnings Modal */}
-        {showLiveEarningsModal && selectedNodeStats && (
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setShowLiveEarningsModal(false)}>
             <Card 
               className={theme.card + " w-full max-w-4xl max-h-[90vh] overflow-y-auto"} 
