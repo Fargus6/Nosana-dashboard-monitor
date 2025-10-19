@@ -973,6 +973,11 @@ function App() {
         timeout: 15000 // 15 second timeout
       });
       setNodes(response.data);
+      
+      // Fetch yesterday's earnings for all nodes
+      if (response.data.length > 0) {
+        setTimeout(() => fetchYesterdayEarnings(), 500); // Small delay to avoid race condition
+      }
     } catch (error) {
       console.error("Error loading nodes:", error);
       
