@@ -281,6 +281,7 @@ class Node(BaseModel):
     user_id: str  # Link node to user
     address: str
     name: Optional[str] = None
+    gpu_type: Optional[str] = "3090"  # GPU type for earnings calculation (3090, A100, Pro6000, H100)
     status: str = "unknown"  # online, offline, unknown
     job_status: Optional[str] = None  # running, queue, idle
     notes: Optional[str] = None
