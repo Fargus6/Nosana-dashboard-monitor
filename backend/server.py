@@ -2442,7 +2442,7 @@ async def get_live_earnings_from_dashboard(address: str, current_user: User = De
 async def get_scraped_statistics(address: str, current_user: User = Depends(get_current_user)):
     """
     Get comprehensive statistics from scraped Nosana dashboard data
-    Includes yesterday, monthly, and yearly breakdowns
+    Includes today, yesterday, monthly, and overall totals
     """
     try:
         # Verify node belongs to user
@@ -2454,21 +2454,58 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
         if not node:
             raise HTTPException(status_code=404, detail="Node not found")
         
+        # Get today's earnings (last 24 hours)
+        now = datetime.now(timezone.utc)
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        today_pipeline = [
+            {
+                "$match": {
+                    "user_id": current_user.id,
+                    "node_address": address,
+                    "status": "SUCCESS",
+                    "completed": {
+                        "$gte": today_start.isoformat(),
+                        "$lt": now.isoformat()
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": None,
+                    "total_usd": {"$sum": "$usd_earned"},
+                    "total_nos": {"$sum": "$nos_earned"},
+                    "total_jobs": {"$sum": 1},
+                    "total_duration": {"$sum": "$duration_seconds"}
+                }
+            }
+        ]
+        
+        today_result = await db.scraped_jobs.aggregate(today_pipeline).to_list(1)
+        today = {
+            "date": today_start.strftime("%Y-%m-%d"),
+            "usd_earned": round(today_result[0]['total_usd'], 2) if today_result else 0,
+            "nos_earned": round(today_result[0]['total_nos'], 2) if today_result else 0,
+            "job_count": today_result[0]['total_jobs'] if today_result else 0,
+            "duration_seconds": today_result[0]['total_duration'] if today_result else 0
+        }
+        
         # Get yesterday's earnings
         yesterday = await get_yesterday_scraped_earnings(current_user.id, address)
         
         # Get monthly breakdown
         monthly = await get_monthly_scraped_earnings(current_user.id, address)
         
-        # Get yearly totals
-        yearly = await get_yearly_scraped_earnings(current_user.id, address)
+        # Get overall totals
+        overall = await get_yearly_scraped_earnings(current_user.id, address)
         
         return {
             "node_address": address,
             "node_name": node.get('name', 'Unnamed Node'),
+            "today": today,
             "yesterday": yesterday,
             "monthly": monthly,
-            "yearly": yearly
+            "overall": overall
         }
     
     except HTTPException:
