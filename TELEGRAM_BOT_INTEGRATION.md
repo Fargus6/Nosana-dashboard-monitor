@@ -49,7 +49,7 @@
 
 To link your account:
 
-1️⃣ Open the web app: https://node-pulse.preview.emergentagent.com
+1️⃣ Open the web app: https://nosana-monitor.preview.emergentagent.com
 2️⃣ Go to Settings ⚙️
 3️⃣ Find "Telegram Notifications" section
 4️⃣ Enter this code: ABC123XY
@@ -61,7 +61,7 @@ Once linked, you'll receive instant alerts:
 ```
 
 ### Step 2: Open Web App
-1. Go to: https://node-pulse.preview.emergentagent.com
+1. Go to: https://nosana-monitor.preview.emergentagent.com
 2. Login to your account
 3. Click **Settings** icon (⚙️) in the header
 
@@ -300,7 +300,7 @@ You'll receive instant notifications for:
 • ✅ Node back online
 
 Web App:
-https://node-pulse.preview.emergentagent.com
+https://nosana-monitor.preview.emergentagent.com
 ```
 
 ---

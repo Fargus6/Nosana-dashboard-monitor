@@ -6,7 +6,7 @@ You're trying to enable notifications on iOS but they don't appear. This is beca
 ## The Solution: 5 Easy Steps
 
 ### Step 1: Open in Safari 🌐
-- Current URL: https://node-pulse.preview.emergentagent.com
+- Current URL: https://nosana-monitor.preview.emergentagent.com
 - **Must use Safari** (not Chrome or other browsers)
 - You're probably already here!
 

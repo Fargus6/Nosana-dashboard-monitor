@@ -320,7 +320,7 @@ INFO: Pinging Nosana service
 sudo supervisorctl status
 
 # Test health endpoint
-curl https://node-pulse.preview.emergentagent.com/api/health
+curl https://nosana-monitor.preview.emergentagent.com/api/health
 
 # Check frontend keep-alive
 # Open browser console, should see logs every 30s

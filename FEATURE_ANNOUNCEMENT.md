@@ -41,7 +41,7 @@ Node Alpha completed a job
 ## How to Enable
 
 ### New Users
-1. **Register:** https://node-pulse.preview.emergentagent.com
+1. **Register:** https://nosana-monitor.preview.emergentagent.com
 2. **Add Nodes:** Click "+ Add Node" and enter your Solana addresses
 3. **Link Telegram:**
    - Click Settings (⚙️ Bell icon)
@@ -167,7 +167,7 @@ Message @NosNode_bot:
 
 **Start monitoring your nodes with detailed earnings today!**
 
-👉 https://node-pulse.preview.emergentagent.com
+👉 https://nosana-monitor.preview.emergentagent.com
 
 ---
 

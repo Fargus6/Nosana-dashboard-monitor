@@ -19,7 +19,7 @@ import sys
 from datetime import datetime, timezone
 
 # Configuration
-BASE_URL = "https://node-pulse.preview.emergentagent.com/api"
+BASE_URL = "https://nosana-monitor.preview.emergentagent.com/api"
 TEST_EMAIL = "test@prod.com"
 TEST_PASSWORD = "TestProd123"
 

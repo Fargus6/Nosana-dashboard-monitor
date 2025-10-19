@@ -9,7 +9,7 @@
 ## 📱 Step-by-Step Visual Guide
 
 ### Step 1: Login to the App
-1. Go to: https://node-pulse.preview.emergentagent.com
+1. Go to: https://nosana-monitor.preview.emergentagent.com
 2. Login with your email/password or Google
 
 ### Step 2: Find the Settings Button
@@ -173,4 +173,4 @@
 **On desktop/tablet:** Shows "Settings" text next to bell icon  
 **On mobile:** Just the bell icon 🔔
 
-**Try it now:** https://node-pulse.preview.emergentagent.com
+**Try it now:** https://nosana-monitor.preview.emergentagent.com

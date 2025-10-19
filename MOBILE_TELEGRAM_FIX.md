@@ -26,7 +26,7 @@
 ## 📱 How to Access on Mobile (Step-by-Step)
 
 ### Step 1: Open App on Phone
-Go to: https://node-pulse.preview.emergentagent.com
+Go to: https://nosana-monitor.preview.emergentagent.com
 
 ### Step 2: Login
 - Enter your email and password
@@ -168,7 +168,7 @@ Once you scroll to the Telegram section:
 
 ## 🚀 Try It Now!
 
-1. **Open on your phone:** https://node-pulse.preview.emergentagent.com
+1. **Open on your phone:** https://nosana-monitor.preview.emergentagent.com
 2. **Login**
 3. **Tap bell icon** (top-right)
 4. **Scroll down** (important!)
@@ -199,7 +199,7 @@ pb-6            /* Extra padding at bottom */
 ## ✅ Confirmation
 
 The fix is deployed and live at:
-https://node-pulse.preview.emergentagent.com
+https://nosana-monitor.preview.emergentagent.com
 
 **Mobile users can now:**
 - ✅ Open Settings by tapping bell

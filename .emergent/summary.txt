@@ -1,81 +1,70 @@
 <analysis>
-This trajectory details a robust development and bug-fixing phase. Initial tasks involved iterative logo redesigns and comprehensive updates across various formats, followed by crucial UI/UX enhancements like Cyber theme adjustments and PWA auto-update implementation. Significant effort was dedicated to app stability, addressing persistent auto-logout issues by identifying and fixing a critical vulnerability related to the  regeneration on backend restarts. Notification systems were refined for iOS compatibility (PWA requirement) and expanded to include Telegram bot integration for critical alerts (low SOL balance, disconnected nodes). Balance display issues were resolved by directly querying the Solana blockchain. Finally, server sleep prevention mechanisms were implemented, and documentation was consistently updated.
+The AI engineer's work transitioned from initial bug fixes and core feature enhancements to implementing a sophisticated earnings statistics system. Key achievements include stabilizing the app (auto-logout, server sleep), integrating Telegram for critical alerts, and implementing PWA auto-updates. The most recent phase focused heavily on developing and debugging the node earnings statistics feature, which involved iterative refinements of the payment calculation formula based on user feedback and direct scraping of the Nosana dashboard. This led to understanding that payment is hourly and dependent on GPU type, with specific rates confirmed through web scraping. The current state is poised to correct the payment calculation using these newly identified rates.
 </analysis>
 
 <product_requirements>
-The Nosana Node Monitor is a PWA designed to track Nosana AI network nodes, displaying their status and offering alerts. The user aimed to enhance its stability, user experience, and notification capabilities.
-
-**Implemented features based on recent requests:**
-1.  **Logo Redesign:** Iterative refinements to the app logo, including specific N shape, green palette, and Nosana Node Monitor text.
-2.  **Cyber Theme UI:** Adjusted node names, buttons, and icons to white for improved visibility.
-3.  **App Stability & Auto-Logout:** Fixed auto-logout by ensuring a static  in backend, enhancing  resilience, and implementing constant keep-alive pings.
-4.  **Job Started Notifications:** Backend logic () updated to correctly trigger job started notifications for nodes transitioning from 'queue' to 'running'.
-5.  **PWA Auto-Update:** Implemented a system for automatic app updates via  and .
-6.  **Lock Screen Notifications:** Enhanced push notifications with higher priority, screen wake-up, and specific options for lock screen display on mobile devices.
-7.  **iOS Notifications:** Identified and addressed iOS-specific requirements, adding in-app warnings for users not having the app Added to Home Screen as a PWA.
-8.  **Wallet Balance Display:** Corrected incorrect NOS and SOL balance display by fetching NOS balance directly from the Solana blockchain, improving accuracy and reliability.
-9.  **Server Sleep Prevention:** Enhanced keep-alive mechanisms and the backend health check endpoint to prevent services from going to sleep due to inactivity.
-10. **Critical SOL Balance Notification:** Implemented a Telegram bot integration to send critical alerts for low SOL balance (<0.006 SOL) and disconnected nodes, offering a more reliable notification channel alongside mobile push.
-11. **Settings Menu Visibility:** Improved the visibility and discoverability of the Settings menu (Bell icon) in the frontend.
-12. **Mobile UI for Telegram:** Adjusted the Settings modal styling to be scrollable on mobile, ensuring the Telegram integration section is visible.
-13. **Automated Testing & Documentation:** Set up daily automated backend/frontend tests and updated  and created various new documentation files (e.g., PWA_UPDATE_SYSTEM.md, TELEGRAM_BOT_INTEGRATION.md).
+The Nosana Node Monitor PWA tracks Nosana AI network nodes, displaying status and offering alerts. The user requested improvements in stability, UX, and notifications.
+**Implemented features:** Logo redesign, Cyber theme UI adjustments, auto-logout fix via static  and keep-alive pings, PWA auto-update, enhanced lock screen and iOS notifications, accurate NOS/SOL balance display from Solana, server sleep prevention, and critical low SOL/disconnected node alerts via Telegram bot. The latest major feature is a detailed node earnings statistics system, displaying daily (yesterday on card), monthly, and yearly earnings per node in a separate tab, calculated based on a rolling year, with calendar-aligned months.
 </product_requirements>
 
 <key_technical_concepts>
--   **Full-stack Development**: React (frontend), FastAPI (backend), MongoDB.
--   **Push Notifications**: Firebase Cloud Messaging (FCM), Firebase Admin SDK.
--   **Telegram Bot**:  library for sending alerts and linking accounts.
--   **PWA**: Service Worker API for offline caching and auto-updates.
--   **Solana Blockchain Interaction**: Direct querying of Solana RPC for SOL and SPL token (NOS) balances.
--   **Security**: JWT for authentication, static  for consistent token validation.
--   **Process Management**: Supervisor for persistent execution of backend services and the Telegram bot.
+- **Full-stack Development**: React (frontend), FastAPI (backend), MongoDB.
+- **Push Notifications**: Firebase Cloud Messaging (FCM).
+- **Telegram Bot**:  for alerts and account linking.
+- **PWA**: Service Worker API for offline caching and auto-updates.
+- **Solana Blockchain**: Direct RPC queries for token balances.
+- **Security**: JWT authentication, static .
+- **Process Management**: Supervisor for persistent service execution.
+- **Web Scraping**: To fetch dynamic payment rates from Nosana dashboard.
 </key_technical_concepts>
 
 <code_architecture>
 
 
--   **/app/backend/server.py**: Core FastAPI backend.
-    -   **Changes**:  now includes Telegram notifications. New endpoints for Telegram account linking added.  checks for low SOL balance and disconnected nodes, triggering Telegram alerts.  pings Nosana service. Rate limit increased.  usage fixed to ensure consistent JWT tokens.
--   **/app/backend/.env**: Environment variables.
-    -   **Changes**:  and  added.
--   **/app/backend/telegram_bot.py**: **NEW FILE**
-    -   **Summary**: Python script to run the Telegram bot, handle commands (, ), and store/retrieve Telegram chat IDs from MongoDB.
-    -   **Changes**: Created to handle Telegram bot logic and integrate with the backend database.
--   **/app/frontend/src/App.js**: Main React UI.
-    -   **Changes**: Logo image references updated.  added to theme selector. Cyber theme colors adjusted. PWA auto-update logic integrated. Password placeholder updated. iOS detection and warning for notifications added. Keep-alive logic enhanced. Telegram state variables, linking functions, and UI section added to the Settings modal. Settings modal made scrollable for mobile.
--   **/app/frontend/public/** (logo files, manifest, service-worker):
-    -   **Summary**: Application icons, PWA manifest, and service worker for offline/updates.
-    -   **Changes**: , , , ,  were updated with the new N logo design.  updated for PWA.  created for PWA updates.
--   **/etc/supervisor/conf.d/telegram-bot.conf**: **NEW FILE**
-    -   **Summary**: Supervisor configuration to ensure the Telegram bot runs persistently and restarts automatically.
-    -   **Changes**: Created to manage the  process.
--   **/app/*.md**: Numerous new documentation files (e.g., , , , , , , ) were created to detail fixes, features, and troubleshooting steps.  was updated.
+- ****: Core FastAPI backend.
+    - **Summary**: Handles API endpoints, authentication, node monitoring, and notifications.
+    - **Changes**: Modified  model to include  and . Added  function. Updated  to store job start times and trigger enhanced Telegram notifications upon job completion. Added  function and integrated it into job completion logic. Introduced , ,  API endpoints. The  function was repeatedly modified to refine payment logic, first to a fixed rate, then to an hourly rate dependent on .
+- ****: Environment variables.
+    - **Summary**: Stores sensitive configurations.
+    - **Changes**:  and  added in previous work.
+- ****: New file.
+    - **Summary**: Runs the Telegram bot, handles  and  commands, and stores/retrieves Telegram chat IDs from MongoDB.
+    - **Changes**: Created as part of Telegram integration.
+- ****: New file.
+    - **Summary**: Supervisor configuration to ensure the Telegram bot runs persistently.
+    - **Changes**: Created to manage .
+- ****: Main React UI.
+    - **Summary**: Renders node cards, settings, and other UI components.
+    - **Changes**: Added state variables for earnings (, , , ). Implemented  and  functions. Modified  to fetch initial earnings data. Updated node card to display yesterdays earnings" and include a "View Earnings Statistics" button. Implemented a new `StatisticsModal` component for detailed earnings. Fixed `secureStorage.getItem` to `secureStorage.get`.
+- **`/app/*.md` files**: Numerous documentation files.
+    - **Summary**: Document fixes, features, and troubleshooting.
+    - **Changes**: `JOB_PAYMENT_NOTIFICATIONS.md`, `EARNINGS_STATISTICS_SYSTEM.md`, `TESTING_JOB_NOTIFICATIONS.md`, `QUICK_TEST.md`, `TEST_YOUR_NODE.md`, `PRODUCTION_SETUP.md`, `DEPLOYMENT_STATUS.md`, `FEATURE_ANNOUNCEMENT.md` were created. `README.md` was updated for Telegram bot instructions and refined to remove specific payment calculation details.
+- **`/app/backend/populate_sample_earnings.py` / `regenerate_realistic_earnings.py` / `fix_job_frequency.py` / `generate_final_realistic_data.py`**: New testing scripts.
+    - **Summary**: Used to populate MongoDB with sample earnings data for testing the frontend display of statistics.
+    - **Changes**: Created and iteratively modified to generate more realistic and accurate sample data based on refined payment formulas.
 </code_architecture>
 
 <pending_tasks>
--   **Custom Domain Setup**: User deferred setting up a custom domain.
--   **Made with Emergent Badge Removal**: The badge is platform-injected and cannot be removed by the agent.
--   **Remote Node Restart**: Implementation deferred, pending user provision of server credentials.
--   **AI Support Agent**: Detailed plan created and discussed, but implementation is deferred for later.
+- **Custom Domain Setup**: User deferred setting up a custom domain.
+- **"Made with Emergent" Badge Removal**: The badge is platform-injected and cannot be removed by the agent.
+- **Remote Node Restart**: Implementation deferred, pending user provision of server credentials.
+- **AI Support Agent**: Detailed plan created and discussed, but implementation is deferred for later.
 </pending_tasks>
 
 <current_work>
-The immediate work involved stabilizing the application and enhancing its notification capabilities. The AI engineer thoroughly addressed the auto-logout issue by identifying that the  for JWT tokens was being regenerated on every backend restart due to its absence in . This was fixed by adding a static  to  and restarting services, preventing token invalidation.
+The immediate work involved extensively debugging and refining the node earnings statistics feature. The backend was updated to save earnings data upon job completion and expose API endpoints for daily, monthly, and yearly statistics. The frontend `App.js` was modified to display "yesterdays earnings on node cards and present detailed statistics in a dedicated modal.
 
-Concurrently, the Telegram bot integration was completed. This included:
-1.  Installing  and adding the  to .
-2.  Creating  to handle bot logic and storing chat IDs.
-3.  Integrating Telegram notification sending into , specifically for critical low SOL balance (<0.006 SOL) and disconnected node alerts.
-4.  Adding API endpoints in  for linking Telegram accounts.
-5.  Implementing a persistent supervisor configuration () to ensure the Telegram bot runs continuously and auto-restarts.
-6.  Developing frontend UI in  for linking Telegram accounts within the Settings modal.
-7.  Addressing mobile display issues for the Telegram section by making the Settings modal scrollable on smaller screens.
-8.  Verifying the bot's functionality and responsiveness to commands.
+During this process, several issues were encountered and resolved:
+1.  **Empty Statistics Display**: Initial frontend display showed No statistics available yet. This was debugged by creating sample data and then identifying and fixing a bug where the  function was called before the  state was properly populated.
+2.  ** API Mismatch**: An error  was reported. This was fixed by changing  to  to match the actual utility function.
+3.  **Incorrect Payment Calculation**: The user reported that the displayed earnings numbers were too high. This led to an iterative debugging process of the payment formula:
+    *   Initially, it was thought the payment was a fixed . The backend was updated accordingly, and new sample data generated.
+    *   The user then clarified that payment is hourly and *depends on the GPU type* (e.g., RTX 3090 is ). The  model and  function in  were updated to incorporate .
+    *   Despite these changes, the numbers were still wrong. A final web scraping of  revealed the *actual* hourly rate for NVIDIA 3090 is .
 
-All these changes have been implemented, tested, and documented.
+The current state is that the correct hourly rate for NVIDIA 3090 () has been identified, and the AI engineer is about to apply this to the payment calculation logic.
 </current_work>
 
 <optional_next_step>
-The Telegram bot's functionality and frontend integration have been completed. The next step is to ensure the user can successfully test and link their Telegram account.
+Update the backend's  function and related logic to use the newly identified GPU-specific hourly rates from Nosana markets, specifically  for RTX 3090.
 </optional_next_step>
-

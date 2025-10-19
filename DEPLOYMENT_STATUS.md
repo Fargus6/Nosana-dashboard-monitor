@@ -104,7 +104,7 @@ curl "https://api.coingecko.com/api/v3/simple/price?ids=nosana&vs_currencies=usd
 ## User Onboarding
 
 ### For New Users
-1. Register at: https://node-pulse.preview.emergentagent.com
+1. Register at: https://nosana-monitor.preview.emergentagent.com
 2. Add nodes (Solana addresses)
 3. Click Settings (Bell icon)
 4. Link Telegram account:
