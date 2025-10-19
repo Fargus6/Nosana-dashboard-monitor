@@ -657,5 +657,127 @@ agent_communication:
 **Features Verified:**
 - ✅ NOS price fetching from CoinGecko API
 - ✅ Payment calculation accuracy
+
+
+user_problem_statement: "Test app stability - ensure NO automatic logout and servers don't go to sleep. Verify keep-alive system, static SECRET_KEY, token validation, and session persistence."
+
+backend:
+  - task: "Static SECRET_KEY - No Token Regeneration"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py, /app/backend/.env"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "SECRET_KEY is stored in .env file and loaded once at startup. This prevents JWT tokens from becoming invalid after server restart. Need to verify: 1) SECRET_KEY exists in .env, 2) It's not regenerated on restart, 3) Tokens remain valid across server restarts, 4) No auto-logout occurs."
+
+  - task: "Keep-Alive System - Prevent Server Sleep"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py, /app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Keep-alive pings are sent every 30 seconds from frontend to /api/health endpoint. Backend has enhanced health check that also pings Nosana service. Need to verify: 1) Keep-alive pings are sent consistently, 2) Health endpoint responds quickly, 3) Server doesn't sleep after inactivity, 4) Services stay responsive."
+
+  - task: "Token Validation - No Auto-Logout on Errors"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "JWT token validation enhanced with better error handling. Token expiry set to 30 days (43200 minutes). Need to verify: 1) Valid tokens are accepted, 2) Invalid tokens are rejected properly, 3) No auto-logout on network errors, 4) Token verification doesn't fail randomly, 5) SECRET_KEY is consistent."
+
+  - task: "Health Check Endpoint Reliability"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Health check endpoint at /api/health includes Nosana service ping and status check. Returns 200 OK with service health info. Need to verify: 1) Endpoint responds consistently, 2) Doesn't timeout, 3) Handles errors gracefully, 4) Keeps server awake."
+
+  - task: "Session Persistence Across Page Reload"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "JWT tokens stored in localStorage persist across page reloads. Token validation on every protected endpoint. Need to verify: 1) User stays logged in after page reload, 2) No random logouts, 3) Token validation works correctly, 4) Session survives browser restart."
+
+frontend:
+  - task: "Keep-Alive Ping Interval"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Frontend sends keep-alive ping every 30 seconds to /api/health when user is logged in. Ping continues even when page is idle. Need to verify: 1) Pings are sent consistently, 2) Pings don't fail silently, 3) No performance impact, 4) Works in background tabs."
+
+  - task: "No Auto-Logout on API Errors"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Error handling improved to not logout on network errors. Only logout on 401 (unauthorized). Need to verify: 1) Network errors don't trigger logout, 2) 500 errors don't trigger logout, 3) Only explicit 401 causes logout, 4) User stays logged in during temporary issues."
+
+  - task: "Token Storage and Retrieval"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Token stored in localStorage and retrieved on app load. Automatic session restoration. Need to verify: 1) Token persists in localStorage, 2) Retrieved correctly on page load, 3) Not cleared unexpectedly, 4) Works across browser tabs."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Static SECRET_KEY - No Token Regeneration"
+    - "Keep-Alive System - Prevent Server Sleep"
+    - "Token Validation - No Auto-Logout on Errors"
+    - "Session Persistence Across Page Reload"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "Critical stability testing needed. User wants to ensure NO automatic logout and servers don't sleep. Previous issues were: 1) SECRET_KEY was regenerating causing tokens to invalidate, 2) Server going to sleep from inactivity. Fixes implemented: 1) Static SECRET_KEY in .env, 2) Keep-alive pings every 30s, 3) Enhanced token validation, 4) Better error handling. Need comprehensive testing of: JWT token persistence, keep-alive effectiveness, session stability, no random logouts. Test with: long idle periods, page reloads, network interruptions, server restarts. Critical: User must stay logged in and server must stay responsive."
+
 - ✅ Duration formatting
 - ✅ Telegram notification delivery
