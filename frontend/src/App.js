@@ -2038,56 +2038,59 @@ function App() {
                           </div>
                         )}
 
-                        {/* Monthly Summary */}
-                        {liveEarningsData.statistics.monthly && (
-                          <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#0a0e27]/50 border border-[#00ff00]/20" : currentTheme === "neon80s" ? "bg-emerald-900/20 border border-emerald-500/20" : "bg-gray-50 border border-gray-200")}>
-                            <h4 className={theme.text.primary + " font-semibold mb-2"}>This Month</h4>
-                            <div className="grid grid-cols-3 gap-4">
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>Total Earnings</p>
-                                <p className={theme.text.primary + " font-bold"}>
-                                  {liveEarningsData.statistics.monthly.total_nos?.toFixed(2) || "0.00"} NOS
-                                </p>
-                              </div>
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>USD Value</p>
-                                <p className={theme.text.primary + " font-bold"}>
-                                  ${liveEarningsData.statistics.monthly.total_usd?.toFixed(2) || "0.00"}
-                                </p>
-                              </div>
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>Total Jobs</p>
-                                <p className={theme.text.primary + " font-bold"}>
-                                  {liveEarningsData.statistics.monthly.total_jobs || 0}
-                                </p>
-                              </div>
+                        {/* Monthly Breakdown */}
+                        {liveEarningsData.statistics?.monthly?.months && liveEarningsData.statistics.monthly.months.length > 0 && (
+                          <div>
+                            <h4 className={theme.text.primary + " font-semibold mb-2 border-b pb-2"}>Monthly Breakdown</h4>
+                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                              {liveEarningsData.statistics.monthly.months.map((month, idx) => (
+                                <div 
+                                  key={month.month || idx}
+                                  className={"p-3 rounded-lg " + (currentTheme === "cyber" ? "bg-[#0a0e27]/50 border border-[#00ff00]/20" : currentTheme === "neon80s" ? "bg-emerald-900/20 border border-emerald-500/20" : "bg-gray-50 border border-gray-200")}
+                                >
+                                  <div className="flex justify-between items-start mb-1">
+                                    <h5 className={theme.text.primary + " font-semibold text-sm"}>
+                                      {month.month_name || month.month}
+                                    </h5>
+                                    <span className={theme.text.primary + " font-bold"}>
+                                      {month.nos_earned?.toFixed(2) || "0.00"} NOS
+                                    </span>
+                                  </div>
+                                  <p className={theme.text.secondary + " text-xs mt-1"}>
+                                    ${month.usd_earned?.toFixed(2) || "0.00"} USD | {month.job_count || 0} jobs
+                                  </p>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         )}
 
-                        {/* Yearly Summary */}
-                        {liveEarningsData.statistics.yearly && (
-                          <div className={"p-4 rounded-lg " + (currentTheme === "cyber" ? "bg-[#00ff00]/20 border-2 border-[#00ff00]" : currentTheme === "neon80s" ? "bg-emerald-500/20 border-2 border-emerald-500" : "bg-blue-100 border-2 border-blue-500")}>
-                            <h4 className={theme.text.primary + " font-semibold mb-2"}>This Year</h4>
-                            <div className="grid grid-cols-3 gap-4">
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>Total Earnings</p>
-                                <p className={theme.text.primary + " text-xl font-bold"}>
-                                  {liveEarningsData.statistics.yearly.total_nos?.toFixed(2) || "0.00"} NOS
-                                </p>
-                              </div>
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>USD Value</p>
-                                <p className={theme.text.primary + " text-xl font-bold"}>
-                                  ${liveEarningsData.statistics.yearly.total_usd?.toFixed(2) || "0.00"}
-                                </p>
-                              </div>
-                              <div>
-                                <p className={theme.text.secondary + " text-xs"}>Total Jobs</p>
-                                <p className={theme.text.primary + " text-xl font-bold"}>
-                                  {liveEarningsData.statistics.yearly.total_jobs || 0}
-                                </p>
-                              </div>
+                        {/* Yearly Breakdown */}
+                        {liveEarningsData.statistics?.yearly?.years && liveEarningsData.statistics.yearly.years.length > 0 && (
+                          <div>
+                            <h4 className={theme.text.primary + " font-semibold mb-2 border-b pb-2"}>Yearly Totals</h4>
+                            <div className="space-y-2">
+                              {liveEarningsData.statistics.yearly.years.map((year, idx) => (
+                                <div 
+                                  key={year.year || idx}
+                                  className={"p-4 rounded-lg " + (idx === 0 
+                                    ? (currentTheme === "cyber" ? "bg-[#00ff00]/20 border-2 border-[#00ff00]" : currentTheme === "neon80s" ? "bg-emerald-500/20 border-2 border-emerald-500" : "bg-blue-100 border-2 border-blue-500")
+                                    : (currentTheme === "cyber" ? "bg-gray-800/50 border border-gray-600" : currentTheme === "neon80s" ? "bg-gray-800/50 border border-gray-600" : "bg-gray-100 border border-gray-300")
+                                  )}
+                                >
+                                  <div className="flex justify-between items-start mb-1">
+                                    <h5 className={theme.text.primary + " font-semibold"}>
+                                      {year.year} {idx === 0 && <span className="text-xs text-blue-500">(current)</span>}
+                                    </h5>
+                                    <span className={theme.text.primary + " font-bold text-lg"}>
+                                      {year.nos_earned?.toFixed(2) || "0.00"} NOS
+                                    </span>
+                                  </div>
+                                  <p className={theme.text.secondary + " text-sm mt-1"}>
+                                    ${year.usd_earned?.toFixed(2) || "0.00"} USD | {year.job_count || 0} jobs
+                                  </p>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         )}
