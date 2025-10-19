@@ -2421,6 +2421,29 @@ async def get_scraped_statistics(address: str, current_user: User = Depends(get_
         raise HTTPException(status_code=500, detail="Failed to get statistics")
 
 
+@api_router.get("/earnings/node/{address}/yesterday-scraped")
+async def get_yesterday_earnings_scraped(address: str, current_user: User = Depends(get_current_user)):
+    """Get yesterday's earnings from scraped data for node card display"""
+    try:
+        # Verify node belongs to user
+        node = await db.nodes.find_one({
+            "address": address,
+            "user_id": current_user.id
+        })
+        
+        if not node:
+            raise HTTPException(status_code=404, detail="Node not found")
+        
+        yesterday = await get_yesterday_scraped_earnings(current_user.id, address)
+        return yesterday
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting yesterday earnings: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get yesterday earnings")
+
+
 @api_router.post("/earnings/scrape-all-nodes")
 async def scrape_all_user_nodes(current_user: User = Depends(get_current_user)):
     """
