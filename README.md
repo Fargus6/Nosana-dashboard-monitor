@@ -312,7 +312,6 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 **Latest Features:**
 - 🤖 Telegram Bot integration with enhanced job notifications
 - ⏱️ Automatic job duration tracking
-- 💰 Payment estimation with live NOS pricing
 
 ---
 
