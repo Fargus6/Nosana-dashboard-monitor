@@ -2562,24 +2562,15 @@ function App() {
                           </div>
                         )}
                         
-                        {/* Stats Buttons */}
-                        <div className="pt-3 border-t space-y-2">
-                          <Button
-                            onClick={() => openStatsModal(node)}
-                            className={theme.button + " w-full text-sm"}
-                            size="sm"
-                          >
-                            <TrendingUp className="w-4 h-4 mr-2" />
-                            View Earnings Statistics
-                          </Button>
-                          
+                        {/* Earnings Button */}
+                        <div className="pt-3 border-t">
                           <Button
                             onClick={() => openLiveEarningsModal(node)}
                             className="w-full text-sm bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                             size="sm"
                           >
                             <Activity className="w-4 h-4 mr-2" />
-                            View Live Earnings
+                            View Earnings & Statistics
                           </Button>
                         </div>
 
