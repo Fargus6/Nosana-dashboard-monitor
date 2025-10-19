@@ -1005,12 +1005,12 @@ function App() {
 
 
   // Fetch yesterday's earnings for all nodes
-  const fetchYesterdayEarnings = async () => {
+  const fetchYesterdayEarnings = async (nodesList = nodes) => {
     try {
       const token = secureStorage.getItem('token');
-      if (!token || nodes.length === 0) return;
+      if (!token || nodesList.length === 0) return;
       
-      const earningsPromises = nodes.map(node => 
+      const earningsPromises = nodesList.map(node => 
         axios.get(`${API}/earnings/node/${node.address}/yesterday`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(err => {
@@ -1022,7 +1022,7 @@ function App() {
       const results = await Promise.all(earningsPromises);
       const earningsMap = {};
       
-      nodes.forEach((node, index) => {
+      nodesList.forEach((node, index) => {
         earningsMap[node.address] = results[index].data;
       });
       
