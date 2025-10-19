@@ -1247,15 +1247,26 @@ async def store_scraped_jobs(user_id: str, node_address: str, jobs: List[Dict]):
             usd_earned = duration_hours * job['hourly_rate_usd']
             nos_earned = usd_earned / nos_price if nos_price > 0 else 0
             
+            # Calculate completion time: started + duration
+            started_dt = job['started'] if isinstance(job['started'], datetime) else datetime.fromisoformat(job['started'].replace('Z', '+00:00'))
+            
+            # For SUCCESS jobs, calculate completed time
+            if job['status'] == 'SUCCESS':
+                completed_dt = started_dt + timedelta(seconds=job['duration_seconds'])
+                completed = completed_dt.isoformat()
+            else:
+                # RUNNING jobs - not completed yet
+                completed = None
+            
             # Store job
             job_doc = {
                 "id": str(uuid.uuid4()),
                 "user_id": user_id,
                 "node_address": node_address,
                 "job_id": job['job_id'],
-                "started": job['started'].isoformat() if isinstance(job['started'], datetime) else job['started'],
+                "started": started_dt.isoformat(),
                 "started_text": job.get('started_text', ''),
-                "completed": job['started'].isoformat() if job['status'] == 'SUCCESS' else None,
+                "completed": completed,
                 "duration_seconds": job['duration_seconds'],
                 "duration_text": job.get('duration_text', ''),
                 "hourly_rate_usd": job['hourly_rate_usd'],
