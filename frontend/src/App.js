@@ -1043,68 +1043,7 @@ function App() {
     }
   };
   
-  // Fetch detailed statistics for a specific node
-  const fetchNodeStatistics = async (nodeAddress) => {
-    try {
-      setStatsLoading(true);
-      const token = secureStorage.get('token');
-      
-      console.log("📊 Fetching statistics for node:", nodeAddress);
-      console.log("🔑 Token available:", !!token);
-      
-      const [yesterday, today, monthly, yearly] = await Promise.all([
-        axios.get(`${API}/earnings/node/${nodeAddress}/yesterday`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => {
-          console.error("❌ Yesterday API failed:", err.response?.status, err.response?.data);
-          throw err;
-        }),
-        axios.get(`${API}/earnings/node/${nodeAddress}/today`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => {
-          console.error("❌ Today API failed:", err.response?.status, err.response?.data);
-          throw err;
-        }),
-        axios.get(`${API}/earnings/node/${nodeAddress}/monthly`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => {
-          console.error("❌ Monthly API failed:", err.response?.status, err.response?.data);
-          throw err;
-        }),
-        axios.get(`${API}/earnings/node/${nodeAddress}/yearly`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }).catch(err => {
-          console.error("❌ Yearly API failed:", err.response?.status, err.response?.data);
-          throw err;
-        })
-      ]);
-      
-      console.log("✅ All earnings APIs succeeded");
-      console.log("Yesterday:", yesterday.data);
-      console.log("Today:", today.data);
-      console.log("Monthly:", monthly.data);
-      console.log("Yearly:", yearly.data);
-      
-      setStatsData({
-        yesterday: yesterday.data,
-        today: today.data,
-        monthly: monthly.data,
-        yearly: yearly.data
-      });
-    } catch (error) {
-      console.error("❌ Error fetching node statistics:", error);
-      toast.error("Failed to load statistics: " + (error.response?.data?.detail || error.message));
-    } finally {
-      setStatsLoading(false);
-    }
-  };
-  
-  // Open stats modal for a node
-  const openStatsModal = async (node) => {
-    setSelectedNodeStats(node);
-    setShowStatsModal(true);
-    await fetchNodeStatistics(node.address);
-  };
+  // Note: Old statistics modal functions removed - now using live earnings modal
   
   // Fetch live earnings from Nosana dashboard AND scraped statistics
   const fetchLiveEarnings = async (nodeAddress) => {
