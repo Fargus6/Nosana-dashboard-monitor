@@ -1536,12 +1536,12 @@ async def refresh_all_nodes_status(request: Request, current_user: User = Depend
                         # Get NOS price and calculate payment
                         nos_price = await get_nos_token_price()
                         if nos_price:
-                            # Calculate payment (default GPU type is A100)
+                            # Calculate payment (Fixed $0.294 per job)
                             nos_payment = calculate_job_payment(duration_seconds, nos_price, gpu_type="A100")
                             if nos_payment:
                                 usd_value = nos_payment * nos_price
                                 payment_str = f"\n💰 Payment: {nos_payment:.2f} NOS (~${usd_value:.2f} USD)"
-                                logger.info(f"💰 Estimated payment for {node_name}: {nos_payment:.2f} NOS (~${usd_value:.2f})")
+                                logger.info(f"💰 Payment for {node_name}: {nos_payment:.2f} NOS (~${usd_value:.2f}) [Fixed $0.294/job]")
                                 
                                 # Save earnings to statistics
                                 await save_job_earnings(
