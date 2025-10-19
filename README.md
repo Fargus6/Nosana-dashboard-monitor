@@ -329,9 +329,14 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 
 ---
 
-**Current Version**: v1.0.1  
-**Last Updated**: October 18, 2025  
+**Current Version**: v1.1.0  
+**Last Updated**: October 19, 2025  
 **Status**: ✅ Production Ready & Actively Maintained
+
+**Latest Features:**
+- 🤖 Telegram Bot integration with enhanced job notifications
+- ⏱️ Automatic job duration tracking
+- 💰 Payment estimation with live NOS pricing
 
 ---
 
