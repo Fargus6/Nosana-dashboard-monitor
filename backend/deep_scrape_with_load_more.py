@@ -42,7 +42,7 @@ async def deep_scrape_with_pagination():
     print(f"🕐 Scrape Time: {scrape_time.strftime('%Y-%m-%d %H:%M:%S %Z')}\n")
     
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)  # Show browser to see what's happening
+        browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         
         url = f"https://dashboard.nosana.com/host/{node_address}"
