@@ -2396,18 +2396,6 @@ function App() {
                             </p>
                           </div>
                         )}
-                        
-                        {/* Earnings Button */}
-                        <div className="pt-3 border-t">
-                          <Button
-                            onClick={() => openLiveEarningsModal(node)}
-                            className="w-full text-sm bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                            size="sm"
-                          >
-                            <Activity className="w-4 h-4 mr-2" />
-                            View Earnings & Statistics
-                          </Button>
-                        </div>
 
                         <div className={"text-xs pt-2 border-t " + theme.text.muted}>
                           Updated: {new Date(node.last_updated).toLocaleString()}
