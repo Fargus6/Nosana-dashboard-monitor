@@ -1022,6 +1022,69 @@ async def send_telegram_notification(user_id: str, message: str):
 
 
 
+async def get_nos_token_price() -> Optional[float]:
+    """Fetch current NOS token price in USD from CoinGecko API"""
+    try:
+        response = requests.get(
+            "https://api.coingecko.com/api/v3/simple/price?ids=nosana&vs_currencies=usd",
+            timeout=5
+        )
+        if response.status_code == 200:
+            data = response.json()
+            price = data.get('nosana', {}).get('usd')
+            if price:
+                logger.info(f"💰 NOS Token Price: ${price:.4f} USD")
+                return float(price)
+        logger.warning(f"Failed to fetch NOS price: {response.status_code}")
+    except Exception as e:
+        logger.error(f"Error fetching NOS price: {str(e)}")
+    return None
+
+
+def calculate_job_payment(duration_seconds: int, nos_price_usd: Optional[float], gpu_type: str = "A100") -> Optional[float]:
+    """
+    Calculate estimated NOS payment for a job based on duration
+    
+    Default GPU hourly rates in USD (based on Nosana market rates):
+    - A100 80GB: $0.90/hr
+    - RTX Pro 6000: $1.00/hr
+    - H100: $1.50/hr
+    
+    Args:
+        duration_seconds: Job duration in seconds
+        nos_price_usd: Current NOS token price in USD
+        gpu_type: Type of GPU (defaults to A100)
+    
+    Returns:
+        Estimated payment in NOS tokens, or None if calculation fails
+    """
+    try:
+        # Default GPU rates per hour in USD (assuming A100 80GB)
+        # User can customize these based on their GPU type
+        gpu_rates = {
+            "A100": 0.90,
+            "Pro6000": 1.00,
+            "H100": 1.50,
+            "default": 0.90  # Default to A100 rate
+        }
+        
+        hourly_rate_usd = gpu_rates.get(gpu_type, gpu_rates["default"])
+        
+        # Calculate USD earnings based on duration
+        duration_hours = duration_seconds / 3600.0
+        usd_earned = hourly_rate_usd * duration_hours
+        
+        # Convert to NOS if we have the price
+        if nos_price_usd and nos_price_usd > 0:
+            nos_payment = usd_earned / nos_price_usd
+            return nos_payment
+        
+        return None
+    except Exception as e:
+        logger.error(f"Error calculating job payment: {str(e)}")
+        return None
+
+
 def format_duration(seconds: int) -> str:
     """Format duration in seconds to human-readable format"""
     if seconds < 60:
