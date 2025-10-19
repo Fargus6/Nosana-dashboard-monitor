@@ -202,6 +202,11 @@ function App() {
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsData, setStatsData] = useState(null);
   
+  // Live earnings states
+  const [showLiveEarningsModal, setShowLiveEarningsModal] = useState(false);
+  const [liveEarningsData, setLiveEarningsData] = useState(null);
+  const [liveEarningsLoading, setLiveEarningsLoading] = useState(false);
+  
   // Service worker update detection
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [waitingWorker, setWaitingWorker] = useState(null);
