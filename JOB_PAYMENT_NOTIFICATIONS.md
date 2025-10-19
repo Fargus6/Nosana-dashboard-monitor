@@ -1,7 +1,7 @@
 # Job Payment & Duration Tracking
 
 ## Overview
-Enhanced Telegram notifications now include **job duration** and **estimated payment** information when a job completes on your Nosana nodes.
+Enhanced Telegram notifications now include **job duration** and **payment information** when a job completes on your Nosana nodes.
 
 ## Features
 
@@ -10,13 +10,10 @@ Enhanced Telegram notifications now include **job duration** and **estimated pay
 - **Duration Calculation**: Calculated when job completes (status changes from `running` to `idle` or `queue`)
 - **Human-Readable Format**: Displays as "5m 30s", "1h 45m", etc.
 
-### 2. Payment Estimation
+### 2. Payment Calculation
+- **REAL Nosana Formula**: Fixed **$0.294 USD per job** (regardless of duration)
 - **Live NOS Price**: Fetches current NOS token price from CoinGecko API
-- **GPU-Based Calculation**: Uses Nosana market hourly rates
-  - A100 80GB: $0.90/hr
-  - RTX Pro 6000: $1.00/hr
-  - H100: $1.50/hr
-- **Dynamic Conversion**: Converts USD earnings to NOS based on current token price
+- **Automatic Conversion**: Converts fixed USD payment to NOS based on current price
 - **Dual Display**: Shows both NOS amount and USD equivalent
 
 ### 3. Enhanced Telegram Notifications
@@ -24,8 +21,8 @@ When a job completes, you'll receive:
 ```
 🎉 Job Completed - Node Name
 
-⏱️ Duration: 5m 30s
-💰 Payment: 0.25 NOS (~$0.12 USD)
+⏱️ Duration: 55m 30s
+💰 Payment: 0.64 NOS ($0.29 USD)
 
 [View Dashboard]
 ```
@@ -44,25 +41,66 @@ When a job completes, you'll receive:
 2. **Job Completes** (status: running → idle/queue)
    - Calculate duration from stored start time
    - Fetch current NOS token price from CoinGecko
-   - Calculate payment: `(hourly_rate × duration_hours) / nos_price`
+   - Calculate payment: **Fixed $0.294 / nos_price = NOS earned**
    - Send Firebase push notification (basic)
    - Send enhanced Telegram notification (with duration & payment)
+   - Save earnings to statistics database
    - Clear start time and increment completed jobs counter
+
+### Payment Calculation
+Based on **real Nosana dashboard data**:
+
+**Formula:**
+```python
+# REAL Nosana payment structure
+FIXED_USD_PER_JOB = 0.294  # All jobs pay this amount
+
+# Convert to NOS
+nos_price = get_current_nos_price()  # e.g., $0.46
+nos_payment = FIXED_USD_PER_JOB / nos_price
+
+# Example: $0.294 / $0.46 = 0.64 NOS per job
+```
+
+**Key Facts:**
+- Payment is **NOT based on duration**
+- All jobs pay the same: **$0.294 USD**
+- Typical job duration: ~55 minutes
+- Frequency: ~12 jobs per day (1 every 2 hours)
 
 ### Payment Calculation Example
 ```python
-# Example: 10-minute job on A100
-duration = 600 seconds (10 minutes)
-hourly_rate = $0.90 (A100)
-nos_price = $0.46 (from CoinGecko)
+# Real example from Nosana dashboard
+job_completes = True
+duration = 55 * 60  # 55 minutes (not used in calculation)
 
-# Calculate
-duration_hours = 600 / 3600 = 0.167 hours
-usd_earned = $0.90 × 0.167 = $0.15
-nos_payment = $0.15 / $0.46 = 0.33 NOS
+# Fixed payment
+usd_payment = 0.294
 
-# Result: "0.33 NOS (~$0.15 USD)"
+# Get live NOS price
+nos_price = 0.46  # From CoinGecko
+
+# Calculate NOS payment
+nos_payment = 0.294 / 0.46 = 0.64 NOS
+
+# Result notification: "0.64 NOS (~$0.29 USD)"
 ```
+
+## Realistic Earnings
+
+Based on actual Nosana data:
+
+**Per Day (12 jobs):**
+- Payment: ~15.4 NOS (~$7.06 USD)
+- Duration: 12 × 55min = 11 hours of work
+
+**Per Month (360 jobs):**
+- Payment: ~230 NOS (~$105.84 USD)
+- About 30 days × 12 jobs
+
+**Per Year:**
+- Payment: ~2,760 NOS (~$1,270 USD)
+- About 4,320 jobs annually
 
 ## API Integration
 
