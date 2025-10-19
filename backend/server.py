@@ -2091,7 +2091,7 @@ async def get_live_earnings_from_dashboard(address: str, current_user: User = De
             raise HTTPException(status_code=404, detail="Node not found")
         
         # Scrape live data from Nosana dashboard
-        jobs = scrape_nosana_job_history(address)
+        jobs = await scrape_nosana_job_history(address)
         
         if not jobs:
             return {
@@ -2122,6 +2122,10 @@ async def get_live_earnings_from_dashboard(address: str, current_user: User = De
             usd_earned = duration_hours * job['hourly_rate_usd']
             job['usd_earned'] = round(usd_earned, 4)
             job['nos_earned'] = round(usd_earned / nos_price, 2) if nos_price > 0 else 0
+            
+            # Convert datetime to string for JSON serialization
+            if isinstance(job['started'], datetime):
+                job['started'] = job['started'].isoformat()
             
             # Add to totals (only count completed jobs in total)
             if job['status'] == 'SUCCESS':
