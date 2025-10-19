@@ -100,12 +100,14 @@ When your node completes a job, you'll receive:
 🎉 Job Completed - Node Name
 
 ⏱️ Duration: 45m 30s
+💰 Payment: $0.176 USD (~0.37 NOS)
 
 [View Dashboard]
 ```
 
 **Features:**
 - ⏱️ **Job Duration**: Automatically tracked from start to finish
+- 💰 **Actual Payment**: Real payment amount scraped from Nosana dashboard (no calculations)
 - 🔗 **Quick Access**: Direct link to your node's Nosana dashboard
 
 ### Telegram Bot Commands:
