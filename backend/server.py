@@ -1440,9 +1440,9 @@ async def get_monthly_scraped_earnings(user_id: str, node_address: str) -> Dict:
 
 
 async def get_yearly_scraped_earnings(user_id: str, node_address: str) -> Dict:
-    """Get yearly totals from scraped data"""
+    """Get overall (all-time) totals from scraped data"""
     try:
-        # Get all completed jobs
+        # Get all completed jobs (all-time)
         jobs = await db.scraped_jobs.find({
             "user_id": user_id,
             "node_address": node_address,
@@ -1451,45 +1451,34 @@ async def get_yearly_scraped_earnings(user_id: str, node_address: str) -> Dict:
         }).to_list(None)
         
         if not jobs:
-            return {"years": []}
+            return {
+                "total_jobs": 0,
+                "total_usd": 0,
+                "total_nos": 0,
+                "total_duration": 0
+            }
         
-        # Group by year
-        yearly_data = {}
-        for job in jobs:
-            completed_date = datetime.fromisoformat(job['completed'].replace('Z', '+00:00'))
-            year_key = completed_date.strftime("%Y")
-            
-            if year_key not in yearly_data:
-                yearly_data[year_key] = {
-                    "year": year_key,
-                    "usd_earned": 0,
-                    "nos_earned": 0,
-                    "job_count": 0,
-                    "duration_seconds": 0
-                }
-            
-            yearly_data[year_key]["usd_earned"] += job.get('usd_earned', 0)
-            yearly_data[year_key]["nos_earned"] += job.get('nos_earned', 0)
-            yearly_data[year_key]["job_count"] += 1
-            yearly_data[year_key]["duration_seconds"] += job.get('duration_seconds', 0)
+        # Calculate overall totals
+        total_usd = sum(job.get('usd_earned', 0) for job in jobs)
+        total_nos = sum(job.get('nos_earned', 0) for job in jobs)
+        total_jobs = len(jobs)
+        total_duration = sum(job.get('duration_seconds', 0) for job in jobs)
         
-        # Convert to sorted list
-        years = []
-        for year_key in sorted(yearly_data.keys(), reverse=True):
-            data = yearly_data[year_key]
-            years.append({
-                "year": year_key,
-                "usd_earned": round(data["usd_earned"], 2),
-                "nos_earned": round(data["nos_earned"], 2),
-                "job_count": data["job_count"],
-                "duration_seconds": data["duration_seconds"]
-            })
-        
-        return {"years": years}
+        return {
+            "total_jobs": total_jobs,
+            "total_usd": round(total_usd, 2),
+            "total_nos": round(total_nos, 2),
+            "total_duration": total_duration
+        }
         
     except Exception as e:
-        logger.error(f"Error getting yearly scraped earnings: {str(e)}")
-        return {"years": []}
+        logger.error(f"Error getting overall scraped earnings: {str(e)}")
+        return {
+            "total_jobs": 0,
+            "total_usd": 0,
+            "total_nos": 0,
+            "total_duration": 0
+        }
 
 
 def calculate_job_payment(duration_seconds: int, nos_price_usd: Optional[float], gpu_type: str = "A100") -> Optional[float]:
