@@ -73,7 +73,7 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 
 ## 🤖 Telegram Bot Setup
 
-Get enhanced job completion notifications with **duration tracking** and **payment calculations** directly in Telegram!
+Get enhanced job completion notifications with **duration tracking** directly in Telegram!
 
 ### Enable Telegram Notifications:
 
@@ -100,15 +100,12 @@ When your node completes a job, you'll receive:
 🎉 Job Completed - Node Name
 
 ⏱️ Duration: 45m 30s
-💰 Payment: 1.46 NOS (~$0.68 USD)
 
 [View Dashboard]
 ```
 
 **Features:**
 - ⏱️ **Job Duration**: Automatically tracked from start to finish
-- 💰 **Payment Estimate**: Based on GPU hourly rates and live NOS price
-- 📊 **Live Pricing**: NOS/USD conversion updated from CoinGecko API
 - 🔗 **Quick Access**: Direct link to your node's Nosana dashboard
 
 ### Telegram Bot Commands:
@@ -124,37 +121,16 @@ When your node completes a job, you'll receive:
 All these alerts are sent automatically to your Telegram:
 
 - 🚀 **Job Started** - When your node picks up a new job
-- 🎉 **Job Completed** - With duration and payment info (enhanced!)
+- 🎉 **Job Completed** - With duration info (enhanced!)
 - 🔴 **Node Offline** - Critical alert when node goes down
 - ✅ **Node Online** - When your node recovers
 - 🟡 **Low SOL Balance** - Warning when SOL < 0.006 (critical threshold)
-
-### Payment Calculation:
-
-**How it works:**
-- **GPU Rate**: Based on Nosana market rates (default: A100 at $0.90/hr)
-- **Duration**: Calculated from job start to completion
-- **NOS Price**: Live price fetched from CoinGecko API
-- **Formula**: `Payment (NOS) = (hourly_rate × duration_hours) / nos_price`
-
-**Example Earnings:**
-| Duration | Estimated Payment |
-|----------|------------------|
-| 5 min    | ~0.16 NOS (~$0.07 USD) |
-| 15 min   | ~0.49 NOS (~$0.23 USD) |
-| 30 min   | ~0.97 NOS (~$0.45 USD) |
-| 1 hour   | ~1.94 NOS (~$0.90 USD) |
-| 2 hours  | ~3.88 NOS (~$1.80 USD) |
-
-*Note: Estimates based on A100 GPU rate and current NOS price (~$0.46). Actual earnings may vary and don't include platform fees.*
 
 ### Important Notes:
 
 - ✅ **Automatic**: No manual action needed after linking
 - ✅ **Secure**: Your chat ID is encrypted and private
 - ✅ **Optional**: Can unlink anytime in app Settings
-- ⚠️ **Estimates Only**: Payments are estimated based on market rates, not actual blockchain transactions
-- ⚠️ **Live Pricing**: NOS price updates with each notification
 
 ---
 
