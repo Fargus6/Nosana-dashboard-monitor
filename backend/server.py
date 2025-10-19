@@ -2512,6 +2512,54 @@ async def get_yesterday_earnings_scraped(address: str, current_user: User = Depe
         raise HTTPException(status_code=500, detail="Failed to get yesterday earnings")
 
 
+@api_router.post("/earnings/node/{address}/scrape-all-history")
+async def scrape_all_history_for_node(address: str, current_user: User = Depends(get_current_user)):
+    """
+    Scrape ALL historical jobs for a specific node (with pagination)
+    Use this to build complete historical data for statistics
+    """
+    try:
+        # Verify node belongs to user
+        node = await db.nodes.find_one({
+            "address": address,
+            "user_id": current_user.id
+        })
+        
+        if not node:
+            raise HTTPException(status_code=404, detail="Node not found")
+        
+        logger.info(f"🚀 Starting full historical scrape for node: {address[:8]}...")
+        
+        # Scrape ALL pages (no max_pages limit)
+        jobs = await scrape_nosana_job_history(address, max_pages=None)
+        
+        if not jobs:
+            return {
+                "success": False,
+                "message": "No jobs found",
+                "jobs_scraped": 0,
+                "jobs_stored": 0
+            }
+        
+        # Store all scraped jobs
+        stored = await store_scraped_jobs(current_user.id, address, jobs)
+        
+        return {
+            "success": True,
+            "message": f"Successfully scraped complete history for node {address[:8]}",
+            "jobs_scraped": len(jobs),
+            "jobs_stored": stored,
+            "node_address": address,
+            "node_name": node.get('name', 'Unnamed Node')
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error scraping all history: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to scrape history")
+
+
 @api_router.post("/earnings/scrape-all-nodes")
 async def scrape_all_user_nodes(current_user: User = Depends(get_current_user)):
     """
