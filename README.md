@@ -307,13 +307,16 @@ Built with ❤️ for the Nosana community by a passionate node operator.
 
 ---
 
-**Current Version**: v1.1.0  
+**Current Version**: v1.2.0  
 **Last Updated**: October 19, 2025  
 **Status**: ✅ Production Ready & Actively Maintained
 
 **Latest Features:**
-- 🤖 Telegram Bot integration with enhanced job notifications
-- ⏱️ Automatic job duration tracking
+- 💰 **Accurate Payment Notifications**: Real payment amounts from Nosana dashboard
+- 🔔 **Enhanced Notifications**: Job completion alerts with duration + payment
+- 🔒 **No Auto-Logout**: Persistent SECRET_KEY prevents session loss
+- ⚡ **Server Keep-Alive**: 30-second ping prevents server sleep
+- 🤖 **Telegram Bot**: Enhanced alerts with rich formatting
 
 ---
 
