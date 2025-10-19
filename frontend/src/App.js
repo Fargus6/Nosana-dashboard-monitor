@@ -716,6 +716,18 @@ function App() {
     return () => clearInterval(keepAlive);
   }, []); // No dependencies - always runs
 
+  // Periodic token verification when authenticated (every 5 minutes)
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const tokenCheck = setInterval(async () => {
+      console.log("Periodic token verification...");
+      await verifyToken();
+    }, 300000); // Every 5 minutes
+
+    return () => clearInterval(tokenCheck);
+  }, [isAuthenticated]);
+
   // Update countdown display every minute
   useEffect(() => {
     if (!nextRefresh) return;
