@@ -1,6 +1,22 @@
 # Nosana Node Monitor
 
-A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nodes with **automated status checking from Solana blockchain** and **real-time push notifications**.
+## 🎯 Getting Started
+
+1. **Access the App**: 
+   - **Web**: Visit https://nosana-monitor-1.preview.emergentagent.com/
+   - **Mobile**: Install as PWA for best experience
+2. **Create an Account**: Register with email/password or use Google Sign-In
+3. **Enable Notifications**: 
+   - **Firebase Push**: Grant push notification permissions for mobile alerts
+   - **Telegram Bot** (Recommended): Link with @NosNode_bot for enhanced job notifications with duration tracking
+4. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
+5. **Choose Refresh Interval**: Select 1, 2, 3, or 10-minute auto-refresh
+6. **Customize Alerts**: Choose which events trigger notifications
+7. **Monitor Status**: Automatic refresh keeps you updated
+8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
+9. **Get Alerts**: 
+   - Lock screen notifications on mobile
+   - Enhanced Telegram alerts with job duration tracking
 
 ## 🌐 Access the App
 
@@ -232,23 +248,6 @@ You can still manually edit any node:
 ### System:
 - `GET /api/health` - Health check endpoint
 
-## 🎯 Getting Started
-
-1. **Access the App**: 
-   - **Web**: Visit https://nosanamonitor.preview.emergentagent.com
-   - **Mobile**: Install as PWA for best experience
-2. **Create an Account**: Register with email/password or use Google Sign-In
-3. **Enable Notifications**: 
-   - **Firebase Push**: Grant push notification permissions for mobile alerts
-   - **Telegram Bot** (Recommended): Link with @NosNode_bot for enhanced job notifications with duration tracking
-4. **Add Your Nodes**: Enter your Nosana node addresses with optional custom names
-5. **Choose Refresh Interval**: Select 1, 2, 3, or 10-minute auto-refresh
-6. **Customize Alerts**: Choose which events trigger notifications
-7. **Monitor Status**: Automatic refresh keeps you updated
-8. **View Details**: Check NOS/SOL balances, job counts, and availability scores
-9. **Get Alerts**: 
-   - Lock screen notifications on mobile
-   - Enhanced Telegram alerts with job duration tracking
 
 ## 🙏 Acknowledgments
 
