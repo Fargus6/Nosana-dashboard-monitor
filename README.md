@@ -62,15 +62,6 @@ A **Progressive Web App (PWA)** to monitor and manage your Nosana AI network nod
 4. Tap "Add"
 5. App appears on your home screen!
 
-### Benefits of PWA:
-✅ Works offline (basic functionality)  
-✅ Fast loading and smooth performance  
-✅ No app store approval needed  
-✅ **Auto-updates automatically** (no reinstalling!)  
-✅ Smaller size than native apps  
-✅ Push notifications support  
-✅ Lock screen alerts
-
 ---
 
 ## 🤖 Telegram Bot Setup
@@ -107,11 +98,6 @@ When your node completes a job, you'll receive:
 [View Dashboard]
 ```
 
-**Features:**
-- ⏱️ **Job Duration**: Automatically tracked from start to finish
-- 💰 **Actual Payment**: Real payment amount scraped from Nosana dashboard (no calculations)
-- 🔗 **Quick Access**: Direct link to your node's Nosana dashboard
-
 ### Telegram Bot Commands:
 
 - `/start` - Link your account and get your linking code
@@ -121,7 +107,6 @@ When your node completes a job, you'll receive:
 - `/help` - Show all available commands
 
 ### Notification Types:
-
 All these alerts are sent automatically to your Telegram:
 
 - 🚀 **Job Started** - When your node picks up a new job
@@ -129,13 +114,6 @@ All these alerts are sent automatically to your Telegram:
 - 🔴 **Node Offline** - Critical alert when node goes down
 - ✅ **Node Online** - When your node recovers
 - 🟡 **Low SOL Balance** - Warning when SOL < 0.006 (critical threshold)
-
-### Important Notes:
-
-- ✅ **Automatic**: No manual action needed after linking
-- ✅ **Secure**: Your chat ID is encrypted and private
-- ✅ **Optional**: Can unlink anytime in app Settings
-
 ---
 
 ## 🔔 Push Notifications Setup
@@ -146,14 +124,6 @@ All these alerts are sent automatically to your Telegram:
 3. Click **"Enable Notifications"**
 4. Grant permission when prompted
 5. Choose which events to monitor
-
-### Lock Screen Notifications:
-Notifications will:
-- ✅ Appear on lock screen
-- ✅ Light up your phone screen
-- ✅ Vibrate with custom pattern
-- ✅ Play notification sound
-- ✅ Show even when app is closed
 
 ### For Best Results:
 **Android:**
@@ -182,7 +152,6 @@ The app connects to the **Solana blockchain** (where Nosana nodes are registered
 - **Offline**: Node account not found or inactive
 - **Running**: Node is actively processing deployments
 - **Queue**: Jobs waiting in queue
-- **Idle**: Node online but no active jobs
 
 ## 📖 How to Use
 
@@ -206,28 +175,6 @@ You can still manually edit any node:
 1. Click the edit icon (pencil) on any node card
 2. Update name, status, job status, or notes
 3. Click "Save"
-
-### Offline Alerts
-
-When a node's status changes to "Offline", you'll receive a toast notification.
-
-### Viewing Node Dashboard
-
-Click the external link icon (↗) to open the official Nosana dashboard for that node.
-
-## 🛠 Technical Stack
-
-- **Frontend**: React with Tailwind CSS and Shadcn UI components
-- **Backend**: FastAPI (Python) with Solana blockchain integration
-- **Database**: MongoDB for persistence
-- **Blockchain**: Solana RPC (mainnet-beta) for real-time node status
-- **Web Scraping**: Playwright for Nosana dashboard data extraction
-- **Authentication**: JWT tokens with bcrypt password hashing, Google OAuth
-- **Push Notifications**: Firebase Cloud Messaging (FCM)
-- **Telegram Bot**: python-telegram-bot for enhanced notifications
-- **Security**: Rate limiting (SlowAPI), XSS protection, input validation, DOMPurify
-- **PWA**: Service Workers for offline support and auto-updates
-- **Font**: Space Grotesk for modern tech aesthetic
 
 ## 🔐 Security Features
 
@@ -308,16 +255,5 @@ Click the external link icon (↗) to open the official Nosana dashboard for tha
 Built with ❤️ for the Nosana community by a passionate node operator.
 
 
-## 🚀 Quick Start
-
-### For Users
-1. Visit https://nosana-monitor-1.preview.emergentagent.com/
-2. Sign up with email or Google
-3. Add your Nosana node addresses
-4. Enable notifications for alerts
-5. Install as PWA for mobile experience
-
-
----
 
 *Monitor smarter, not harder. Keep your Nosana nodes running 24/7 with confidence!* 🚀
